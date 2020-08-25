@@ -24,7 +24,7 @@ from lib.utils import get_device
 
 # get minimum and maximum for each feature across the whole dataset
 def get_data_min_max(records):
-	device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
+	device = torch.device("cuda:3" if torch.cuda.is_available() else "cpu")
 
 	data_min, data_max = None, None
 	inf = torch.Tensor([float("Inf")])[0].to(device)
@@ -112,7 +112,7 @@ class PhysioNet(object):
 		if self._check_exists():
 			return
 
-		self.device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
+		self.device = torch.device("cuda:3" if torch.cuda.is_available() else "cpu")
 
 		os.makedirs(self.raw_folder, exist_ok=True)
 		os.makedirs(self.processed_folder, exist_ok=True)
