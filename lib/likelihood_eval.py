@@ -57,8 +57,9 @@ def compute_binary_CE_loss(label_predictions, mortality_label):
  
 	n_traj_samples = label_predictions.size(0)
 	label_predictions = label_predictions.reshape(n_traj_samples, -1)
-	
-	idx_not_nan = 1 - torch.isnan(mortality_label)
+
+	# idx_not_nan = 1 - torch.isnan(mortality_label)
+	idx_not_nan = ~torch.isnan(mortality_label)
 	if len(idx_not_nan) == 0.:
 		print("All are labels are NaNs!")
 		ce_loss = torch.Tensor(0.).to(get_device(mortality_label))
