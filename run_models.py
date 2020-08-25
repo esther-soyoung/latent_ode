@@ -310,7 +310,7 @@ if __name__ == '__main__':
 					logger.info("CE loss: {}".format(test_res["ce_loss"]))
 
 				if "nfe" in test_res:
-					logger.info("NFE: {:.4f}".format(test_res['nfe'])
+					logger.info("NFE: {:.4f}".format(test_res['nfe']))
 
 			torch.save({
 				'args': args,
