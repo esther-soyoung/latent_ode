@@ -103,7 +103,7 @@ class LatentODE(VAE_Baseline):
 
 		pred_x = self.decoder(sol_y)
 		# kinetic energy term
-		kinetic = quadratic_cost(pred_x)
+		kinetic = quadratic_cost(pred_x)[0]
 
 		all_extra_info = {
 			"first_point": (first_point_mu, first_point_std, first_point_enc),

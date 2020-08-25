@@ -38,8 +38,7 @@ class Baseline(nn.Module):
 		linear_classifier = False,
 		n_labels = 1,
 		train_classif_w_reconstr = False,
-		reg_dopri = 0,
-		reg_kinetic = 0):
+		reg_dopri = 0, reg_kinetic = 0):
 		super(Baseline, self).__init__()
 
 		self.input_dim = input_dim
@@ -191,7 +190,8 @@ class VAE_Baseline(nn.Module):
 		use_poisson_proc = False,
 		linear_classifier = False,
 		n_labels = 1,
-		train_classif_w_reconstr = False):
+		train_classif_w_reconstr = False,
+		reg_dopri = 0, reg_kinetic = 0):
 
 		super(VAE_Baseline, self).__init__()
 		

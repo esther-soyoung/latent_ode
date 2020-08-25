@@ -1,1 +1,4 @@
 data/
+lib/torchdiffeq_/_impl/__pycache__/
+lib/torchdiffeq_/__pycache__/
+*.pyc
