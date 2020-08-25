@@ -15,6 +15,7 @@ import lib.utils as utils
 from lib.utils import get_device
 from lib.encoder_decoder import *
 from lib.likelihood_eval import *
+from lib.regularizer import quadratic_cost
 
 from torch.distributions.multivariate_normal import MultivariateNormal
 from torch.distributions.normal import Normal
@@ -30,7 +31,8 @@ class LatentODE(VAE_Baseline):
 		linear_classifier = False,
 		classif_per_tp = False,
 		n_labels = 1,
-		train_classif_w_reconstr = False):
+		train_classif_w_reconstr = False,
+		reg_dopri = 0, reg_kinetic = 0):
 
 		super(LatentODE, self).__init__(
 			input_dim = input_dim, latent_dim = latent_dim, 
@@ -41,12 +43,16 @@ class LatentODE(VAE_Baseline):
 			linear_classifier = linear_classifier,
 			use_poisson_proc = use_poisson_proc,
 			n_labels = n_labels,
-			train_classif_w_reconstr = train_classif_w_reconstr)
+			train_classif_w_reconstr = train_classif_w_reconstr,
+			reg_dopri = reg_dopri, reg_kinetic = reg_kinetic)
 
 		self.encoder_z0 = encoder_z0
 		self.diffeq_solver = diffeq_solver
 		self.decoder = decoder
 		self.use_poisson_proc = use_poisson_proc
+
+		self.reg_dopri = reg_dopri
+		self.reg_kinetic = reg_kinetic
 
 	def get_reconstruction(self, time_steps_to_predict, truth, truth_time_steps, 
 		mask = None, n_traj_samples = 1, run_backwards = True, mode = None):
@@ -85,7 +91,9 @@ class LatentODE(VAE_Baseline):
 		assert(not torch.isnan(first_point_enc_aug).any())
 
 		# Shape of sol_y [n_traj_samples, n_samples, n_timepoints, n_latents]
-		sol_y = self.diffeq_solver(first_point_enc_aug, time_steps_to_predict)
+		self.reset_nfe()
+		sol_y, dopri_err = self.diffeq_solver(first_point_enc_aug, time_steps_to_predict)
+		dopri_err = torch.mean(torch.stack(dopri_err))
 
 		if self.use_poisson_proc:
 			sol_y, log_lambda_y, int_lambda, _ = self.diffeq_solver.ode_func.extract_poisson_rate(sol_y)
@@ -94,6 +102,8 @@ class LatentODE(VAE_Baseline):
 			assert(torch.sum(int_lambda[0,0,-1,:] <= 0) == 0.)
 
 		pred_x = self.decoder(sol_y)
+		# kinetic energy term
+		kinetic = quadratic_cost(pred_x)
 
 		all_extra_info = {
 			"first_point": (first_point_mu, first_point_std, first_point_enc),
@@ -111,7 +121,7 @@ class LatentODE(VAE_Baseline):
 			else:
 				all_extra_info["label_predictions"] = self.classifier(first_point_enc).squeeze(-1)
 
-		return pred_x, all_extra_info
+		return pred_x, dopri_err, kinetic, all_extra_info
 
 
 	def sample_traj_from_prior(self, time_steps_to_predict, n_traj_samples = 1):
@@ -137,3 +147,8 @@ class LatentODE(VAE_Baseline):
 		return self.decoder(sol_y)
 
 
+	def reset_nfe(self):
+		self.diffeq_solver.ode_func.reset_nfe()
+
+	def get_nfe(self):
+		return self.diffeq_solver.ode_func.get_nfe()

@@ -82,7 +82,7 @@ def create_LatentODE_model(args, input_dim, z0_prior, obsrv_std, device,
 
 	decoder = Decoder(args.latents, gen_data_dim).to(device)
 
-	diffeq_solver = DiffeqSolver(gen_data_dim, gen_ode_func, 'dopri5', args.latents, 
+	diffeq_solver = DiffeqSolver(gen_data_dim, gen_ode_func, 'dopri5_err', args.latents, 
 		odeint_rtol = 1e-3, odeint_atol = 1e-4, device = device)
 
 	model = LatentODE(
@@ -99,7 +99,8 @@ def create_LatentODE_model(args, input_dim, z0_prior, obsrv_std, device,
 		linear_classifier = args.linear_classif,
 		classif_per_tp = classif_per_tp,
 		n_labels = n_labels,
-		train_classif_w_reconstr = (args.dataset == "physionet")
+		train_classif_w_reconstr = (args.dataset == "physionet"),
+		reg_dopri = args.reg_dopri, reg_kinetic = args.reg_kinetic
 		).to(device)
 
 	return model

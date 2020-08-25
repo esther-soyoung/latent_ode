@@ -37,7 +37,9 @@ class Baseline(nn.Module):
 		use_poisson_proc = False,
 		linear_classifier = False,
 		n_labels = 1,
-		train_classif_w_reconstr = False):
+		train_classif_w_reconstr = False,
+		reg_dopri = 0,
+		reg_kinetic = 0):
 		super(Baseline, self).__init__()
 
 		self.input_dim = input_dim
@@ -52,6 +54,9 @@ class Baseline(nn.Module):
 		self.use_poisson_proc = use_poisson_proc
 		self.linear_classifier = linear_classifier
 		self.train_classif_w_reconstr = train_classif_w_reconstr
+
+		self.reg_dopri = reg_dopri
+		self.reg_kinetic = reg_kinetic
 
 		z0_dim = latent_dim
 		if use_poisson_proc:
@@ -102,7 +107,7 @@ class Baseline(nn.Module):
 
 		# Condition on subsampled points
 		# Make predictions for all the points
-		pred_x, info = self.get_reconstruction(batch_dict["tp_to_predict"], 
+		pred_x, dopri_err, kinetic, info = self.get_reconstruction(batch_dict["tp_to_predict"], 
 			batch_dict["observed_data"], batch_dict["observed_tp"], 
 			mask = batch_dict["observed_mask"], n_traj_samples = n_traj_samples,
 			mode = batch_dict["mode"])
@@ -159,7 +164,9 @@ class Baseline(nn.Module):
 
 		# Take mean over the number of samples in a batch
 		results = {}
-		results["loss"] = torch.mean(loss)
+		results["loss"] = torch.mean(loss) \
+							+ self.reg_dopri * dopri_err \
+							+ self.reg_kinetic * kinetic
 		results["likelihood"] = torch.mean(likelihood).detach()
 		results["mse"] = torch.mean(mse).detach()
 		results["pois_likelihood"] = torch.mean(pois_log_likelihood).detach()
@@ -167,7 +174,8 @@ class Baseline(nn.Module):
 		results["kl"] = 0.
 		results["kl_first_p"] =  0.
 		results["std_first_p"] = 0.
-
+		results["nfe"] = nfe
+		
 		if batch_dict["labels"] is not None and self.use_binary_classif:
 			results["label_predictions"] = info["label_predictions"].detach()
 		return results
@@ -253,7 +261,7 @@ class VAE_Baseline(nn.Module):
 	def compute_all_losses(self, batch_dict, n_traj_samples = 1, kl_coef = 1.):
 		# Condition on subsampled points
 		# Make predictions for all the points
-		pred_y, info = self.get_reconstruction(batch_dict["tp_to_predict"], 
+		pred_y, dopri_err, kinetic, info = self.get_reconstruction(batch_dict["tp_to_predict"], 
 			batch_dict["observed_data"], batch_dict["observed_tp"], 
 			mask = batch_dict["observed_mask"], n_traj_samples = n_traj_samples,
 			mode = batch_dict["mode"])
@@ -326,7 +334,9 @@ class VAE_Baseline(nn.Module):
 				loss =  ce_loss
 
 		results = {}
-		results["loss"] = torch.mean(loss)
+		results["loss"] = torch.mean(loss) \
+							+ self.reg_dopri * dopri_err \
+							+ self.reg_kinetic * kinetic
 		results["likelihood"] = torch.mean(rec_likelihood).detach()
 		results["mse"] = torch.mean(mse).detach()
 		results["pois_likelihood"] = torch.mean(pois_log_likelihood).detach()

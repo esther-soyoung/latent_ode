@@ -263,11 +263,13 @@ class Encoder_z0_ODE_RNN(nn.Module):
 		assert(not torch.isnan(time_steps).any())
 
 		latent_ys = []
+		dopri_err = []
 		# Run ODE backwards and combine the y(t) estimates using gating
 		time_points_iter = range(0, len(time_steps))
 		if run_backwards:
 			time_points_iter = reversed(time_points_iter)
 
+		# forward
 		for i in time_points_iter:
 			if (prev_t - t_i) < minimum_step:
 				time_points = torch.stack((prev_t, t_i))
@@ -283,7 +285,7 @@ class Encoder_z0_ODE_RNN(nn.Module):
 				n_intermediate_tp = max(2, ((prev_t - t_i) / minimum_step).int())
 
 				time_points = utils.linspace_vector(prev_t, t_i, n_intermediate_tp)
-				ode_sol = self.z0_diffeq_solver(prev_y, time_points)
+				ode_sol, err = self.z0_diffeq_solver(prev_y, time_points)
 
 				assert(not torch.isnan(ode_sol).any())
 
@@ -302,19 +304,22 @@ class Encoder_z0_ODE_RNN(nn.Module):
 			prev_t, t_i = time_steps[i],  time_steps[i-1]
 
 			latent_ys.append(yi)
+			dopri_err.append(err)
 
 			if save_info:
 				d = {"yi_ode": yi_ode.detach(), #"yi_from_data": yi_from_data,
 					 "yi": yi.detach(), "yi_std": yi_std.detach(), 
-					 "time_points": time_points.detach(), "ode_sol": ode_sol.detach()}
+					 "time_points": time_points.detach(), "ode_sol": ode_sol.detach(),
+					 "dopri_err": err.detach()}
 				extra_info.append(d)
 
 		latent_ys = torch.stack(latent_ys, 1)
+		dopri_err = torch.mean(torch.stack(dopri_err))
 
 		assert(not torch.isnan(yi).any())
 		assert(not torch.isnan(yi_std).any())
 
-		return yi, yi_std, latent_ys, extra_info
+		return yi, yi_std, latent_ys, extra_info, dopri_err
 
 
 

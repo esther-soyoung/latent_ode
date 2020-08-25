@@ -11,6 +11,7 @@ from torch.nn.functional import relu
 import lib.utils as utils
 from lib.encoder_decoder import *
 from lib.likelihood_eval import *
+from lib.regularizer import quadratic_cost
 
 from torch.distributions.multivariate_normal import MultivariateNormal
 from torch.distributions.normal import Normal
@@ -26,13 +27,15 @@ class ODE_RNN(Baseline):
 	def __init__(self, input_dim, latent_dim, device = torch.device("cpu"),
 		z0_diffeq_solver = None, n_gru_units = 100,  n_units = 100,
 		concat_mask = False, obsrv_std = 0.1, use_binary_classif = False,
-		classif_per_tp = False, n_labels = 1, train_classif_w_reconstr = False):
+		classif_per_tp = False, n_labels = 1, train_classif_w_reconstr = False,
+		reg_dopri = 0, reg_kinetic = 0):
 
 		Baseline.__init__(self, input_dim, latent_dim, device = device, 
 			obsrv_std = obsrv_std, use_binary_classif = use_binary_classif,
 			classif_per_tp = classif_per_tp,
 			n_labels = n_labels,
-			train_classif_w_reconstr = train_classif_w_reconstr)
+			train_classif_w_reconstr = train_classif_w_reconstr,
+			reg_dopri = reg_dopri, reg_kinetic = reg_kinetic)
 
 		ode_rnn_encoder_dim = latent_dim
 	
@@ -67,7 +70,9 @@ class ODE_RNN(Baseline):
 		if mask is not None:
 			data_and_mask = torch.cat([data, mask],-1)
 
-		_, _, latent_ys, _ = self.ode_gru.run_odernn(
+		# forward
+		self.reset_nfe()  # reset nfe
+		_, _, latent_ys, _, dopri_err = self.ode_gru.run_odernn(
 			data_and_mask, truth_time_steps, run_backwards = False)
 		
 		latent_ys = latent_ys.permute(0,2,1,3)
@@ -76,6 +81,9 @@ class ODE_RNN(Baseline):
 			#assert(torch.sum(int_lambda[0,0,-1,:] <= 0) == 0.)
 
 		outputs = self.decoder(latent_ys)
+		# kinetic energy term
+		kinetic = quadratic_cost(outputs)
+
 		# Shift outputs for computing the loss -- we should compare the first output to the second data point, etc.
 		first_point = data[:,0,:]
 		outputs = utils.shift_outputs(outputs, first_point)
@@ -89,7 +97,13 @@ class ODE_RNN(Baseline):
 				extra_info["label_predictions"] = self.classifier(last_hidden).squeeze(-1)
 
 		# outputs shape: [n_traj_samples, n_traj, n_tp, n_dims]
-		return outputs, extra_info
+		return outputs, dopri_err, kinetic, extra_info
+
+	def reset_nfe(self):
+		self.z0_diffeq_solver.ode_func.reset_nfe()
+
+	def get_nfe(self):
+		return self.z0_diffeq_solver.ode_func.get_nfe()
 
 
 

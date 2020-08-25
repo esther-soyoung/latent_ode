@@ -25,6 +25,9 @@ class ODEFunc(nn.Module):
 
 		utils.init_network_weights(ode_func_net)
 		self.gradient_net = ode_func_net
+		
+		# nfe
+		self.nfe = 0
 
 	def forward(self, t_local, y, backwards = False):
 		"""
@@ -34,6 +37,8 @@ class ODEFunc(nn.Module):
 		y: value at the current time point
 		"""
 		grad = self.get_ode_gradient_nn(t_local, y)
+		# nfe
+		self.nfe += 1
 		if backwards:
 			grad = -grad
 		return grad
@@ -47,6 +52,12 @@ class ODEFunc(nn.Module):
 		y: value at the current time point
 		"""
 		return self.get_ode_gradient_nn(t_local, y)
+
+	def get_nfe(self):
+		return self.nfe
+
+	def reset_nfe(self):
+		self.nfe = 0
 
 #####################################################################################################
 
