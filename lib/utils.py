@@ -525,6 +525,7 @@ def compute_loss_all_batches(model,
 	total["std_first_p"] = 0
 	total["pois_likelihood"] = 0
 	total["ce_loss"] = 0
+	total['nfe'] = 0
 
 	n_test_batches = 0
 	
@@ -538,6 +539,7 @@ def compute_loss_all_batches(model,
 
 		results  = model.compute_all_losses(batch_dict,
 			n_traj_samples = n_traj_samples, kl_coef = kl_coef)
+		total['nfe'] = model.get_nfe()
 
 		if args.classif:
 			n_labels = model.n_labels #batch_dict["labels"].size(-1)

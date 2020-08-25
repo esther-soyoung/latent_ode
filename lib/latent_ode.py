@@ -85,6 +85,7 @@ class LatentODE(VAE_Baseline):
 		assert(not torch.isnan(first_point_enc_aug).any())
 
 		# Shape of sol_y [n_traj_samples, n_samples, n_timepoints, n_latents]
+		self.reset_nfe()
 		sol_y = self.diffeq_solver(first_point_enc_aug, time_steps_to_predict)
 
 		if self.use_poisson_proc:
@@ -136,4 +137,8 @@ class LatentODE(VAE_Baseline):
 		
 		return self.decoder(sol_y)
 
+	def reset_nfe(self):
+		self.diffeq_solver.ode_func.reset_nfe()
 
+	def get_nfe(self):
+		return self.diffeq_solver.ode_func.get_nfe(

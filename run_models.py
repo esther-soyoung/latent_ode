@@ -279,10 +279,11 @@ if __name__ == '__main__':
 					device = device,
 					n_traj_samples = 3, kl_coef = kl_coef)
 
-				message = 'Epoch {:04d} [Test seq (cond on sampled tp)] | Loss {:.6f} | Likelihood {:.6f} | KL fp {:.4f} | FP STD {:.4f}|'.format(
+				message = 'Epoch {:04d} [Test seq (cond on sampled tp)] | Loss {:.6f} | Likelihood {:.6f} | KL fp {:.4f} | FP STD {:.4f} | NFE {:.4f}'.format(
 					itr//num_batches, 
 					test_res["loss"].detach(), test_res["likelihood"].detach(), 
-					test_res["kl_first_p"], test_res["std_first_p"])
+					test_res["kl_first_p"], test_res["std_first_p"],
+					test_res['nfe'])
 		 	
 				logger.info("Experiment " + str(experimentID))
 				logger.info(message)
@@ -307,6 +308,9 @@ if __name__ == '__main__':
 
 				if "ce_loss" in test_res:
 					logger.info("CE loss: {}".format(test_res["ce_loss"]))
+
+				if "nfe" in test_res:
+					logger.info("NFE: {:.4f}".format(test_res['nfe'])
 
 			torch.save({
 				'args': args,
