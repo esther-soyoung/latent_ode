@@ -7,4 +7,3 @@ def quadratic_cost(dx):
 
 ''' higher order derivatives
 '''
-def
