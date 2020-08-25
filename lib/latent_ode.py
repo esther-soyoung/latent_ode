@@ -141,4 +141,4 @@ class LatentODE(VAE_Baseline):
 		self.diffeq_solver.ode_func.reset_nfe()
 
 	def get_nfe(self):
-		return self.diffeq_solver.ode_func.get_nfe(
+		return self.diffeq_solver.ode_func.get_nfe()
