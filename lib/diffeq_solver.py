@@ -12,7 +12,7 @@ import torch.nn as nn
 import lib.utils as utils
 from torch.distributions.multivariate_normal import MultivariateNormal
 
-from torchdiffeq_ import odeint_err as odeint_err
+from lib.torchdiffeq_ import odeint_err as odeint_err
 
 #####################################################################################################
 
