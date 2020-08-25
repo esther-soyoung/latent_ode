@@ -48,7 +48,7 @@ parser.add_argument('--save', type=str, default='experiments/', help="Path for s
 parser.add_argument('--load', type=str, default=None, help="ID of the experiment to load for evaluation. If None, run a new experiment.")
 parser.add_argument('-r', '--random-seed', type=int, default=1991, help="Random_seed")
 
-parser.add_argument('--dataset', type=str, default='periodic', help="Dataset to load. Available: physionet, activity, hopper, periodic")
+parser.add_argument('--dataset', type=str, default='physionet', help="Dataset to load. Available: physionet, activity, hopper, periodic")
 parser.add_argument('-s', '--sample-tp', type=float, default=None, help="Number of time points to sub-sample."
 	"If > 1, subsample exact number of points. If the number is in [0,1], take a percentage of available points per time series. If None, do not subsample")
 
@@ -59,7 +59,7 @@ parser.add_argument('--quantization', type=float, default=0.1, help="Quantizatio
 	"Value 1 means quantization by 1 hour, value 0.1 means quantization by 0.1 hour = 6 min")
 
 parser.add_argument('--latent-ode', action='store_true', help="Run Latent ODE seq2seq model")
-parser.add_argument('--z0-encoder', type=str, default='odernn', help="Type of encoder for Latent ODE model: odernn or rnn")
+parser.add_argument('--z0-encoder', type=str, default='rnn', help="Type of encoder for Latent ODE model: odernn or rnn")
 
 parser.add_argument('--classic-rnn', action='store_true', help="Run RNN baseline: classic RNN that sees true points at every point. Used for interpolation only.")
 parser.add_argument('--rnn-cell', default="gru", help="RNN Cell type. Available: gru (default), expdecay")
@@ -91,7 +91,7 @@ parser.add_argument('--noise-weight', type=float, default=0.01, help="Noise ampl
 
 args = parser.parse_args()
 
-device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
+device = torch.device("cuda:3" if torch.cuda.is_available() else "cpu")
 file_name = os.path.basename(__file__)[:-3]
 utils.makedirs(args.save)
 
