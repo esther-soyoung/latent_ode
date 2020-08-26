@@ -83,10 +83,10 @@ class LatentODE(VAE_Baseline):
 			first_point_enc_aug = torch.cat((first_point_enc, zeros), -1)
 			means_z0_aug = torch.cat((means_z0, zeros), -1)
 		else:
-			first_point_enc_aug = first_point_enc
+			first_point_enc_aug = first_point_enc  # [3, 50, 20]
 			means_z0_aug = means_z0
 			
-		assert(not torch.isnan(time_steps_to_predict).any())
+		assert(not torch.isnan(time_steps_to_predict).any())  # 2208
 		assert(not torch.isnan(first_point_enc).any())
 		assert(not torch.isnan(first_point_enc_aug).any())
 
@@ -103,7 +103,7 @@ class LatentODE(VAE_Baseline):
 
 		pred_x = self.decoder(sol_y)  # [3, 50, 2208, 41]
 		# kinetic energy term
-		kinetic = quadratic_cost(pred_x)[0]
+		kinetic = torch.mean(quadratic_cost(pred_x))  # 50
 
 		all_extra_info = {
 			"first_point": (first_point_mu, first_point_std, first_point_enc),
