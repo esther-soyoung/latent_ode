@@ -258,7 +258,7 @@ class VAE_Baseline(nn.Module):
 		return torch.mean(log_density_data)
 
 
-	def compute_all_losses(self, batch_dict, n_traj_samples = 1, kl_coef = 1.):
+	def compute_all_losses(self, batch_dict, n_traj_samples = 1, kl_coef = 1., test=False):
 		# Condition on subsampled points
 		# Make predictions for all the points
 		pred_y, dopri_err, kinetic, info = self.get_reconstruction(batch_dict["tp_to_predict"], 
@@ -334,7 +334,10 @@ class VAE_Baseline(nn.Module):
 				loss =  ce_loss
 
 		results = {}
-		results["loss"] = torch.mean(loss) \
+		if test:
+			results["loss"] = torch.mean(loss)
+		else:
+			results["loss"] = torch.mean(loss) \
 							+ self.reg_dopri * dopri_err \
 							+ self.reg_kinetic * kinetic
 		results["likelihood"] = torch.mean(rec_likelihood).detach()

@@ -252,7 +252,7 @@ if __name__ == '__main__':
 
 	optimizer = optim.Adamax(model.parameters(), lr=args.lr)
 
-	num_batches = data_obj["n_train_batches"]
+	num_batches = data_obj["n_train_batches"]  # 64
 
 	for itr in range(1, num_batches * (args.niters + 1)):
 		optimizer.zero_grad()
@@ -270,7 +270,7 @@ if __name__ == '__main__':
 		optimizer.step()
 
 		n_iters_to_viz = 1
-		if itr % (n_iters_to_viz * num_batches) == 0:
+		if itr % (n_iters_to_viz * num_batches) == 0:  # one test batch for 64 train batches
 			with torch.no_grad():
 
 				test_res = compute_loss_all_batches(model, 

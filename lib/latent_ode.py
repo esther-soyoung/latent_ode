@@ -101,7 +101,7 @@ class LatentODE(VAE_Baseline):
 			assert(torch.sum(int_lambda[:,:,0,:]) == 0.)
 			assert(torch.sum(int_lambda[0,0,-1,:] <= 0) == 0.)
 
-		pred_x = self.decoder(sol_y)
+		pred_x = self.decoder(sol_y)  # [3, 50, 2208, 41]
 		# kinetic energy term
 		kinetic = quadratic_cost(pred_x)[0]
 
