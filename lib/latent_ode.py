@@ -92,7 +92,7 @@ class LatentODE(VAE_Baseline):
 		# Shape of sol_y [n_traj_samples, n_samples, n_timepoints, n_latents]
 		self.reset_nfe()
 		sol_y, dopri_err, kinetic = self.diffeq_solver(first_point_enc_aug, time_steps_to_predict)
-		dopri_err = torch.mean(torch.stack(dopri_err)torch.mean(torch.stack(dopri_err)))
+		dopri_err = torch.mean(torch.stack(dopri_err))
 		kinetic = torch.mean(kinetic)
 
 		if self.use_poisson_proc:
