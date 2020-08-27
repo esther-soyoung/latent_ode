@@ -15,4 +15,5 @@ python run_models.py \
         --quantization 0.016 \
         --classif \
 	--reg_dopri $1 \
-	--reg_kinetic $2
+	--reg_kinetic $2 \
+	--gpu 1
