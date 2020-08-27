@@ -13,7 +13,7 @@ from torch.nn.functional import relu
 import lib.utils as utils
 from lib.latent_ode import LatentODE
 from lib.encoder_decoder import *
-from lib.diffeq_solver import DiffeqSolver, DiffeqSolverKin
+from lib.diffeq_solver import DiffeqSolver
 
 from torch.distributions.normal import Normal
 from lib.ode_func import ODEFunc, ODEFunc_w_Poisson
@@ -50,9 +50,10 @@ def create_LatentODE_model(args, input_dim, z0_prior, obsrv_std, device,
 			ode_func_net = ode_func_net,
 			device = device).to(device)
 
-	reg_func = None
+	regularization_fns = []
 	if args.reg_kinetic > 0:
-		reg_func = quadratic_cost
+		regularization_fns.append(quadratic_cost)
+	regularization_fns = tuple(regularization_fns)
 
 	z0_diffeq_solver = None
 	n_rec_dims = args.rec_dims
@@ -87,7 +88,7 @@ def create_LatentODE_model(args, input_dim, z0_prior, obsrv_std, device,
 
 	decoder = Decoder(args.latents, gen_data_dim).to(device)
 
-	diffeq_solver = DiffeqSolver(gen_data_dim, gen_ode_func, reg_func, 'dopri5_err', args.latents, 
+	diffeq_solver = DiffeqSolver(gen_data_dim, gen_ode_func, regularization_fns, 'dopri5_err', args.latents, 
 						odeint_rtol = 1e-3, odeint_atol = 1e-4, device = device, train=True)
 
 	model = LatentODE(

@@ -11,7 +11,7 @@ from torch.nn.functional import relu
 import lib.utils as utils
 from lib.encoder_decoder import *
 from lib.likelihood_eval import *
-from lib.regularizer import quadratic_cost
+from lib.cnf_regularization import quadratic_cost
 
 from torch.distributions.multivariate_normal import MultivariateNormal
 from torch.distributions.normal import Normal

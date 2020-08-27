@@ -42,22 +42,24 @@ class DiffeqSolver(nn.Module):
 		n_traj_samples, n_traj = first_point.size()[0], first_point.size()[1]
 		n_dims = first_point.size()[-1]
 
-		if train:
-			pred_y, err = odeint_err(self.ode_func, 
-				first_point + reg_states, 
+		if self.train:
+			reg_state = torch.zeros(first_point.size(0)).to(first_point)
+			state_t, err = odeint_err(self.ode_func, 
+				first_point + reg_state, 
 				time_steps_to_predict, 
-				rtol=[self.odeint_rtol, self.odeint_rtol] + [1e20] * len(reg_states)
-				atol=[self.odeint_atol, self.odeint_atol] + [1e20] * len(reg_states)
+				rtol=[self.odeint_rtol, self.odeint_rtol] + [1e20] * len(reg_states),
+				atol=[self.odeint_atol, self.odeint_atol] + [1e20] * len(reg_states),
 				method = self.ode_method)
-			pred_y = pred_y.permute(1,2,0,3)
 		else:
-			pred_y, err = odeint_err(self.ode_func, 
+			state_t, err = odeint_err(self.ode_func, 
 				first_point, 
 				time_steps_to_predict, 
 				rtol=self.odeint_rtol,
 				atol=self.odeint_atol,
 				method = self.ode_method)
-			pred_y = pred_y.permute(1,2,0,3)
+		pred_y = state_t[:1]
+		reg_states = state_t[1:]
+		pred_y = pred_y.permute(1,2,0,3)
 
 		assert(torch.mean(pred_y[:, :, 0, :]  - first_point) < 0.001)
 		assert(pred_y.size()[0] == n_traj_samples)

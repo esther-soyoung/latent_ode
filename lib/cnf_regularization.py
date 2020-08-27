@@ -4,10 +4,10 @@ import torch.nn as nn
 
 
 class RegularizedODEfunc(nn.Module):
-    def __init__(self, odefunc, regularization_fns):
+    def __init__(self, odefunc, regfunc):
         super(RegularizedODEfunc, self).__init__()
         self.odefunc = odefunc
-        self.regularization_fns = regularization_fns
+        self.regfunc = regfunc
 
     def before_odeint(self, *args, **kwargs):
         self.odefunc.before_odeint(*args, **kwargs)
@@ -23,7 +23,7 @@ class RegularizedODEfunc(nn.Module):
             dstate = self.odefunc(t, (x, logp))
             if len(state) > 2:
                 dx, dlogp = dstate[:2]
-                reg_states = tuple(reg_fn(x, t, logp, dx, dlogp, self.odefunc) for reg_fn in self.regularization_fns)
+                reg_state = reg_fn(x, t, logp, dx, dlogp, self.odefunc) for reg_fn in self.regularization_fns)
                 return dstate + reg_states
             else:
                 return dstate
@@ -31,9 +31,9 @@ class RegularizedODEfunc(nn.Module):
     @property
     def get_nfe(self):
         return self.odefunc.get_nfe()
-    
-	def reset_nfe(self):
-		self.odefunc.reset_nfe()
+
+    def reset_nfe(self):
+        self.odefunc.reset_nfe()
 
 
 def total_derivative(x, t, logp, dx, dlogp, unused_context):
