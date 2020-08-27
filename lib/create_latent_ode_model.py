@@ -50,10 +50,10 @@ def create_LatentODE_model(args, input_dim, z0_prior, obsrv_std, device,
 			ode_func_net = ode_func_net,
 			device = device).to(device)
 
-	regularization_fns = []
+	# kinetic energy regularizer
+	reg_func = None
 	if args.reg_kinetic > 0:
-		regularization_fns.append(quadratic_cost)
-	regularization_fns = tuple(regularization_fns)
+		reg_func = quadratic_cost
 
 	z0_diffeq_solver = None
 	n_rec_dims = args.rec_dims
@@ -88,7 +88,7 @@ def create_LatentODE_model(args, input_dim, z0_prior, obsrv_std, device,
 
 	decoder = Decoder(args.latents, gen_data_dim).to(device)
 
-	diffeq_solver = DiffeqSolver(gen_data_dim, gen_ode_func, regularization_fns, 'dopri5_err', args.latents, 
+	diffeq_solver = DiffeqSolver(gen_data_dim, gen_ode_func, reg_func, 'dopri5_err', args.latents, 
 						odeint_rtol = 1e-3, odeint_atol = 1e-4, device = device, train=True)
 
 	model = LatentODE(

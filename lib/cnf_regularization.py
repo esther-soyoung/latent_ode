@@ -4,29 +4,25 @@ import torch.nn as nn
 
 
 class RegularizedODEfunc(nn.Module):
-    def __init__(self, odefunc, regularization_fns):
+    def __init__(self, odefunc, regfunc):
         super(RegularizedODEfunc, self).__init__()
         self.odefunc = odefunc
-        self.regularization_fns = regularization_fns
+        self.regfunc = regfunc
 
     def before_odeint(self, *args, **kwargs):
         self.odefunc.before_odeint(*args, **kwargs)
 
     def forward(self, t, state):
-
-
         with torch.enable_grad():
-            x, logp = state[:2]
+            # x, logp = state[:2]
+            x = state[0]
             x.requires_grad_(True)
             t.requires_grad_(True)
-            logp.requires_grad_(True)
-            dstate = self.odefunc(t, (x, logp))
-            import pdb
-            pdb.set_trace()
-            if len(state) > 2:
-                dx, dlogp = dstate[:2]
-                reg_states = tuple(reg_fn(x, t, logp, dx, dlogp, self.odefunc) for reg_fn in self.regularization_fns)
-                return dstate + reg_states
+            # logp.requires_grad_(True)
+            dstate = self.odefunc(t, x)
+            if len(state) > 1:  # reg state
+                reg_state = self.regfunc(dstate)
+                return (dstate, reg_state)  # [3, 50, 20], [3]
             else:
                 return dstate
 
@@ -65,10 +61,10 @@ def directional_derivative(x, t, logp, dx, dlogp, unused_context):
 
     return 0.5*ddx2.mean(dim=-1)
 
-def quadratic_cost(x, t, logp, dx, dlogp, unused_context):
-    del x, logp, dlogp, t, unused_context
+def quadratic_cost(dx):
+    # del x, logp, dlogp, t, unused_context
     dx = dx.view(dx.shape[0], -1)
-    return 0.5*dx.pow(2).mean(dim=-1)
+    return dx.pow(2).mean(dim=-1)
 
 def jacobian_frobenius_regularization_fn(x, t, logp, dx, dlogp, context):
     sh = x.shape
