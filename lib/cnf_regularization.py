@@ -29,8 +29,11 @@ class RegularizedODEfunc(nn.Module):
                 return dstate
 
     @property
-    def _num_evals(self):
-        return self.odefunc._num_evals
+    def get_nfe(self):
+        return self.odefunc.get_nfe()
+    
+	def reset_nfe(self):
+		self.odefunc.reset_nfe()
 
 
 def total_derivative(x, t, logp, dx, dlogp, unused_context):

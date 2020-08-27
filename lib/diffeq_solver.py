@@ -14,7 +14,7 @@ from torch.distributions.multivariate_normal import MultivariateNormal
 
 from lib.torchdiffeq_ import odeint_err as odeint_err
 
-from .wrappers.cnf_regularization import RegularizedODEfunc
+from lib.cnf_regularization import RegularizedODEfunc
 
 #####################################################################################################
 
