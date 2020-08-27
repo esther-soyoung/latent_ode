@@ -4,10 +4,10 @@ import torch.nn as nn
 
 
 class RegularizedODEfunc(nn.Module):
-    def __init__(self, odefunc, regfunc):
+    def __init__(self, odefunc, regularization_fns):
         super(RegularizedODEfunc, self).__init__()
         self.odefunc = odefunc
-        self.regfunc = regfunc
+        self.regularization_fns = regularization_fns
 
     def before_odeint(self, *args, **kwargs):
         self.odefunc.before_odeint(*args, **kwargs)
@@ -21,9 +21,11 @@ class RegularizedODEfunc(nn.Module):
             t.requires_grad_(True)
             logp.requires_grad_(True)
             dstate = self.odefunc(t, (x, logp))
+            import pdb
+            pdb.set_trace()
             if len(state) > 2:
                 dx, dlogp = dstate[:2]
-                reg_state = reg_fn(x, t, logp, dx, dlogp, self.odefunc) for reg_fn in self.regularization_fns)
+                reg_states = tuple(reg_fn(x, t, logp, dx, dlogp, self.odefunc) for reg_fn in self.regularization_fns)
                 return dstate + reg_states
             else:
                 return dstate

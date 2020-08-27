@@ -19,16 +19,19 @@ from lib.cnf_regularization import RegularizedODEfunc
 #####################################################################################################
 
 class DiffeqSolver(nn.Module):
-	def __init__(self, input_dim, ode_func, reg_func, method, latents, 
+	def __init__(self, input_dim, ode_func, regularization_fns, method, latents, 
 			odeint_rtol = 1e-4, odeint_atol = 1e-5, device = torch.device("cpu"), train=True):
 		super(DiffeqSolver, self).__init__()
 
 		self.ode_method = method
 		self.latents = latents		
 		self.device = device
-		if reg_func is not None:
-			ode_func = RegularizedODEfunc(ode_func, reg_func)
+		nreg = 0
+		if len(regularization_fns) > 0:
+			ode_func = RegularizedODEfunc(ode_func, regularization_fns)
+			nreg = len(regularization_fns)
 		self.ode_func = ode_func
+		self.nreg = nreg
 
 		self.odeint_rtol = odeint_rtol
 		self.odeint_atol = odeint_atol
@@ -42,10 +45,21 @@ class DiffeqSolver(nn.Module):
 		n_traj_samples, n_traj = first_point.size()[0], first_point.size()[1]
 		n_dims = first_point.size()[-1]
 
-		if self.train:
-			reg_state = torch.zeros(first_point.size(0)).to(first_point)
-			state_t, err = odeint_err(self.ode_func, 
-				first_point + reg_state, 
+		if self.nreg > 0 and self.train:
+			reg_states = torch.zeros(first_point.size(0)).to(first_point)
+			# reg_states = tuple(torch.zeros(first_point.size(0)).to(first_point) for i in range(self.nreg))
+			# _logpz = state_torch.zeros(first_point.shape[0], 1).to(first_point)
+
+			pred_y, err = odeint_err(self.ode_func, 
+				(first_point, reg_states),
+				time_steps_to_predict, 
+				rtol=[self.odeint_rtol] + [1e20],
+				atol=[self.odeint_atol] + [1e20],
+				method = self.ode_method)
+			import pdb
+			pdb.set_trace()
+			reg_states, _ = odeint_err(self.ode_func,
+				reg_states,
 				time_steps_to_predict, 
 				rtol=[self.odeint_rtol, self.odeint_rtol] + [1e20] * len(reg_states),
 				atol=[self.odeint_atol, self.odeint_atol] + [1e20] * len(reg_states),
@@ -57,8 +71,8 @@ class DiffeqSolver(nn.Module):
 				rtol=self.odeint_rtol,
 				atol=self.odeint_atol,
 				method = self.ode_method)
-		pred_y = state_t[:1]
-		reg_states = state_t[1:]
+		# pred_y = state_t[:1]
+		# reg_states = state_t[1:]
 		pred_y = pred_y.permute(1,2,0,3)
 
 		assert(torch.mean(pred_y[:, :, 0, :]  - first_point) < 0.001)
