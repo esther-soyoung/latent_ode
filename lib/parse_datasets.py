@@ -121,11 +121,11 @@ def parse_datasets(args, device):
 
 		# Shuffle and split
 		train_data, test_data = model_selection.train_test_split(total_dataset, train_size= 0.8, 
-			random_state = 42, shuffle = True)
+			random_state = 42, shuffle = True)  # 3200, 800
 
 		record_id, tt, vals, mask, labels = train_data[0]
 
-		n_samples = len(total_dataset)
+		n_samples = len(total_dataset)  # 4000
 		input_dim = vals.size(-1)
 
 		batch_size = min(min(len(train_dataset_obj), args.batch_size), args.n)
@@ -142,10 +142,10 @@ def parse_datasets(args, device):
 		data_objects = {"dataset_obj": train_dataset_obj, 
 					"train_dataloader": utils.inf_generator(train_dataloader), 
 					"test_dataloader": utils.inf_generator(test_dataloader),
-					"input_dim": input_dim,
-					"n_train_batches": len(train_dataloader),
-					"n_test_batches": len(test_dataloader),
-					"attr": attr_names, #optional
+					"input_dim": input_dim,  # 41
+					"n_train_batches": len(train_dataloader),  # 64
+					"n_test_batches": len(test_dataloader),  # 1
+					"attr": attr_names, #optional, 41
 					"classif_per_tp": False, #optional
 					"n_labels": 1} #optional
 		return data_objects

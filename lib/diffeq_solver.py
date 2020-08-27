@@ -14,20 +14,26 @@ from torch.distributions.multivariate_normal import MultivariateNormal
 
 from lib.torchdiffeq_ import odeint_err as odeint_err
 
+from .wrappers.cnf_regularization import RegularizedODEfunc
+
 #####################################################################################################
 
 class DiffeqSolver(nn.Module):
-	def __init__(self, input_dim, ode_func, method, latents, 
-			odeint_rtol = 1e-4, odeint_atol = 1e-5, device = torch.device("cpu")):
+	def __init__(self, input_dim, ode_func, reg_func, method, latents, 
+			odeint_rtol = 1e-4, odeint_atol = 1e-5, device = torch.device("cpu"), train=True):
 		super(DiffeqSolver, self).__init__()
 
 		self.ode_method = method
 		self.latents = latents		
 		self.device = device
+		if reg_func is not None:
+			ode_func = RegularizedODEfunc(ode_func, reg_func)
 		self.ode_func = ode_func
 
 		self.odeint_rtol = odeint_rtol
 		self.odeint_atol = odeint_atol
+
+		self.train = train
 
 	def forward(self, first_point, time_steps_to_predict, backwards = False):
 		"""
@@ -36,9 +42,22 @@ class DiffeqSolver(nn.Module):
 		n_traj_samples, n_traj = first_point.size()[0], first_point.size()[1]
 		n_dims = first_point.size()[-1]
 
-		pred_y, err = odeint_err(self.ode_func, first_point, time_steps_to_predict, 
-			rtol=self.odeint_rtol, atol=self.odeint_atol, method = self.ode_method)
-		pred_y = pred_y.permute(1,2,0,3)
+		if train:
+			pred_y, err = odeint_err(self.ode_func, 
+				first_point + reg_states, 
+				time_steps_to_predict, 
+				rtol=[self.odeint_rtol, self.odeint_rtol] + [1e20] * len(reg_states)
+				atol=[self.odeint_atol, self.odeint_atol] + [1e20] * len(reg_states)
+				method = self.ode_method)
+			pred_y = pred_y.permute(1,2,0,3)
+		else:
+			pred_y, err = odeint_err(self.ode_func, 
+				first_point, 
+				time_steps_to_predict, 
+				rtol=self.odeint_rtol,
+				atol=self.odeint_atol,
+				method = self.ode_method)
+			pred_y = pred_y.permute(1,2,0,3)
 
 		assert(torch.mean(pred_y[:, :, 0, :]  - first_point) < 0.001)
 		assert(pred_y.size()[0] == n_traj_samples)
@@ -60,5 +79,4 @@ class DiffeqSolver(nn.Module):
 		# shape: [n_traj_samples, n_traj, n_tp, n_dim]
 		pred_y = pred_y.permute(1,2,0,3)
 		return pred_y
-
 

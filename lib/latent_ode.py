@@ -15,7 +15,6 @@ import lib.utils as utils
 from lib.utils import get_device
 from lib.encoder_decoder import *
 from lib.likelihood_eval import *
-from lib.regularizer import quadratic_cost
 
 from torch.distributions.multivariate_normal import MultivariateNormal
 from torch.distributions.normal import Normal
@@ -23,7 +22,7 @@ from torch.distributions import kl_divergence, Independent
 from lib.base_models import VAE_Baseline
 
 
-
+# 
 class LatentODE(VAE_Baseline):
 	def __init__(self, input_dim, latent_dim, encoder_z0, decoder, diffeq_solver, 
 		z0_prior, device, obsrv_std = None, 
@@ -92,7 +91,7 @@ class LatentODE(VAE_Baseline):
 
 		# Shape of sol_y [n_traj_samples, n_samples, n_timepoints, n_latents]
 		self.reset_nfe()
-		sol_y, dopri_err = self.diffeq_solver(first_point_enc_aug, time_steps_to_predict)
+		sol_y, dopri_err, kinetic = self.diffeq_solver(first_point_enc_aug, time_steps_to_predict)
 		dopri_err = torch.mean(torch.stack(dopri_err))
 
 		if self.use_poisson_proc:
@@ -103,7 +102,7 @@ class LatentODE(VAE_Baseline):
 
 		pred_x = self.decoder(sol_y)  # [3, 50, 2208, 41]
 		# kinetic energy term
-		kinetic = torch.mean(quadratic_cost(pred_x))  # 50
+		# kinetic = torch.mean(quadratic_cost(pred_x))  # 50
 
 		all_extra_info = {
 			"first_point": (first_point_mu, first_point_std, first_point_enc),
@@ -152,3 +151,6 @@ class LatentODE(VAE_Baseline):
 
 	def get_nfe(self):
 		return self.diffeq_solver.ode_func.get_nfe()
+
+	def train(self, train):  # boolean
+		self.diffeq_solver.train = train

@@ -90,7 +90,7 @@ parser.add_argument('-t', '--timepoints', type=int, default=100, help="Total num
 parser.add_argument('--max-t',  type=float, default=5., help="We subsample points in the interval [0, args.max_tp]")
 parser.add_argument('--noise-weight', type=float, default=0.01, help="Noise amplitude for generated traejctories")
 
-parser.add_argument('--gpu', type=int, default=3, help="cuda:")
+parser.add_argument('--gpu', type=int, default=0, help="cuda:")
 
 args = parser.parse_args()
 
@@ -254,8 +254,9 @@ if __name__ == '__main__':
 
 	num_batches = data_obj["n_train_batches"]  # 64
 
-	for itr in range(1, num_batches * (args.niters + 1)):
+	for itr in range(1, num_batches * (args.niters + 1)):  # 64 * 300
 		optimizer.zero_grad()
+		model.train(True)
 		utils.update_learning_rate(optimizer, decay_rate = 0.999, lowest = args.lr / 10)
 
 		wait_until_kl_inc = 10
@@ -272,7 +273,7 @@ if __name__ == '__main__':
 		n_iters_to_viz = 1
 		if itr % (n_iters_to_viz * num_batches) == 0:  # one test batch for 64 train batches
 			with torch.no_grad():
-
+				model.train(False)
 				test_res = compute_loss_all_batches(model, 
 					data_obj["test_dataloader"], args,
 					n_batches = data_obj["n_test_batches"],
