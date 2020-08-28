@@ -64,7 +64,7 @@ def directional_derivative(x, t, logp, dx, dlogp, unused_context):
 def quadratic_cost(dx):
     # del x, logp, dlogp, t, unused_context
     dx = dx.view(dx.shape[0], -1)
-    return dx.pow(2).mean(dim=-1)
+    return 0.5 * dx.pow(2).mean(dim=-1)
 
 def jacobian_frobenius_regularization_fn(x, t, logp, dx, dlogp, context):
     sh = x.shape
