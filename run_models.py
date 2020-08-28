@@ -15,6 +15,7 @@ import datetime
 import argparse
 import numpy as np
 import pandas as pd
+import random
 from random import SystemRandom
 from sklearn import model_selection
 
@@ -103,6 +104,12 @@ utils.makedirs(args.save)
 if __name__ == '__main__':
 	torch.manual_seed(args.random_seed)
 	np.random.seed(args.random_seed)
+	torch.manual_seed(args.random_seed)
+	torch.cuda.manual_seed(args.random_seed)
+	torch.cuda.manual_seed_all(args.random_seed) # if use multi-GPU
+	torch.backends.cudnn.deterministic = True
+	torch.backends.cudnn.benchmark = False
+	random.seed(args.random_seed)
 
 	experimentID = args.load
 	if experimentID is None:
