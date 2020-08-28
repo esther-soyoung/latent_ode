@@ -28,11 +28,12 @@ class DiffeqSolver(nn.Module):
 		self.device = device
 		self.train = train
 
-		nreg = 0
-		if self.train and reg_func is not None:
-			ode_func = RegularizedODEfunc(ode_func, reg_func)
-			nreg = 1
 		self.ode_func = ode_func
+		self.func = None
+		nreg = 0
+		if reg_func is not None:
+			self.func = RegularizedODEfunc(ode_func, reg_func)
+			nreg = 1
 		self.nreg = nreg
 
 		self.odeint_rtol = odeint_rtol
@@ -50,7 +51,8 @@ class DiffeqSolver(nn.Module):
 		if self.nreg > 0 and self.train:  # regularizer state
 			# reg_states = tuple(torch.zeros(first_point.size(0)).to(first_point) for i in range(self.nreg))
 			# _logpz = state_torch.zeros(first_point.shape[0], 1).to(first_point)
-			state_t, err = odeint_err(self.ode_func, 
+			assert self.func is not None, 'regularizer function not given'
+			state_t, err = odeint_err(self.func,  # ode_func + reg_func
 				(first_point, reg_state),
 				time_steps_to_predict, 
 				rtol=[self.odeint_rtol] + [1e20],
@@ -59,7 +61,7 @@ class DiffeqSolver(nn.Module):
 			pred_y = state_t[0].permute(1,2,0,3)  # [3, 50, 2208, 20]
 			reg_state = state_t[1].permute(1,0)  # [3, 2208]
 		else:
-			state_t, err = odeint_err(self.ode_func, 
+			state_t, err = odeint_err(self.ode_func,  # ode_func
 				first_point, 
 				time_steps_to_predict, 
 				rtol=self.odeint_rtol,

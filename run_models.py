@@ -280,8 +280,6 @@ if __name__ == '__main__':
 					experimentID = experimentID,
 					device = device,
 					n_traj_samples = 3, kl_coef = kl_coef)
-				import pdb
-				pdb.set_trace()
 
 				message = 'Epoch {:04d} [Test seq (cond on sampled tp)] | Loss {:.6f} | Likelihood {:.6f} | KL fp {:.4f} | FP STD {:.4f} | NFE {:.4f}'.format(
 					itr//num_batches, 
