@@ -26,8 +26,10 @@ class DiffeqSolver(nn.Module):
 		self.ode_method = method
 		self.latents = latents		
 		self.device = device
+		self.train = train
+
 		nreg = 0
-		if reg_func is not None:
+		if self.train and reg_func is not None:
 			ode_func = RegularizedODEfunc(ode_func, reg_func)
 			nreg = 1
 		self.ode_func = ode_func
@@ -36,7 +38,6 @@ class DiffeqSolver(nn.Module):
 		self.odeint_rtol = odeint_rtol
 		self.odeint_atol = odeint_atol
 
-		self.train = train
 
 	def forward(self, first_point, time_steps_to_predict, backwards = False):
 		"""
