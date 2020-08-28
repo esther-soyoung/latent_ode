@@ -538,7 +538,7 @@ def compute_loss_all_batches(model,
 		batch_dict = get_next_batch(test_dataloader)
 
 		results = model.compute_all_losses(batch_dict,
-			n_traj_samples = n_traj_samples, kl_coef = kl_coef, test=True)
+			n_traj_samples = n_traj_samples, kl_coef = kl_coef)
 		total['nfe'] = model.get_nfe()
 
 		if args.classif:
