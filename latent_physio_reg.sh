@@ -16,4 +16,4 @@ python run_models.py \
         --classif \
 	--reg_dopri $1 \
 	--reg_kinetic $2 \
-	--gpu 1
+	--gpu 2
