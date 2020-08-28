@@ -5,3 +5,4 @@ lib/torchdiffeq_/__pycache__/
 *.sh
 .vscode/
 logs/
+experiments/
