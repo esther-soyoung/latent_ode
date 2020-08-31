@@ -67,8 +67,6 @@ parser.add_argument('--rnn-cell', default="gru", help="RNN Cell type. Available:
 parser.add_argument('--input-decay', action='store_true', help="For RNN: use the input that is the weighted average of impirical mean and previous value (like in GRU-D)")
 
 parser.add_argument('--ode-rnn', action='store_true', help="Run ODE-RNN baseline: RNN-style that sees true points at every point. Used for interpolation only.")
-parser.add_argument('--reg_dopri', type=float, default=0, help="Lambda for Dopri error regularizer. Used for ODE-RNN model only.")
-parser.add_argument('--reg_kinetic', type=float, default=0, help="Lambda for Kinetic energy regularizer. Used for ODE-RNN model only.")
 
 parser.add_argument('--rnn-vae', action='store_true', help="Run RNN baseline: seq2seq model with sampling of the h0 and ELBO loss.")
 
@@ -92,6 +90,8 @@ parser.add_argument('--max-t',  type=float, default=5., help="We subsample point
 parser.add_argument('--noise-weight', type=float, default=0.01, help="Noise amplitude for generated traejctories")
 
 parser.add_argument('--gpu', type=int, default=0, help="cuda:")
+parser.add_argument('--reg_dopri', type=float, default=0, help="Lambda for Dopri error regularizer.")
+parser.add_argument('--reg_kinetic', type=float, default=0, help="Lambda for Kinetic energy regularizer.")
 
 args = parser.parse_args()
 

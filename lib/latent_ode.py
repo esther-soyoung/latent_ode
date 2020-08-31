@@ -22,7 +22,6 @@ from torch.distributions import kl_divergence, Independent
 from lib.base_models import VAE_Baseline
 
 
-# 
 class LatentODE(VAE_Baseline):
 	def __init__(self, input_dim, latent_dim, encoder_z0, decoder, diffeq_solver, 
 		z0_prior, device, obsrv_std = None, 
