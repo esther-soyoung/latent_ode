@@ -30,7 +30,7 @@ class LatentODE(VAE_Baseline):
 		classif_per_tp = False,
 		n_labels = 1,
 		train_classif_w_reconstr = False,
-		reg_dopri = 0, reg_kinetic = 0, reg_l1 = 0):
+		reg_dopri = 0, reg_kinetic = 0, reg_deriv = 0, reg_l1 = 0):
 
 		super(LatentODE, self).__init__(
 			input_dim = input_dim, latent_dim = latent_dim, 
@@ -42,7 +42,7 @@ class LatentODE(VAE_Baseline):
 			use_poisson_proc = use_poisson_proc,
 			n_labels = n_labels,
 			train_classif_w_reconstr = train_classif_w_reconstr,
-			reg_dopri = reg_dopri, reg_kinetic = reg_kinetic, reg_l1 = reg_l1)
+			reg_dopri = reg_dopri, reg_kinetic = reg_kinetic, reg_deriv = reg_deriv, reg_l1 = reg_l1)
 
 		self.encoder_z0 = encoder_z0
 		self.diffeq_solver = diffeq_solver
@@ -51,6 +51,7 @@ class LatentODE(VAE_Baseline):
 
 		self.reg_dopri = reg_dopri
 		self.reg_kinetic = reg_kinetic
+		self.reg_deriv = reg_deriv
 		self.reg_l1 = reg_l1
 
 	def get_reconstruction(self, time_steps_to_predict, truth, truth_time_steps, 
