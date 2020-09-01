@@ -62,6 +62,17 @@ def directional_derivative(x, t, dx):
     return 0.5*ddx2.mean(dim=-1)
 
 
+def third_derivative(x, t, dx):
+    # del logp, dlogp, unused_context
+    first = torch.autograd.grad(dx, x, dx, create_graph=True)[0]
+    second = torch.autograd.grad(first.sum(), dx, create_graph=True)[0]
+    third = torch.autograd.grad(second.sum(), dx, create_graph=True)[0]
+
+    total = third.pow(2).view(x.size(0), -1)
+
+    return 0.5*total.mean(dim=-1)
+
+
 def quadratic_cost(x, t, dx):
     # del x, logp, dlogp, t, unused_context
     del x, t

@@ -106,7 +106,7 @@ class Baseline(nn.Module):
 
 		# Condition on subsampled points
 		# Make predictions for all the points
-		pred_x, dopri_err, kinetic, info = self.get_reconstruction(batch_dict["tp_to_predict"], 
+		pred_x, dopri_err, reg_state, info = self.get_reconstruction(batch_dict["tp_to_predict"], 
 			batch_dict["observed_data"], batch_dict["observed_tp"], 
 			mask = batch_dict["observed_mask"], n_traj_samples = n_traj_samples,
 			mode = batch_dict["mode"])
@@ -191,7 +191,7 @@ class VAE_Baseline(nn.Module):
 		linear_classifier = False,
 		n_labels = 1,
 		train_classif_w_reconstr = False,
-		reg_dopri = 0, reg_kinetic = 0):
+		reg_dopri = 0, reg_kinetic = 0, reg_l1 = 0):
 
 		super(VAE_Baseline, self).__init__()
 		
@@ -261,7 +261,7 @@ class VAE_Baseline(nn.Module):
 	def compute_all_losses(self, batch_dict, n_traj_samples = 1, kl_coef = 1.):
 		# Condition on subsampled points
 		# Make predictions for all the points
-		pred_y, dopri_err, kinetic, info = self.get_reconstruction(batch_dict["tp_to_predict"], 
+		pred_y, dopri_err, reg_state, info = self.get_reconstruction(batch_dict["tp_to_predict"], 
 			batch_dict["observed_data"], batch_dict["observed_tp"], 
 			mask = batch_dict["observed_mask"], n_traj_samples = n_traj_samples,
 			mode = batch_dict["mode"])
@@ -331,12 +331,19 @@ class VAE_Baseline(nn.Module):
 			if self.train_classif_w_reconstr:
 				loss = loss +  ce_loss * 100
 			else:
-				loss =  ce_loss
+				loss =  ce_los
+
+		# l1 regularizer
+		l1 = 0
+		for parameter in self.diffeq_solver.ode_func.parameters():
+			l1 = l1 + parameter.norm(1)
 
 		results = {}
 		results["loss"] = torch.mean(loss) \
 							+ self.reg_dopri * dopri_err \
-							+ self.reg_kinetic * kinetic
+							+ self.reg_kinetic * reg_state \
+							+ self.reg_deriv * reg_state \
+							+ self.reg_l1 * l1
 		results["likelihood"] = torch.mean(rec_likelihood).detach()
 		results["mse"] = torch.mean(mse).detach()
 		results["pois_likelihood"] = torch.mean(pois_log_likelihood).detach()
