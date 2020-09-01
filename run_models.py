@@ -92,6 +92,7 @@ parser.add_argument('--noise-weight', type=float, default=0.01, help="Noise ampl
 parser.add_argument('--gpu', type=int, default=0, help="cuda:")
 parser.add_argument('--reg_dopri', type=float, default=0, help="Lambda for Dopri error regularizer.")
 parser.add_argument('--reg_kinetic', type=float, default=0, help="Lambda for Kinetic energy regularizer.")
+parser.add_argument('--reg_deriv', type=float, default=0, help="Lambda for 3rd-order derivative regularizer.")
 
 args = parser.parse_args()
 

@@ -21,7 +21,7 @@ class RegularizedODEfunc(nn.Module):
             # logp.requires_grad_(True)
             dstate = self.odefunc(t, x)
             if len(state) > 1:  # reg state
-                reg_state = self.regfunc(dstate)
+                reg_state = self.regfunc(x, t, dstate)
                 return (dstate, reg_state)  # [3, 50, 20], [3]
             else:
                 return dstate
@@ -34,9 +34,8 @@ class RegularizedODEfunc(nn.Module):
         self.odefunc.reset_nfe()
 
 
-def total_derivative(x, t, logp, dx, dlogp, unused_context):
-    del logp, dlogp, unused_context
-
+def total_derivative(x, t, dx):
+    # del logp, dlogp, unused_context
     directional_dx = torch.autograd.grad(dx, x, dx, create_graph=True)[0]
 
     try:
@@ -53,18 +52,22 @@ def total_derivative(x, t, logp, dx, dlogp, unused_context):
 
     return 0.5*tdv2.mean(dim=-1)
 
-def directional_derivative(x, t, logp, dx, dlogp, unused_context):
-    del t, logp, dlogp, unused_context
 
+def directional_derivative(x, t, dx):
+    # del t, logp, dlogp, unused_context
+    del t
     directional_dx = torch.autograd.grad(dx, x, dx, create_graph=True)[0]
     ddx2 = directional_dx.pow(2).view(x.size(0),-1)
 
     return 0.5*ddx2.mean(dim=-1)
 
-def quadratic_cost(dx):
+
+def quadratic_cost(x, t, dx):
     # del x, logp, dlogp, t, unused_context
+    del x, t
     dx = dx.view(dx.shape[0], -1)
     return 0.5 * dx.pow(2).mean(dim=-1)
+
 
 def jacobian_frobenius_regularization_fn(x, t, logp, dx, dlogp, context):
     sh = x.shape

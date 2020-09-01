@@ -17,7 +17,7 @@ from lib.diffeq_solver import DiffeqSolver
 
 from torch.distributions.normal import Normal
 from lib.ode_func import ODEFunc, ODEFunc_w_Poisson
-from lib.cnf_regularization import quadratic_cost
+from lib.cnf_regularization import quadratic_cost, total_derivative
 
 #####################################################################################################
 
@@ -50,10 +50,13 @@ def create_LatentODE_model(args, input_dim, z0_prior, obsrv_std, device,
 			ode_func_net = ode_func_net,
 			device = device).to(device)
 
-	# kinetic energy regularizer
 	reg_func = None
+	# kinetic energy regularizer
 	if args.reg_kinetic > 0:
 		reg_func = quadratic_cost
+	# derivative term regularizer
+	elif args.reg_deriv > 0:
+		reg_func = total_derivative
 
 	z0_diffeq_solver = None
 	n_rec_dims = args.rec_dims
