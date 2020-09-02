@@ -144,7 +144,7 @@ def odeint_adjoint(func, y0, t, rtol=1e-6, atol=1e-12, method=None, options=None
     ys = OdeintAdjointMethod.apply(*y0, func, t, flat_params, rtol, atol, method, options, adjoint_rtol, adjoint_atol,
                                    adjoint_method, adjoint_options)
     err = OdeintAdjointMethod.total_err
-    OdeintAdjointMethod.total_err=[]
+    OdeintAdjointMethod.total_err = []
     if tensor_input:
         ys = ys[0]
-    return ys, []
+    return ys, err

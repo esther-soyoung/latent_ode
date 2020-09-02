@@ -84,11 +84,11 @@ class LatentODE(VAE_Baseline):
 			means_z0_aug = torch.cat((means_z0, zeros), -1)
 		else:
 			first_point_enc_aug = first_point_enc  # [3, 50, 20]
-			means_z0_aug = means_z0
+			means_z0_aug = means_z0  # [3, 50, 20]
 			
 		assert(not torch.isnan(time_steps_to_predict).any())  # 2208
-		assert(not torch.isnan(first_point_enc).any())
-		assert(not torch.isnan(first_point_enc_aug).any())
+		assert(not torch.isnan(first_point_enc).any())  # [3, 50, 20]
+		assert(not torch.isnan(first_point_enc_aug).any())  # [3, 50, 20]
 
 		# Shape of sol_y [n_traj_samples, n_samples, n_timepoints, n_latents]
 		self.reset_nfe()

@@ -12,7 +12,8 @@ import torch.nn as nn
 import lib.utils as utils
 from torch.distributions.multivariate_normal import MultivariateNormal
 
-from lib.torchdiffeq_ import odeint_err as odeint_err
+# from lib.torchdiffeq_ import odeint_err as odeint_err
+from lib.torchdiffeq_ import odeint_adjoint as odeint_err
 
 from lib.cnf_regularization import RegularizedODEfunc
 
@@ -59,8 +60,6 @@ class DiffeqSolver(nn.Module):
 				atol=[self.odeint_atol] + [1e20],
 				method = self.ode_method)
 			pred_y = state_t[0].permute(1,2,0,3)  # [3, 50, 2208, 20]
-			import pdb
-			pdb.set_trace()
 			reg_state = state_t[1].permute(1,0)  # [3, 2208]
 		else:
 			state_t, err = odeint_err(self.ode_func,  # ode_func
