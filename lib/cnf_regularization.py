@@ -64,9 +64,10 @@ def directional_derivative(x, t, dx):
 
 def third_derivative(x, t, dx):
     # del logp, dlogp, unused_context
-    first = torch.autograd.grad(dx, x, dx, create_graph=True)[0]
-    second = torch.autograd.grad(first.sum(), dx, create_graph=True)[0]
-    third = torch.autograd.grad(second.sum(), dx, create_graph=True)[0]
+    del x
+    first = torch.autograd.grad(dx, t, create_graph=True)[0]
+    second = torch.autograd.grad(first.sum(), t, create_graph=True)[0]
+    third = torch.autograd.grad(second.sum(), t, create_graph=True)[0]
 
     total = third.pow(2).view(x.size(0), -1)
 
