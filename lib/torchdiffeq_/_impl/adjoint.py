@@ -136,6 +136,12 @@ def odeint_adjoint(func, y0, t, rtol=1e-6, atol=1e-12, method=None, options=None
             def forward(self, t, y):
                 return (self.base_func(t, y[0]),)
 
+            def get_nfe(self):
+                return self.nfe
+
+            def reset_nfe(self):
+                self.nfe = 0
+
         tensor_input = True
         y0 = (y0,)
         func = TupleFunc(func)
