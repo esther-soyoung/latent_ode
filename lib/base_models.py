@@ -191,7 +191,7 @@ class VAE_Baseline(nn.Module):
 		linear_classifier = False,
 		n_labels = 1,
 		train_classif_w_reconstr = False,
-		reg_dopri = 0, reg_kinetic = 0):
+		reg_dopri = 0, reg_kinetic = 0, reg_l1 = 0):
 
 		super(VAE_Baseline, self).__init__()
 		
@@ -333,10 +333,16 @@ class VAE_Baseline(nn.Module):
 			else:
 				loss =  ce_loss
 
+		# l1 regularizer
+		l1 = 0
+		for parameter in self.diffeq_solver.ode_func.parameters():
+			l1 = l1 + parameter.norm(1)
+
 		results = {}
 		results["loss"] = torch.mean(loss) \
 							+ self.reg_dopri * dopri_err \
-							+ self.reg_kinetic * kinetic
+							+ self.reg_kinetic * kinetic \
+							+ self.reg_l1 * l1
 		results["likelihood"] = torch.mean(rec_likelihood).detach()
 		results["mse"] = torch.mean(mse).detach()
 		results["pois_likelihood"] = torch.mean(pois_log_likelihood).detach()

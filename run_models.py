@@ -92,6 +92,8 @@ parser.add_argument('--noise-weight', type=float, default=0.01, help="Noise ampl
 parser.add_argument('--gpu', type=int, default=0, help="cuda:")
 parser.add_argument('--reg_dopri', type=float, default=0, help="Lambda for Dopri error regularizer.")
 parser.add_argument('--reg_kinetic', type=float, default=0, help="Lambda for Kinetic energy regularizer.")
+parser.add_argument('--reg_l1', type=float, default=0, help="Lambda for L1 regularizer.")
+parser.add_argument('--reg_l2', type=float, default=0, help="Lambda for L2 regularizer(weight decay).")
 
 args = parser.parse_args()
 
@@ -257,7 +259,7 @@ if __name__ == '__main__':
 	logger = utils.get_logger(logpath=log_path, filepath=os.path.abspath(__file__))
 	logger.info(input_command)
 
-	optimizer = optim.Adamax(model.parameters(), lr=args.lr)
+	optimizer = optim.Adamax(model.parameters(), lr=args.lr, weight_decay=args.reg_l2)
 
 	num_batches = data_obj["n_train_batches"]  # 64
 

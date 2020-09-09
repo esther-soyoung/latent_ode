@@ -49,10 +49,8 @@ class DiffeqSolver(nn.Module):
 
 		reg_state = torch.zeros(first_point.size(0)).to(first_point)
 		if self.nreg > 0 and self.train:  # regularizer state
-			# reg_states = tuple(torch.zeros(first_point.size(0)).to(first_point) for i in range(self.nreg))
-			# _logpz = state_torch.zeros(first_point.shape[0], 1).to(first_point)
 			assert self.func is not None, 'regularizer function not given'
-			state_t, err = odeint_err(self.func,  # ode_func + reg_func
+			state_t, err = odeint_err(self.func,  # ode_func & reg_func
 				(first_point, reg_state),
 				time_steps_to_predict, 
 				rtol=[self.odeint_rtol] + [1e20],
