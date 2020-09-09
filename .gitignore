@@ -1,7 +1,4 @@
 data/
 __pycache__/
 *.pyc
-experiments/
-*.sh
 .vscode/
-logs/
