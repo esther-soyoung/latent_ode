@@ -261,8 +261,8 @@ class VAE_Baseline(nn.Module):
 	def compute_all_losses(self, batch_dict, n_traj_samples = 1, kl_coef = 1.):
 		# Condition on subsampled points
 		# Make predictions for all the points
-		pred_y, dopri_err, kinetic, info = self.get_reconstruction(batch_dict["tp_to_predict"], 
-			batch_dict["observed_data"], batch_dict["observed_tp"], 
+		pred_y, dopri_err, kinetic, info, first_point_enc = self.get_reconstruction(batch_dict["tp_to_predict"], 
+			batch_dict["observed_data"], batch_dict["observed_tp"],
 			mask = batch_dict["observed_mask"], n_traj_samples = n_traj_samples,
 			mode = batch_dict["mode"])
 
@@ -353,7 +353,7 @@ class VAE_Baseline(nn.Module):
 		if batch_dict["labels"] is not None and self.use_binary_classif:
 			results["label_predictions"] = info["label_predictions"].detach()
 
-		return results
+		return results, first_point_enc
 
 
 

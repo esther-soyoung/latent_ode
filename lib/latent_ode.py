@@ -53,7 +53,7 @@ class LatentODE(VAE_Baseline):
 		self.reg_kinetic = reg_kinetic
 		self.reg_l1 = reg_l1
 
-	def get_reconstruction(self, time_steps_to_predict, truth, truth_time_steps, 
+	def get_reconstruction(self, time_steps_to_predict, truth, truth_time_steps,
 		mask = None, n_traj_samples = 1, run_backwards = True, mode = None):
 
 		if isinstance(self.encoder_z0, Encoder_z0_ODE_RNN) or \
@@ -119,7 +119,7 @@ class LatentODE(VAE_Baseline):
 			else:
 				all_extra_info["label_predictions"] = self.classifier(first_point_enc).squeeze(-1)
 
-		return pred_x, dopri_err, kinetic, all_extra_info
+		return pred_x, dopri_err, kinetic, all_extra_info, first_point_enc
 
 
 	def sample_traj_from_prior(self, time_steps_to_predict, n_traj_samples = 1):

@@ -30,6 +30,7 @@ from lib.plotting import *
 from lib.rnn_baselines import *
 from lib.ode_rnn import *
 from lib.create_latent_ode_model import create_LatentODE_model
+from lib.auxiliary_network import AuxiliaryNetwork
 from lib.parse_datasets import parse_datasets
 from lib.ode_func import ODEFunc, ODEFunc_w_Poisson
 from lib.diffeq_solver import DiffeqSolver
@@ -235,6 +236,7 @@ if __name__ == '__main__':
 		model = create_LatentODE_model(args, input_dim, z0_prior, obsrv_std, device, 
 			classif_per_tp = classif_per_tp,
 			n_labels = n_labels)
+		aux_net = AuxiliaryNetwork()
 	else:
 		raise Exception("Model not specified")
 
@@ -260,11 +262,14 @@ if __name__ == '__main__':
 	logger.info(input_command)
 
 	optimizer = optim.Adamax(model.parameters(), lr=args.lr, weight_decay=args.reg_l2)
+	aux_opt = optim.Adamax(aux_net.parameters(), lr=args.lr)
+	aux_criterion = nn.NLLLoss().cuda()
 
 	num_batches = data_obj["n_train_batches"]  # 64
 
 	for itr in range(1, num_batches * (args.niters + 1)):  # 64 * 300
 		optimizer.zero_grad()
+
 		model.train(True)
 		utils.update_learning_rate(optimizer, decay_rate = 0.999, lowest = args.lr / 10)
 
@@ -275,9 +280,16 @@ if __name__ == '__main__':
 			kl_coef = (1-0.99** (itr // num_batches - wait_until_kl_inc))
 
 		batch_dict = utils.get_next_batch(data_obj["train_dataloader"])
-		train_res = model.compute_all_losses(batch_dict, n_traj_samples = 3, kl_coef = kl_coef)
+		train_res, first_point_enc = model.compute_all_losses(batch_dict, n_traj_samples = 3, kl_coef = kl_coef)
 		train_res["loss"].backward()
 		optimizer.step()
+
+		##### Auxiliary Network #####
+		aux_opt.zero_grad()
+		aux_y = aux_net(first_point_enc)
+		aux_loss = aux_criterion(aux_y)
+		aux_loss.backward()
+		aux_opt.step()
 
 		n_iters_to_viz = 1
 		if itr % (n_iters_to_viz * num_batches) == 0:  # one test batch for 64 train batches
