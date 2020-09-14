@@ -33,7 +33,8 @@ class LatentODE(VAE_Baseline):
 		reg_dopri = 0, reg_kinetic = 0, reg_l1 = 0):
 
 		super(LatentODE, self).__init__(
-			input_dim = input_dim, latent_dim = latent_dim, 
+			input_dim = input_dim,  # 41
+			latent_dim = latent_dim,  # 20
 			z0_prior = z0_prior, 
 			device = device, obsrv_std = obsrv_std, 
 			use_binary_classif = use_binary_classif,
@@ -63,10 +64,10 @@ class LatentODE(VAE_Baseline):
 			if mask is not None:
 				truth_w_mask = torch.cat((truth, mask), -1)
 			first_point_mu, first_point_std = self.encoder_z0(
-				truth_w_mask, truth_time_steps, run_backwards = run_backwards)
+				truth_w_mask, truth_time_steps, run_backwards = run_backwards)  # [1, 50, 20]
 
-			means_z0 = first_point_mu.repeat(n_traj_samples, 1, 1)
-			sigma_z0 = first_point_std.repeat(n_traj_samples, 1, 1)
+			means_z0 = first_point_mu.repeat(n_traj_samples, 1, 1)  # [3, 50, 20]
+			sigma_z0 = first_point_std.repeat(n_traj_samples, 1, 1)  # [3, 50, 20]
 			first_point_enc = utils.sample_standard_gaussian(means_z0, sigma_z0)
 
 		else:
@@ -119,7 +120,7 @@ class LatentODE(VAE_Baseline):
 			else:
 				all_extra_info["label_predictions"] = self.classifier(first_point_enc).squeeze(-1)
 
-		return pred_x, dopri_err, kinetic, all_extra_info, first_point_enc
+		return pred_x, dopri_err, kinetic, all_extra_info
 
 
 	def sample_traj_from_prior(self, time_steps_to_predict, n_traj_samples = 1):

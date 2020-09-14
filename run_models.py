@@ -71,14 +71,14 @@ parser.add_argument('--ode-rnn', action='store_true', help="Run ODE-RNN baseline
 
 parser.add_argument('--rnn-vae', action='store_true', help="Run RNN baseline: seq2seq model with sampling of the h0 and ELBO loss.")
 
-parser.add_argument('-l', '--latents', type=int, default=6, help="Size of the latent state")
-parser.add_argument('--rec-dims', type=int, default=20, help="Dimensionality of the recognition model (ODE or RNN).")
+parser.add_argument('-l', '--latents', type=int, default=20, help="Size of the latent state")
+parser.add_argument('--rec-dims', type=int, default=40, help="Dimensionality of the recognition model (ODE or RNN).")
 
-parser.add_argument('--rec-layers', type=int, default=1, help="Number of layers in ODE func in recognition ODE")
-parser.add_argument('--gen-layers', type=int, default=1, help="Number of layers in ODE func in generative ODE")
+parser.add_argument('--rec-layers', type=int, default=3, help="Number of layers in ODE func in recognition ODE")
+parser.add_argument('--gen-layers', type=int, default=3, help="Number of layers in ODE func in generative ODE")
 
-parser.add_argument('-u', '--units', type=int, default=100, help="Number of units per layer in ODE func")
-parser.add_argument('-g', '--gru-units', type=int, default=100, help="Number of units per layer in each of GRU update networks")
+parser.add_argument('-u', '--units', type=int, default=50, help="Number of units per layer in ODE func")
+parser.add_argument('-g', '--gru-units', type=int, default=50, help="Number of units per layer in each of GRU update networks")
 
 parser.add_argument('--poisson', action='store_true', help="Model poisson-process likelihood for the density of events in addition to reconstruction.")
 parser.add_argument('--classif', action='store_true', help="Include binary classification loss -- used for Physionet dataset for hospiral mortality")
@@ -134,8 +134,7 @@ if __name__ == '__main__':
 
 	##################################################################
 	data_obj = parse_datasets(args, device)
-	input_dim = data_obj["input_dim"]
-
+	input_dim = data_obj["input_dim"]  # 41
 	classif_per_tp = False
 	if ("classif_per_tp" in data_obj):
 		# do classification per time point rather than on a time series as a whole
@@ -236,7 +235,7 @@ if __name__ == '__main__':
 		model = create_LatentODE_model(args, input_dim, z0_prior, obsrv_std, device, 
 			classif_per_tp = classif_per_tp,
 			n_labels = n_labels)
-		aux_net = AuxiliaryNetwork()
+		# aux_net = AuxiliaryNetwork()
 	else:
 		raise Exception("Model not specified")
 
@@ -262,7 +261,7 @@ if __name__ == '__main__':
 	logger.info(input_command)
 
 	optimizer = optim.Adamax(model.parameters(), lr=args.lr, weight_decay=args.reg_l2)
-	aux_opt = optim.Adamax(aux_net.parameters(), lr=args.lr)
+	# aux_opt = optim.Adamax(aux_net.parameters(), lr=args.lr)
 	aux_criterion = nn.NLLLoss().cuda()
 
 	num_batches = data_obj["n_train_batches"]  # 64
@@ -279,14 +278,18 @@ if __name__ == '__main__':
 		else:
 			kl_coef = (1-0.99** (itr // num_batches - wait_until_kl_inc))
 
+		# dict_keys(['observed_data', 'observed_tp', 'data_to_predict', 'tp_to_predict', 
+		# 'observed_mask', 'mask_predicted_data', 'labels', 'mode'])
 		batch_dict = utils.get_next_batch(data_obj["train_dataloader"])
-		train_res, first_point_enc = model.compute_all_losses(batch_dict, n_traj_samples = 3, kl_coef = kl_coef)
+		import pdb;pdb.set_trace()
+		train_res, fp_enc = model.compute_all_losses(batch_dict, n_traj_samples = 3, kl_coef = kl_coef)
+
 		train_res["loss"].backward()
 		optimizer.step()
 
 		##### Auxiliary Network #####
 		aux_opt.zero_grad()
-		aux_y = aux_net(first_point_enc)
+		aux_y = aux_net(fp_enc)
 		aux_loss = aux_criterion(aux_y)
 		aux_loss.backward()
 		aux_opt.step()

@@ -24,7 +24,7 @@ from lib.cnf_regularization import quadratic_cost
 def create_LatentODE_model(args, input_dim, z0_prior, obsrv_std, device, 
 	classif_per_tp = False, n_labels = 1):
 
-	dim = args.latents
+	dim = args.latents  # 20
 	if args.poisson:
 		lambda_net = utils.create_net(dim, input_dim, 
 			n_layers = 1, n_units = args.units, nonlinear = nn.Tanh)
@@ -34,7 +34,7 @@ def create_LatentODE_model(args, input_dim, z0_prior, obsrv_std, device,
 			n_layers = args.gen_layers, n_units = args.units, nonlinear = nn.Tanh)
 
 		gen_ode_func = ODEFunc_w_Poisson(
-			input_dim = input_dim, 
+			input_dim = input_dim,  # 41 
 			latent_dim = args.latents * 2,
 			ode_func_net = ode_func_net,
 			lambda_net = lambda_net,
@@ -45,8 +45,8 @@ def create_LatentODE_model(args, input_dim, z0_prior, obsrv_std, device,
 			n_layers = args.gen_layers, n_units = args.units, nonlinear = nn.Tanh)
 
 		gen_ode_func = ODEFunc(
-			input_dim = input_dim, 
-			latent_dim = args.latents, 
+			input_dim = input_dim,  # 41 
+			latent_dim = args.latents,  # 20
 			ode_func_net = ode_func_net,
 			device = device).to(device)
 
@@ -56,11 +56,11 @@ def create_LatentODE_model(args, input_dim, z0_prior, obsrv_std, device,
 		reg_func = quadratic_cost
 
 	z0_diffeq_solver = None
-	n_rec_dims = args.rec_dims
+	n_rec_dims = args.rec_dims  # 40
 	enc_input_dim = int(input_dim) * 2 # we concatenate the mask
 	gen_data_dim = input_dim
 
-	z0_dim = args.latents
+	z0_dim = args.latents  # 20
 	if args.poisson:
 		z0_dim += args.latents # predict the initial poisson rate
 
@@ -92,8 +92,8 @@ def create_LatentODE_model(args, input_dim, z0_prior, obsrv_std, device,
 						odeint_rtol = 1e-3, odeint_atol = 1e-4, device = device, train=True)
 
 	model = LatentODE(
-		input_dim = gen_data_dim, 
-		latent_dim = args.latents, 
+		input_dim = gen_data_dim,  # 41 
+		latent_dim = args.latents,  # 20
 		encoder_z0 = encoder_z0, 
 		decoder = decoder, 
 		diffeq_solver = diffeq_solver, 

@@ -110,7 +110,6 @@ def parse_datasets(args, device):
 										quantization = args.quantization,
 										download=True, n_samples = min(10000, args.n), 
 										device = device)
-
 		# Combine and shuffle samples from physionet Train and physionet Test
 		total_dataset = train_dataset_obj[:len(train_dataset_obj)]
 
@@ -123,12 +122,17 @@ def parse_datasets(args, device):
 		train_data, test_data = model_selection.train_test_split(total_dataset, train_size= 0.8, 
 			random_state = 42, shuffle = True)  # 3200, 800
 
+		# patient_id (string)
+		# time values of observations (tensor[83])
+		# observed values for variables, (tensor[83,41])
+		# observed binary values(mask) for varibles, (tensor[83,41])
+		# label if any 
 		record_id, tt, vals, mask, labels = train_data[0]
 
 		n_samples = len(total_dataset)  # 4000
-		input_dim = vals.size(-1)
+		input_dim = vals.size(-1)  # 41
 
-		batch_size = min(min(len(train_dataset_obj), args.batch_size), args.n)
+		batch_size = min(min(len(train_dataset_obj), args.batch_size), args.n)  # 50
 		data_min, data_max = get_data_min_max(total_dataset, device)
 
 		train_dataloader = DataLoader(train_data, batch_size= batch_size, shuffle=False, 
