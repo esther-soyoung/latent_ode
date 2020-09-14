@@ -336,7 +336,8 @@ class VAE_Baseline(nn.Module):
 		# l1 regularizer
 		l1 = 0
 		for parameter in self.diffeq_solver.ode_func.parameters():
-			l1 = l1 + parameter.norm(1)
+			# l1 = l1 + parameter.norm(1)
+			l1 += torch.sum(abs(parameter))
 
 		results = {}
 		results["loss"] = torch.mean(loss) \
