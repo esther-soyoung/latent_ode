@@ -244,10 +244,10 @@ class VAE_Baseline(nn.Module):
 	def get_mse(self, truth, pred_y, mask = None):
 		# pred_y shape [n_traj_samples, n_traj, n_tp, n_dim]
 		# truth shape  [n_traj, n_tp, n_dim]
-		n_traj, n_tp, n_dim = truth.size()
+		n_traj, n_tp, n_dim = truth.size()  # [50, 2208, 41]
 
 		# Compute likelihood of the data under the predictions
-		truth_repeated = truth.repeat(pred_y.size(0), 1, 1, 1)
+		truth_repeated = truth.repeat(pred_y.size(0), 1, 1, 1)  # [3, 50, 2208, 41]
 		
 		if mask is not None:
 			mask = mask.repeat(pred_y.size(0), 1, 1, 1)
@@ -257,17 +257,29 @@ class VAE_Baseline(nn.Module):
 		# shape: [1]
 		return torch.mean(log_density_data)
 
+	''' truth: batch_dict["labels"])
+		pred_y: info["label_predictions"]
+	'''
+	def get_reward(self, truth, pred_y):
+		truth = truth.squeeze(1).repeat(pred_y.size(0), 1)  # [3, 50]
+		pred_y = nn.Sigmoid()(pred_y)  # [3, 50]
+		return (truth == pred_y).int() / self.get_nfe()  # [3, 50]
 
-	def compute_all_losses(self, batch_dict, n_traj_samples = 1, kl_coef = 1.):
+
+	def compute_all_losses(self, batch_dict, method='dopri5_err', n_traj_samples = 1, kl_coef = 1.):
 		# Condition on subsampled points
 		# Make predictions for all the points
-		pred_y, dopri_err, kinetic, info = self.get_reconstruction(batch_dict["tp_to_predict"], 
-			batch_dict["observed_data"], batch_dict["observed_tp"], 
-			mask = batch_dict["observed_mask"], n_traj_samples = n_traj_samples,
-			mode = batch_dict["mode"])
+		pred_y, dopri_err, kinetic, info = self.get_reconstruction(
+			batch_dict["tp_to_predict"],  # union of 83 tps of all patients removed nan (ex. 2208)
+			batch_dict["observed_data"],  # truth, [batch_size, union tp, num_features] (ex. [50, 2208, 41])
+			batch_dict["observed_tp"],  # [2208]
+			method=method,  # integrator method
+			mask=batch_dict["observed_mask"],  # feature values in binary, True, [50, 2208, 41]
+			n_traj_samples=n_traj_samples,  # 3
+			mode=batch_dict["mode"])
 
 		#print("get_reconstruction done -- computing likelihood")
-		fp_mu, fp_std, fp_enc = info["first_point"]
+		fp_mu, fp_std, fp_enc = info["first_point"]  # [n_traj_samples, batch_size, latent_dim] (ex. [3, 50, 20])
 		fp_std = fp_std.abs()
 		fp_distr = Normal(fp_mu, fp_std)
 
@@ -291,28 +303,23 @@ class VAE_Baseline(nn.Module):
 			batch_dict["data_to_predict"], pred_y,
 			mask = batch_dict["mask_predicted_data"])
 
+		# pred_y: [30, 50, 2208, 41]
+		# batch_dict['data_to_predict']: [50, 2208, 41]
 		mse = self.get_mse(
 			batch_dict["data_to_predict"], pred_y,
 			mask = batch_dict["mask_predicted_data"])
 
 		pois_log_likelihood = torch.Tensor([0.]).to(get_device(batch_dict["data_to_predict"]))
-		if self.use_poisson_proc:
-			pois_log_likelihood = compute_poisson_proc_likelihood(
-				batch_dict["data_to_predict"], pred_y, 
-				info, mask = batch_dict["mask_predicted_data"])
-			# Take mean over n_traj
-			pois_log_likelihood = torch.mean(pois_log_likelihood, 1)
 
 		################################
 		# Compute CE loss for binary classification on Physionet
 		device = get_device(batch_dict["data_to_predict"])
 		ce_loss = torch.Tensor([0.]).to(device)
 		if (batch_dict["labels"] is not None) and self.use_binary_classif:
-
-			if (batch_dict["labels"].size(-1) == 1) or (len(batch_dict["labels"].size()) == 1):
+			if (batch_dict["labels"].size(-1) == 1) or (len(batch_dict["labels"].size()) == 1):  # True
 				ce_loss = compute_binary_CE_loss(
-					info["label_predictions"], 
-					batch_dict["labels"])
+					info["label_predictions"],  # prediction
+					batch_dict["labels"])  # ground truth
 			else:
 				ce_loss = compute_multiclass_CE_loss(
 					info["label_predictions"], 
@@ -324,12 +331,9 @@ class VAE_Baseline(nn.Module):
 		if torch.isnan(loss):
 			loss = - torch.mean(rec_likelihood - kl_coef * kldiv_z0,0)
 			
-		if self.use_poisson_proc:
-			loss = loss - 0.1 * pois_log_likelihood 
-
 		if self.use_binary_classif:
 			if self.train_classif_w_reconstr:
-				loss = loss +  ce_loss * 100
+				loss = loss +  ce_loss * 100  # True
 			else:
 				loss =  ce_loss
 
@@ -340,6 +344,10 @@ class VAE_Baseline(nn.Module):
 			l1 += torch.sum(abs(parameter))
 
 		results = {}
+		# task loss: 952.5074
+		# dopri: 7.0814 * 0.02 = 0.141628
+		# kinetic:
+		# l1: 762.5653 * 0.00018359 = 0.14
 		results["loss"] = torch.mean(loss) \
 							+ self.reg_dopri * dopri_err \
 							+ self.reg_kinetic * kinetic \
@@ -350,11 +358,13 @@ class VAE_Baseline(nn.Module):
 		results["ce_loss"] = torch.mean(ce_loss).detach()
 		results["kl_first_p"] =  torch.mean(kldiv_z0).detach()
 		results["std_first_p"] = torch.mean(fp_std).detach()
+		results['nfe'] = self.get_nfe()
+		results['reward'] = self.get_reward(batch_dict['labels'], info['label_predictions'].detach())  # [3, 50]
 
 		if batch_dict["labels"] is not None and self.use_binary_classif:
 			results["label_predictions"] = info["label_predictions"].detach()
 
-		return results
+		return results, fp_enc.detach()
 
 
 

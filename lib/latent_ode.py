@@ -53,7 +53,7 @@ class LatentODE(VAE_Baseline):
 		self.reg_kinetic = reg_kinetic
 		self.reg_l1 = reg_l1
 
-	def get_reconstruction(self, time_steps_to_predict, truth, truth_time_steps, 
+	def get_reconstruction(self, time_steps_to_predict, truth, truth_time_steps, method,
 		mask = None, n_traj_samples = 1, run_backwards = True, mode = None):
 
 		if isinstance(self.encoder_z0, Encoder_z0_ODE_RNN) or \
@@ -62,10 +62,10 @@ class LatentODE(VAE_Baseline):
 			truth_w_mask = truth
 			if mask is not None:
 				truth_w_mask = torch.cat((truth, mask), -1)
-			first_point_mu, first_point_std = self.encoder_z0(
+			first_point_mu, first_point_std = self.encoder_z0(  # [1, 50, 20]
 				truth_w_mask, truth_time_steps, run_backwards = run_backwards)
 
-			means_z0 = first_point_mu.repeat(n_traj_samples, 1, 1)
+			means_z0 = first_point_mu.repeat(n_traj_samples, 1, 1)  # [3, 50, 20]
 			sigma_z0 = first_point_std.repeat(n_traj_samples, 1, 1)
 			first_point_enc = utils.sample_standard_gaussian(means_z0, sigma_z0)
 
@@ -91,15 +91,9 @@ class LatentODE(VAE_Baseline):
 
 		# Shape of sol_y [n_traj_samples, n_samples, n_timepoints, n_latents]
 		self.reset_nfe()
-		sol_y, dopri_err, kinetic = self.diffeq_solver(first_point_enc_aug, time_steps_to_predict)
+		sol_y, dopri_err, kinetic = self.diffeq_solver(first_point_enc_aug, time_steps_to_predict, method)
 		dopri_err = torch.mean(torch.stack(dopri_err))
 		kinetic = torch.mean(kinetic)
-
-		if self.use_poisson_proc:
-			sol_y, log_lambda_y, int_lambda, _ = self.diffeq_solver.ode_func.extract_poisson_rate(sol_y)
-
-			assert(torch.sum(int_lambda[:,:,0,:]) == 0.)
-			assert(torch.sum(int_lambda[0,0,-1,:] <= 0) == 0.)
 
 		pred_x = self.decoder(sol_y)  # [3, 50, 2208, 41]
 
@@ -108,15 +102,10 @@ class LatentODE(VAE_Baseline):
 			"latent_traj": sol_y.detach()
 		}
 
-		if self.use_poisson_proc:
-			# intergral of lambda from the last step of ODE Solver
-			all_extra_info["int_lambda"] = int_lambda[:,:,-1,:]
-			all_extra_info["log_lambda_y"] = log_lambda_y
-
 		if self.use_binary_classif:
 			if self.classif_per_tp:
 				all_extra_info["label_predictions"] = self.classifier(sol_y)
-			else:
+			else:  # [3, 50]
 				all_extra_info["label_predictions"] = self.classifier(first_point_enc).squeeze(-1)
 
 		return pred_x, dopri_err, kinetic, all_extra_info

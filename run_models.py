@@ -30,6 +30,7 @@ from lib.plotting import *
 from lib.rnn_baselines import *
 from lib.ode_rnn import *
 from lib.create_latent_ode_model import create_LatentODE_model
+from lib.auxiliary_network import AuxiliaryNetwork
 from lib.parse_datasets import parse_datasets
 from lib.ode_func import ODEFunc, ODEFunc_w_Poisson
 from lib.diffeq_solver import DiffeqSolver
@@ -235,6 +236,11 @@ if __name__ == '__main__':
 		model = create_LatentODE_model(args, input_dim, z0_prior, obsrv_std, device, 
 			classif_per_tp = classif_per_tp,
 			n_labels = n_labels)
+		##### Auxiliary Network #####
+		n_intg = 3  # [dopri, euler, rk4] 
+		aux_net = AuxiliaryNetwork(model.latent_dim, 10, n_intg).to(device)
+		aux_opt = optim.Adamax(aux_net.parameters(), lr=args.lr)
+		aux_criterion = nn.CrossEntropyLoss().cuda()
 	else:
 		raise Exception("Model not specified")
 
@@ -264,6 +270,7 @@ if __name__ == '__main__':
 	num_batches = data_obj["n_train_batches"]  # 64
 
 	for itr in range(1, num_batches * (args.niters + 1)):  # 64 * 300
+		##### Train Latent NODE #####
 		optimizer.zero_grad()
 		model.train(True)
 		utils.update_learning_rate(optimizer, decay_rate = 0.999, lowest = args.lr / 10)
@@ -275,19 +282,72 @@ if __name__ == '__main__':
 			kl_coef = (1-0.99** (itr // num_batches - wait_until_kl_inc))
 
 		batch_dict = utils.get_next_batch(data_obj["train_dataloader"])
-		train_res = model.compute_all_losses(batch_dict, n_traj_samples = 3, kl_coef = kl_coef)
+		train_res, fp_enc = model.compute_all_losses(batch_dict, n_traj_samples = 3, kl_coef = kl_coef)
 		train_res["loss"].backward()
 		optimizer.step()
+		##############################
 
+		#### Dynamic Integrators #####
+		with torch.no_grad():
+			euler_res, _ = model.compute_all_losses(batch_dict, method='euler', n_traj_samples=3, kl_coef=kl_coef)
+			rk4_res, _ = model.compute_all_losses(batch_dict, method='rk4', n_traj_samples=3, kl_coef=kl_coef)
+		##############################
+
+		##### Auxiliary Network #####
+		n_traj_samples, n_traj, n_dims = fp_enc.size()  # 3, 50, 20
+
+		dopri_intg = torch.tensor([1, 0, 0]).repeat(n_traj_samples, n_traj, 1).to(device)  # [3, 50, 3]
+		dopri_reward = train_res['reward'].unsqueeze(2).type(dopri_intg.type())  # [3, 50, 1]
+		dopri_truth = dopri_reward * dopri_intg  # [3, 50, 3]
+
+		euler_intg = torch.tensor([0, 1, 0]).repeat(n_traj_samples, n_traj, 1).to(device)  # [3, 50, 3]
+		euler_reward = euler_res['reward'].unsqueeze(2).type(euler_intg.type())  # [3, 50, 1]
+		euler_truth = euler_reward * euler_intg  # [3, 50, 3]
+
+		rk4_intg = torch.tensor([0, 0, 1]).repeat(n_traj_samples, n_traj, 1).to(device)  # [3, 50, 3]
+		rk4_reward = rk4_res['reward'].unsqueeze(2).type(rk4_intg.type())  # [3, 50, 1]
+		rk4_truth = rk4_reward * rk4_intg  # [3, 50, 3]
+
+		aux_truth = dopri_truth + euler_truth + rk4_truth  # [3, 50, 3]
+		aux_truth =  aux_truth.view(-1, n_intg) # [150, 3]
+		aux_truth = torch.max(aux_truth, 1)[1]  # [150]
+
+		aux_opt.zero_grad()
+		aux_net.train()
+		utils.update_learning_rate(aux_opt, decay_rate = 0.999, lowest = args.lr / 10)
+		aux_y = aux_net(fp_enc)  # [3, 50, 3]
+		aux_y =  aux_y.view(-1, n_intg) # [150, 3]
+
+		aux_loss = aux_criterion(aux_y, aux_truth)
+		aux_loss.backward()
+		aux_opt.step()
+		##############################
+
+		############ TEST ############
 		n_iters_to_viz = 1
-		if itr % (n_iters_to_viz * num_batches) == 0:  # one test batch for 64 train batches
+		# if itr % (n_iters_to_viz * num_batches) == 0:  # one test batch for 64 train batches
+		if itr % (n_iters_to_viz * num_batches) == 1:  # one test batch for 64 train batches
 			with torch.no_grad():
 				model.train(False)
-				test_res = compute_loss_all_batches(model, 
+				test_res, fp_enc = compute_loss_all_batches(model,
 					data_obj["test_dataloader"], args,
 					n_batches = data_obj["n_test_batches"],
 					experimentID = experimentID,
 					device = device,
+					n_traj_samples = 3, kl_coef = kl_coef)
+				test_euler, _ = compute_loss_all_batches(model,
+					data_obj["test_dataloader"], args,
+					n_batches = data_obj["n_test_batches"],
+					experimentID = experimentID,
+					device = device,
+					method = 'euler',
+					n_traj_samples = 3, kl_coef = kl_coef)
+				test_rk4, _ = compute_loss_all_batches(model,
+					data_obj["test_dataloader"], args,
+					n_batches = data_obj["n_test_batches"],
+					experimentID = experimentID,
+					device = device,
+					method = 'rk4',
 					n_traj_samples = 3, kl_coef = kl_coef)
 
 				message = 'Epoch {:04d} [Test seq (cond on sampled tp)] | Loss {:.6f} | Likelihood {:.6f} | KL fp {:.4f} | FP STD {:.4f} | NFE {:.4f}'.format(
@@ -323,6 +383,53 @@ if __name__ == '__main__':
 				if "nfe" in test_res:
 					logger.info("NFE: {:.4f}".format(test_res['nfe']))
 
+				##### Auxiliary Network #####
+				n_traj_samples, n_traj, n_dims = fp_enc.size()  # 3, 800, 20
+
+				dopri_intg = torch.tensor([1, 0, 0]).repeat(n_traj_samples, n_traj, 1).to(device)  # [3, 800, 3]
+				dopri_reward = test_res['reward'].unsqueeze(2).type(dopri_intg.type())  # [3, 800, 1]
+				dopri_truth = dopri_reward * dopri_intg  # [3, 800, 3]
+
+				euler_intg = torch.tensor([0, 1, 0]).repeat(n_traj_samples, n_traj, 1).to(device)  # [3, 800, 3]
+				euler_reward = test_euler['reward'].unsqueeze(2).type(euler_intg.type())  # [3, 800, 1]
+				euler_truth = euler_reward * euler_intg  # [3, 800, 3]
+
+				rk4_intg = torch.tensor([0, 0, 1]).repeat(n_traj_samples, n_traj, 1).to(device)  # [3, 800, 3]
+				rk4_reward = test_rk4['reward'].unsqueeze(2).type(rk4_intg.type())  # [3, 800, 1]
+				rk4_truth = rk4_reward * rk4_intg  # [3, 800, 3]
+
+				aux_truth = dopri_truth + euler_truth + rk4_truth  # [3, 800, 3]
+				aux_truth =  aux_truth.view(-1, n_intg) # [2400, 3]
+				aux_truth = torch.max(aux_truth, 1)[1]  # [2400]
+
+				aux_net.eval()
+				aux_y = aux_net(fp_enc)  # [3, 800, 3]
+				aux_y =  aux_y.view(-1, n_intg) # [2400, 3]
+				aux_test_loss = aux_criterion(aux_y, aux_truth)
+	
+				# Choice of integrator
+				aux_y_sum = torch.sum(aux_y, dim=0)  # [3]
+				pred_y = torch.max(aux_y_sum, 0)[1].item()  # 0: dopri5, 1: euler, 2: rk4
+				if pred_y == 0:
+					pred_integrator = 'dopri5'
+				elif pred_y == 1:
+					pred_integrator = 'euler'
+				else:
+					pred_integrator = 'rk4'
+
+				# Actual rewards
+				total_reward_dopri = torch.sum(dopri_reward.squeeze().view(-1)).item()  # total Dopri reward
+				total_reward_euler = torch.sum(euler_reward.squeeze().view(-1)).item()  # total Euler reward
+				total_reward_rk4 = torch.sum(rk4_reward.squeeze().view(-1)).item()  # total RK4 reward
+
+				logger.info("### Auxiliary Network### ")
+				logger.info("Train CE loss (one batch): {}".format(aux_loss.detach()))
+				logger.info("Test CE loss: {}".format(aux_test_loss))
+				logger.info("Choice of integrator: {}".format(pred_integrator))
+				logger.info("Reward for Dopri integrator: {}".format(total_reward_dopri))
+				logger.info("Reward for Euler integrator: {}".format(total_reward_euler))
+				logger.info("Reward for RK4 integrator: {}".format(total_reward_rk4))
+
 			torch.save({
 				'args': args,
 				'state_dict': model.state_dict(),
@@ -341,6 +448,8 @@ if __name__ == '__main__':
 							plot_name = file_name + "_" + str(experimentID) + "_{:03d}".format(plot_id) + ".png",
 						 	experimentID = experimentID, save=True)
 						plt.pause(0.01)
+
+	############## SAVE MODEL ###############
 	torch.save({
 		'args': args,
 		'state_dict': model.state_dict(),
