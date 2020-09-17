@@ -406,7 +406,7 @@ if __name__ == '__main__':
 				aux_y = aux_net(fp_enc)  # [3, 800, 3]
 				aux_y =  aux_y.view(-1, n_intg) # [2400, 3]
 				aux_test_loss = aux_criterion(aux_y, aux_truth)
-	
+
 				# Choice of integrator
 				aux_y_sum = torch.sum(aux_y, dim=0)  # [3]
 				pred_y = torch.max(aux_y_sum, 0)[1].item()  # 0: dopri5, 1: euler, 2: rk4
