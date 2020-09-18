@@ -263,7 +263,7 @@ class VAE_Baseline(nn.Module):
 	def get_reward(self, truth, pred_y):
 		truth = truth.squeeze(1).repeat(pred_y.size(0), 1)  # [3, 50]
 		pred_y = nn.Sigmoid()(pred_y)  # [3, 50]
-		return (truth == pred_y).int() / self.get_nfe()  # [3, 50]
+		return (truth == (pred_y>=0.5)).int() / self.get_nfe()  # [3, 50]
 
 
 	def compute_all_losses(self, batch_dict, method='dopri5_err', n_traj_samples = 1, kl_coef = 1.):
