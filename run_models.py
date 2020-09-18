@@ -325,7 +325,6 @@ if __name__ == '__main__':
 
 		############ TEST ############
 		n_iters_to_viz = 1
-		# if itr % (n_iters_to_viz * num_batches) == 1:  # one test batch for 64 train batches
 		if itr % (n_iters_to_viz * num_batches) == 0:  # one test batch for 64 train batches
 			with torch.no_grad():
 				model.train(False)
