@@ -263,7 +263,7 @@ class VAE_Baseline(nn.Module):
 	def get_reward(self, truth, pred_y):
 		truth = truth.squeeze(1).repeat(pred_y.size(0), 1)  # [3, 50]
 		pred_y = nn.Sigmoid()(pred_y)  # [3, 50]
-		return (truth == (pred_y>=0.5)).int() / self.get_nfe()  # [3, 50]
+		return (truth == (pred_y>=0.5)).to(dtype=torch.float) / float(self.get_nfe())  # [3, 50]
 
 
 	def compute_all_losses(self, batch_dict, method='dopri5_err', n_traj_samples = 1, kl_coef = 1.):
@@ -359,7 +359,7 @@ class VAE_Baseline(nn.Module):
 		results["kl_first_p"] =  torch.mean(kldiv_z0).detach()
 		results["std_first_p"] = torch.mean(fp_std).detach()
 		results['nfe'] = self.get_nfe()
-		results['reward'] = self.get_reward(batch_dict['labels'], info['label_predictions'].detach())  # [3, 50]
+		results['reward'] = self.get_reward(batch_dict['labels'], info['label_predictions'].detach())  # [n_traj_samples, batch_size]
 
 		if batch_dict["labels"] is not None and self.use_binary_classif:
 			results["label_predictions"] = info["label_predictions"].detach()

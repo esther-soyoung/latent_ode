@@ -387,15 +387,15 @@ if __name__ == '__main__':
 				n_traj_samples, n_traj, n_dims = fp_enc.size()  # 3, 800, 20
 
 				dopri_intg = torch.tensor([1, 0, 0]).repeat(n_traj_samples, n_traj, 1).to(device)  # [3, 800, 3]
-				dopri_reward = test_res['reward'].unsqueeze(2).type(dopri_intg.type())  # [3, 800, 1]
+				dopri_reward = test_res['reward'].unsqueeze(2)  # [3, 800, 1]
 				dopri_truth = dopri_reward * dopri_intg  # [3, 800, 3]
 
 				euler_intg = torch.tensor([0, 1, 0]).repeat(n_traj_samples, n_traj, 1).to(device)  # [3, 800, 3]
-				euler_reward = test_euler['reward'].unsqueeze(2).type(euler_intg.type())  # [3, 800, 1]
+				euler_reward = test_euler['reward'].unsqueeze(2)  # [3, 800, 1]
 				euler_truth = euler_reward * euler_intg  # [3, 800, 3]
 
 				rk4_intg = torch.tensor([0, 0, 1]).repeat(n_traj_samples, n_traj, 1).to(device)  # [3, 800, 3]
-				rk4_reward = test_rk4['reward'].unsqueeze(2).type(rk4_intg.type())  # [3, 800, 1]
+				rk4_reward = test_rk4['reward'].unsqueeze(2)  # [3, 800, 1]
 				rk4_truth = rk4_reward * rk4_intg  # [3, 800, 3]
 
 				aux_truth = dopri_truth + euler_truth + rk4_truth  # [3, 800, 3]
