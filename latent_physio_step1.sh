@@ -18,5 +18,5 @@ python run_models.py \
 		--reg_kinetic $2 \
 		--reg_l1 $3 \
 		--reg_l2 $4 \
-		--step_size $5 \
-		--gpu 2
+		--method $5 \
+		--step_size $6
