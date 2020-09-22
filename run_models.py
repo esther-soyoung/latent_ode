@@ -260,7 +260,7 @@ if __name__ == '__main__':
 		utils.makedirs("logs/")
 	logger = utils.get_logger(logpath=log_path, filepath=os.path.abspath(__file__))
 	logger.info(input_command)
-	_mode = model.diffeq_solver.ode_method + args.step_size
+	_mode = model.diffeq_solver.ode_method + str(args.step_size)
 	logger.info(_mode)
 
 	optimizer = optim.Adamax(model.parameters(), lr=args.lr, weight_decay=args.reg_l2)
