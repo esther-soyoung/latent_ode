@@ -46,7 +46,6 @@ class DiffeqSolver(nn.Module):
 		"""
 		n_traj_samples, n_traj = first_point.size()[0], first_point.size()[1]
 		n_dims = first_point.size()[-1]
-
 		reg_state = torch.zeros(first_point.size(0)).to(first_point)
 		if self.nreg > 0 and self.train:  # regularizer state
 			assert self.func is not None, 'regularizer function not given'

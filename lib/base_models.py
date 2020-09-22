@@ -266,7 +266,9 @@ class VAE_Baseline(nn.Module):
 		return (truth == (pred_y>=0.5)).to(dtype=torch.float) / float(self.get_nfe())  # [3, 50]
 
 
-	def compute_all_losses(self, batch_dict, method='dopri5_err', n_traj_samples = 1, kl_coef = 1.):
+	def compute_all_losses(self, batch_dict, method=None, n_traj_samples = 1, kl_coef = 1.):
+		if method == None:
+			method = self.diffeq_solver.ode_method
 		# Condition on subsampled points
 		# Make predictions for all the points
 		pred_y, dopri_err, kinetic, info = self.get_reconstruction(
