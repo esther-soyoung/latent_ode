@@ -95,6 +95,7 @@ parser.add_argument('--reg_dopri', type=float, default=0, help="Lambda for Dopri
 parser.add_argument('--reg_kinetic', type=float, default=0, help="Lambda for Kinetic energy regularizer.")
 parser.add_argument('--reg_l1', type=float, default=0, help="Lambda for L1 regularizer.")
 parser.add_argument('--reg_l2', type=float, default=0, help="Lambda for L2 regularizer(weight decay).")
+parser.add_argument('--step_size', type=float, default=0, help="Step size for fixed grid integrators")
 
 args = parser.parse_args()
 
