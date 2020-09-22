@@ -90,7 +90,6 @@ def create_LatentODE_model(args, input_dim, z0_prior, obsrv_std, device,
 
 	diffeq_solver = DiffeqSolver(gen_data_dim, gen_ode_func, reg_func, args.method, args.latents, 
 						odeint_rtol = 1e-3, odeint_atol = 1e-4, device = device, train=True)
-
 	model = LatentODE(
 		input_dim = gen_data_dim, 
 		latent_dim = args.latents, 
