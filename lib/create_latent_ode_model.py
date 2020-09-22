@@ -88,7 +88,7 @@ def create_LatentODE_model(args, input_dim, z0_prior, obsrv_std, device,
 
 	decoder = Decoder(args.latents, gen_data_dim).to(device)
 
-	diffeq_solver = DiffeqSolver(gen_data_dim, gen_ode_func, reg_func, 'rk4', args.latents, 
+	diffeq_solver = DiffeqSolver(gen_data_dim, gen_ode_func, reg_func, args.method, args.latents, 
 						odeint_rtol = 1e-3, odeint_atol = 1e-4, device = device, train=True)
 
 	model = LatentODE(
