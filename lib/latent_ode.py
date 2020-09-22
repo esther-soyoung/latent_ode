@@ -30,6 +30,7 @@ class LatentODE(VAE_Baseline):
 		classif_per_tp = False,
 		n_labels = 1,
 		train_classif_w_reconstr = False,
+		step_size = 0,
 		reg_dopri = 0, reg_kinetic = 0, reg_l1 = 0):
 
 		super(LatentODE, self).__init__(
@@ -42,12 +43,15 @@ class LatentODE(VAE_Baseline):
 			use_poisson_proc = use_poisson_proc,
 			n_labels = n_labels,
 			train_classif_w_reconstr = train_classif_w_reconstr,
+			step_size = step_size,
 			reg_dopri = reg_dopri, reg_kinetic = reg_kinetic, reg_l1 = reg_l1)
 
 		self.encoder_z0 = encoder_z0
 		self.diffeq_solver = diffeq_solver
 		self.decoder = decoder
 		self.use_poisson_proc = use_poisson_proc
+
+		self.step_size = step_size
 
 		self.reg_dopri = reg_dopri
 		self.reg_kinetic = reg_kinetic
@@ -91,7 +95,7 @@ class LatentODE(VAE_Baseline):
 
 		# Shape of sol_y [n_traj_samples, n_samples, n_timepoints, n_latents]
 		self.reset_nfe()
-		sol_y, dopri_err, kinetic = self.diffeq_solver(first_point_enc_aug, time_steps_to_predict, method)
+		sol_y, dopri_err, kinetic = self.diffeq_solver(first_point_enc_aug, time_steps_to_predict, method, step_size=self.step_size)
 		if method == 'dopri5_err':
 			dopri_err = torch.mean(torch.stack(dopri_err))
 		kinetic = torch.mean(kinetic)

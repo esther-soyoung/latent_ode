@@ -128,7 +128,7 @@ def odeint_err(func, y0, t, rtol=1e-7, atol=1e-9, method=None, options=None):
     elif method is None:
         raise ValueError('cannot supply `options` without specifying `method`')
     
-    solver = SOLVERS[method](func, y0, rtol=rtol, atol=atol, **options)
+    solver = SOLVERS[method](func, y0, rtol=rtol, atol=atol, step_size=options['step_size'])
 
     if method == 'dopri5_err':
         solution, tot_err = solver.integrate(t)

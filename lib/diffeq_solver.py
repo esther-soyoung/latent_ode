@@ -40,13 +40,12 @@ class DiffeqSolver(nn.Module):
 		self.odeint_atol = odeint_atol
 
 
-	def forward(self, first_point, time_steps_to_predict, method, backwards = False):
+	def forward(self, first_point, time_steps_to_predict, method, backwards = False, **options):
 		"""
 		# Decode the trajectory through ODE Solver
 		"""
 		n_traj_samples, n_traj = first_point.size()[0], first_point.size()[1]
 		n_dims = first_point.size()[-1]
-
 		reg_state = torch.zeros(first_point.size(0)).to(first_point)
 		if self.nreg > 0 and self.train:  # regularizer state
 			assert self.func is not None, 'regularizer function not given'
@@ -55,7 +54,8 @@ class DiffeqSolver(nn.Module):
 				time_steps_to_predict, 
 				rtol=[self.odeint_rtol] + [1e20],
 				atol=[self.odeint_atol] + [1e20],
-				method=method)
+				method=method,
+				options=options)
 			pred_y = state_t[0].permute(1,2,0,3)  # [3, 50, 2208, 20]
 			reg_state = state_t[1].permute(1,0)  # [3, 2208]
 		else:
@@ -64,7 +64,8 @@ class DiffeqSolver(nn.Module):
 				time_steps_to_predict, 
 				rtol=self.odeint_rtol,
 				atol=self.odeint_atol,
-				method=method)
+				method=method,
+				options=options)
 			pred_y = state_t.permute(1,2,0,3)
 
 		assert(torch.mean(pred_y[:, :, 0, :]  - first_point) < 0.001)
