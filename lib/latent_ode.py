@@ -43,7 +43,7 @@ class LatentODE(VAE_Baseline):
 			use_poisson_proc = use_poisson_proc,
 			n_labels = n_labels,
 			train_classif_w_reconstr = train_classif_w_reconstr,
-			step_size = step_size
+			step_size = step_size,
 			reg_dopri = reg_dopri, reg_kinetic = reg_kinetic, reg_l1 = reg_l1)
 
 		self.encoder_z0 = encoder_z0
