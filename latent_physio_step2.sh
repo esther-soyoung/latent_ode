@@ -1,6 +1,6 @@
 #!/bin/sh
 
-python run_models.py \
+python train_aux.py \
         --niters 100 \
         -n 8000 \
         -l 20 \
@@ -14,9 +14,5 @@ python run_models.py \
         --gru-units 50 \
         --quantization 0.016 \
         --classif \
-        --reg_dopri $1 \
-        --reg_kinetic $2 \
-        --reg_l1 $3 \
-        --reg_l2 $4 \
-        --step_size $5 \
+        --load '81209' \
         --gpu 3

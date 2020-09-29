@@ -138,7 +138,7 @@ def parse_datasets(args, device):
 		train_dataloader = DataLoader(train_data, batch_size= batch_size, shuffle=False, 
 			collate_fn= lambda batch: variable_time_collate_fn(batch, args, device, data_type = "train",
 				data_min = data_min, data_max = data_max))
-		test_dataloader = DataLoader(test_data, batch_size = n_samples, shuffle=False, 
+		test_dataloader = DataLoader(test_data, batch_size = 20, shuffle=False, 
 			collate_fn= lambda batch: variable_time_collate_fn(batch, args, device, data_type = "test",
 				data_min = data_min, data_max = data_max))
 
@@ -148,7 +148,7 @@ def parse_datasets(args, device):
 					"test_dataloader": utils.inf_generator(test_dataloader),
 					"input_dim": input_dim,  # 41
 					"n_train_batches": len(train_dataloader),  # 64
-					"n_test_batches": len(test_dataloader),  # 1
+					"n_test_batches": len(test_dataloader),  # 1 --> 40
 					"attr": attr_names, #optional, 41
 					"classif_per_tp": False, #optional
 					"n_labels": 1} #optional

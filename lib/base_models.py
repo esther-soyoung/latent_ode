@@ -20,6 +20,7 @@ from torch.distributions.normal import Normal
 from torch.distributions import Independent
 from torch.nn.parameter import Parameter
 
+import sklearn as sk
 
 def create_classifier(z0_dim, n_labels):
 	return nn.Sequential(
@@ -269,8 +270,8 @@ class VAE_Baseline(nn.Module):
 	def get_loss(self, truth, pred_y):
 		truth = truth.squeeze(1).repeat(pred_y.size(0), 1)  # [3, 50]
 		pred_y = nn.Sigmoid()(pred_y)  # [3, 50]
-		ret = (truth == (pred_y>=0.5)).to(dtype=torch.float) * float(self.get_nfe())  # [3, 50]
-		ret[ret==0] = 1000
+		ret = (truth == (pred_y>=0.5)).to(dtype=torch.float) * float(self.get_nfe() ** 0.1)  # [3, 50]
+		ret[ret==0] = 1000 ** 0.1
 		return ret
 
 	def compute_all_losses(self, batch_dict, method='dopri5_err', n_traj_samples = 1, kl_coef = 1.):
@@ -371,6 +372,30 @@ class VAE_Baseline(nn.Module):
 
 		if batch_dict["labels"] is not None and self.use_binary_classif:
 			results["label_predictions"] = info["label_predictions"].detach()
+
+		# auc
+		classif_predictions = torch.Tensor([]).to(device)
+		all_test_labels =  torch.Tensor([]).to(device)
+		classif_predictions = torch.cat((classif_predictions, 
+			results["label_predictions"].reshape(n_traj_samples, -1, self.n_labels)),1)
+		all_test_labels = torch.cat((all_test_labels, 
+			batch_dict["labels"].reshape(-1, self.n_labels)),0)
+		all_test_labels = all_test_labels.repeat(n_traj_samples,1,1)
+
+		idx_not_nan = ~torch.isnan(all_test_labels)
+		classif_predictions = classif_predictions[idx_not_nan]
+		all_test_labels = all_test_labels[idx_not_nan]
+
+		results["auc"] = 0.
+		if torch.sum(all_test_labels) != 0.:
+			print("Number of labeled examples: {}".format(len(all_test_labels.reshape(-1))))
+			print("Number of examples with mortality 1: {}".format(torch.sum(all_test_labels == 1.)))
+
+			# Cannot compute AUC with only 1 class
+			results["auc"] = sk.metrics.roc_auc_score(all_test_labels.cpu().numpy().reshape(-1), 
+				classif_predictions.cpu().numpy().reshape(-1))
+		else:
+			print("Warning: Couldn't compute AUC -- all examples are from the same class")
 
 		return results, fp_enc.detach()
 
