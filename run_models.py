@@ -88,10 +88,13 @@ parser.add_argument('-t', '--timepoints', type=int, default=100, help="Total num
 parser.add_argument('--max-t',  type=float, default=5., help="We subsample points in the interval [0, args.max_tp]")
 parser.add_argument('--noise-weight', type=float, default=0.01, help="Noise amplitude for generated traejctories")
 
+parser.add_argument('--gpu', type=int, default=0, help="device")
+
 
 args = parser.parse_args()
 
-device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
+gpu = args.gpu
+device = torch.device("cuda:"+str(gpu) if torch.cuda.is_available() else "cpu")
 file_name = os.path.basename(__file__)[:-3]
 utils.makedirs(args.save)
 
@@ -269,17 +272,17 @@ if __name__ == '__main__':
 		if itr % (n_iters_to_viz * num_batches) == 0:
 			with torch.no_grad():
 
-				test_res = compute_loss_all_batches(model, 
-					data_obj["test_dataloader"], args,
-					n_batches = data_obj["n_test_batches"],
+				valid_res = compute_loss_all_batches(model, 
+					data_obj["valid_dataloader"], args,
+					n_batches = data_obj["n_valid_batches"],
 					experimentID = experimentID,
 					device = device,
 					n_traj_samples = 3, kl_coef = kl_coef)
 
-				message = 'Epoch {:04d} [Test seq (cond on sampled tp)] | Loss {:.6f} | Likelihood {:.6f} | KL fp {:.4f} | FP STD {:.4f}|'.format(
+				message = 'Epoch {:04d} [Valid seq (cond on sampled tp)] | Loss {:.6f} | Likelihood {:.6f} | KL fp {:.4f} | FP STD {:.4f}|'.format(
 					itr//num_batches, 
-					test_res["loss"].detach(), test_res["likelihood"].detach(), 
-					test_res["kl_first_p"], test_res["std_first_p"])
+					valid_res["loss"].detach(), valid_res["likelihood"].detach(), 
+					valid_res["kl_first_p"], valid_res["std_first_p"])
 		 	
 				logger.info("Experiment " + str(experimentID))
 				logger.info(message)
@@ -287,23 +290,23 @@ if __name__ == '__main__':
 				logger.info("Train loss (one batch): {}".format(train_res["loss"].detach()))
 				logger.info("Train CE loss (one batch): {}".format(train_res["ce_loss"].detach()))
 				
-				if "auc" in test_res:
-					logger.info("Classification AUC (TEST): {:.4f}".format(test_res["auc"]))
+				if "auc" in valid_res:
+					logger.info("Classification AUC (VALID): {:.4f}".format(valid_res["auc"]))
 
-				if "mse" in test_res:
-					logger.info("Test MSE: {:.4f}".format(test_res["mse"]))
+				if "mse" in valid_res:
+					logger.info("VALID MSE: {:.4f}".format(valid_res["mse"]))
 
 				if "accuracy" in train_res:
 					logger.info("Classification accuracy (TRAIN): {:.4f}".format(train_res["accuracy"]))
 
-				if "accuracy" in test_res:
-					logger.info("Classification accuracy (TEST): {:.4f}".format(test_res["accuracy"]))
+				if "accuracy" in valid_res:
+					logger.info("Classification accuracy (VALID): {:.4f}".format(valid_res["accuracy"]))
 
-				if "pois_likelihood" in test_res:
-					logger.info("Poisson likelihood: {}".format(test_res["pois_likelihood"]))
+				if "pois_likelihood" in valid_res:
+					logger.info("Poisson likelihood: {}".format(valid_res["pois_likelihood"]))
 
-				if "ce_loss" in test_res:
-					logger.info("CE loss: {}".format(test_res["ce_loss"]))
+				if "ce_loss" in valid_res:
+					logger.info("CE loss: {}".format(valid_res["ce_loss"]))
 
 			torch.save({
 				'args': args,
@@ -328,3 +331,42 @@ if __name__ == '__main__':
 		'state_dict': model.state_dict(),
 	}, ckpt_path)
 
+##### TEST #####
+logger.info('##### TEST #####')
+with torch.no_grad():
+
+	test_res = compute_loss_all_batches(model, 
+		data_obj["test_dataloader"], args,
+		n_batches = data_obj["n_test_batches"],
+		experimentID = experimentID,
+		device = device,
+		n_traj_samples = 3, kl_coef = kl_coef)
+
+	message = '[Test seq (cond on sampled tp)] | Loss {:.6f} | Likelihood {:.6f} | KL fp {:.4f} | FP STD {:.4f}|'.format(
+		itr//num_batches, 
+		test_res["loss"].detach(), test_res["likelihood"].detach(), 
+		test_res["kl_first_p"], test_res["std_first_p"])
+
+	logger.info("Experiment " + str(experimentID))
+	logger.info(message)
+	logger.info("KL coef: {}".format(kl_coef))
+	logger.info("Train loss (one batch): {}".format(train_res["loss"].detach()))
+	logger.info("Train CE loss (one batch): {}".format(train_res["ce_loss"].detach()))
+	
+	if "auc" in test_res:
+		logger.info("Classification AUC (TEST): {:.4f}".format(test_res["auc"]))
+
+	if "mse" in test_res:
+		logger.info("Test MSE: {:.4f}".format(test_res["mse"]))
+
+	if "accuracy" in train_res:
+		logger.info("Classification accuracy (TRAIN): {:.4f}".format(train_res["accuracy"]))
+
+	if "accuracy" in test_res:
+		logger.info("Classification accuracy (TEST): {:.4f}".format(test_res["accuracy"]))
+
+	if "pois_likelihood" in test_res:
+		logger.info("Poisson likelihood: {}".format(test_res["pois_likelihood"]))
+
+	if "ce_loss" in test_res:
+		logger.info("CE loss: {}".format(test_res["ce_loss"]))

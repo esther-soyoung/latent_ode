@@ -120,7 +120,10 @@ def parse_datasets(args, device):
 			total_dataset = total_dataset + test_dataset_obj[:len(test_dataset_obj)]
 
 		# Shuffle and split
-		train_data, test_data = model_selection.train_test_split(total_dataset, train_size= 0.8, 
+		train_data, test_data = model_selection.train_test_split(total_dataset, train_size= 0.7, 
+			random_state = 42, shuffle = True)
+		
+		valid_data, test_data = model_selection.train_test_split(test_data, train_size= 0.5, 
 			random_state = 42, shuffle = True)
 
 		record_id, tt, vals, mask, labels = train_data[0]
@@ -129,10 +132,13 @@ def parse_datasets(args, device):
 		input_dim = vals.size(-1)
 
 		batch_size = min(min(len(train_dataset_obj), args.batch_size), args.n)
-		data_min, data_max = get_data_min_max(total_dataset)
+		data_min, data_max = get_data_min_max(total_dataset, device)
 
 		train_dataloader = DataLoader(train_data, batch_size= batch_size, shuffle=False, 
 			collate_fn= lambda batch: variable_time_collate_fn(batch, args, device, data_type = "train",
+				data_min = data_min, data_max = data_max))
+		valid_dataloader = DataLoader(valid_data, batch_size= batch_size, shuffle=False, 
+			collate_fn= lambda batch: variable_time_collate_fn(batch, args, device, data_type = "validation",
 				data_min = data_min, data_max = data_max))
 		test_dataloader = DataLoader(test_data, batch_size = n_samples, shuffle=False, 
 			collate_fn= lambda batch: variable_time_collate_fn(batch, args, device, data_type = "test",
@@ -141,9 +147,11 @@ def parse_datasets(args, device):
 		attr_names = train_dataset_obj.params
 		data_objects = {"dataset_obj": train_dataset_obj, 
 					"train_dataloader": utils.inf_generator(train_dataloader), 
+					"valid_dataloader": utils.inf_generator(valid_dataloader), 
 					"test_dataloader": utils.inf_generator(test_dataloader),
 					"input_dim": input_dim,
 					"n_train_batches": len(train_dataloader),
+					"n_valid_batches": len(valid_dataloader),
 					"n_test_batches": len(test_dataloader),
 					"attr": attr_names, #optional
 					"classif_per_tp": False, #optional
