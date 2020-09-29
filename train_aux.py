@@ -1,0 +1,365 @@
+###########################
+# Latent ODEs for Irregularly-Sampled Time Series
+# Author: Yulia Rubanova
+###########################
+
+import os
+import sys
+import matplotlib
+matplotlib.use('Agg')
+import matplotlib.pyplot
+import matplotlib.pyplot as plt
+
+import time
+import datetime
+import argparse
+import numpy as np
+import pandas as pd
+import random
+from random import SystemRandom
+from sklearn import model_selection
+
+import torch
+import torch.nn as nn
+from torch.nn.functional import relu
+import torch.optim as optim
+
+import lib.utils as utils
+from lib.plotting import *
+
+from lib.rnn_baselines import *
+from lib.ode_rnn import *
+from lib.create_latent_ode_model import create_LatentODE_model
+from lib.auxiliary_network import AuxiliaryBlock
+from lib.parse_datasets import parse_datasets
+from lib.ode_func import ODEFunc, ODEFunc_w_Poisson
+from lib.diffeq_solver import DiffeqSolver
+from mujoco_physics import HopperPhysics
+
+from lib.utils import compute_loss_all_batches
+
+# Generative model for noisy data based on ODE
+parser = argparse.ArgumentParser('Latent ODE')
+parser.add_argument('-n',  type=int, default=100, help="Size of the dataset")
+parser.add_argument('--niters', type=int, default=100)
+parser.add_argument('--lr',  type=float, default=1e-2, help="Starting learning rate.")
+parser.add_argument('-b', '--batch-size', type=int, default=50)
+parser.add_argument('--viz', action='store_true', help="Show plots while training")
+
+parser.add_argument('--save', type=str, default='experiments/', help="Path for save checkpoints")
+parser.add_argument('--load', type=str, default='81209', help="ID of the experiment to load for evaluation. If None, run a new experiment.")
+parser.add_argument('-r', '--random-seed', type=int, default=1991, help="Random_seed")
+
+parser.add_argument('--dataset', type=str, default='physionet', help="Dataset to load. Available: physionet, activity, hopper, periodic")
+parser.add_argument('-s', '--sample-tp', type=float, default=None, help="Number of time points to sub-sample."
+	"If > 1, subsample exact number of points. If the number is in [0,1], take a percentage of available points per time series. If None, do not subsample")
+
+parser.add_argument('-c', '--cut-tp', type=int, default=None, help="Cut out the section of the timeline of the specified length (in number of points)."
+	"Used for periodic function demo.")
+
+parser.add_argument('--quantization', type=float, default=0.1, help="Quantization on the physionet dataset."
+	"Value 1 means quantization by 1 hour, value 0.1 means quantization by 0.1 hour = 6 min")
+
+parser.add_argument('--latent-ode', action='store_true', help="Run Latent ODE seq2seq model")
+parser.add_argument('--z0-encoder', type=str, default='rnn', help="Type of encoder for Latent ODE model: odernn or rnn")
+
+parser.add_argument('--classic-rnn', action='store_true', help="Run RNN baseline: classic RNN that sees true points at every point. Used for interpolation only.")
+parser.add_argument('--rnn-cell', default="gru", help="RNN Cell type. Available: gru (default), expdecay")
+parser.add_argument('--input-decay', action='store_true', help="For RNN: use the input that is the weighted average of impirical mean and previous value (like in GRU-D)")
+
+parser.add_argument('--ode-rnn', action='store_true', help="Run ODE-RNN baseline: RNN-style that sees true points at every point. Used for interpolation only.")
+
+parser.add_argument('--rnn-vae', action='store_true', help="Run RNN baseline: seq2seq model with sampling of the h0 and ELBO loss.")
+
+parser.add_argument('-l', '--latents', type=int, default=20, help="Size of the latent state")
+parser.add_argument('--rec-dims', type=int, default=40, help="Dimensionality of the recognition model (ODE or RNN).")
+
+parser.add_argument('--rec-layers', type=int, default=3, help="Number of layers in ODE func in recognition ODE")
+parser.add_argument('--gen-layers', type=int, default=3, help="Number of layers in ODE func in generative ODE")
+
+parser.add_argument('-u', '--units', type=int, default=50, help="Number of units per layer in ODE func")
+parser.add_argument('-g', '--gru-units', type=int, default=50, help="Number of units per layer in each of GRU update networks")
+
+parser.add_argument('--poisson', action='store_true', help="Model poisson-process likelihood for the density of events in addition to reconstruction.")
+parser.add_argument('--classif', action='store_true', help="Include binary classification loss -- used for Physionet dataset for hospiral mortality")
+
+parser.add_argument('--linear-classif', action='store_true', help="If using a classifier, use a linear classifier instead of 1-layer NN")
+parser.add_argument('--extrap', action='store_true', help="Set extrapolation mode. If this flag is not set, run interpolation mode.")
+
+parser.add_argument('-t', '--timepoints', type=int, default=100, help="Total number of time-points")
+parser.add_argument('--max-t',  type=float, default=5., help="We subsample points in the interval [0, args.max_tp]")
+parser.add_argument('--noise-weight', type=float, default=0.01, help="Noise amplitude for generated traejctories")
+
+parser.add_argument('--gpu', type=int, default=0, help="cuda:")
+parser.add_argument('--reg_dopri', type=float, default=0, help="Lambda for Dopri error regularizer.")
+parser.add_argument('--reg_kinetic', type=float, default=0, help="Lambda for Kinetic energy regularizer.")
+parser.add_argument('--reg_l1', type=float, default=0, help="Lambda for L1 regularizer.")
+parser.add_argument('--reg_l2', type=float, default=0, help="Lambda for L2 regularizer(weight decay).")
+
+parser.add_argument('--method', type=str, default='dopri5_err', help="Integrator method: euler, rk4, dopri5_err")
+parser.add_argument('--step_size', type=float, default=30, help="Step size for fixed grid integrators")
+
+args = parser.parse_args()
+
+device = torch.device("cuda:{}".format(args.gpu) if torch.cuda.is_available() else "cpu")
+file_name = os.path.basename(__file__)[:-3]
+utils.makedirs(args.save)
+
+#####################################################################################################
+
+if __name__ == '__main__':
+	torch.manual_seed(args.random_seed)
+	np.random.seed(args.random_seed)
+	torch.manual_seed(args.random_seed)
+	torch.cuda.manual_seed(args.random_seed)
+	torch.cuda.manual_seed_all(args.random_seed) # if use multi-GPU
+	torch.backends.cudnn.deterministic = True
+	torch.backends.cudnn.benchmark = False
+	random.seed(args.random_seed)
+
+	experimentID = args.load
+	if experimentID is None:
+		raise Exception("Please provide experiment ID to load")
+	ckpt_path = os.path.join(args.save, "experiment_" + str(experimentID) + '.ckpt')
+
+	start = time.time()
+	print("Sampling dataset of {} training examples".format(args.n))
+	
+	input_command = sys.argv
+	ind = [i for i in range(len(input_command)) if input_command[i] == "--load"]
+	if len(ind) == 1:
+		ind = ind[0]
+		input_command = input_command[:ind] + input_command[(ind+2):]
+	input_command = " ".join(input_command)
+
+	utils.makedirs("results/")
+
+	##################################################################
+	data_obj = parse_datasets(args, device)
+	input_dim = data_obj["input_dim"]  # 41
+	classif_per_tp = False
+	if ("classif_per_tp" in data_obj):
+		# do classification per time point rather than on a time series as a whole
+		classif_per_tp = data_obj["classif_per_tp"]
+
+	n_labels = 1
+	if args.classif:
+		if ("n_labels" in data_obj):
+			n_labels = data_obj["n_labels"]
+		else:
+			raise Exception("Please provide number of labels for classification task")
+
+	##################################################################
+	# Create the model
+	obsrv_std = 0.01
+	obsrv_std = torch.Tensor([obsrv_std]).to(device)
+
+	z0_prior = Normal(torch.Tensor([0.0]).to(device), torch.Tensor([1.]).to(device))
+
+	if args.latent_ode:
+		model = create_LatentODE_model(args, input_dim, z0_prior, obsrv_std, device, 
+			classif_per_tp = classif_per_tp,
+			n_labels = n_labels)
+	else:
+		raise Exception("Model not specified")
+
+	##### Auxiliary Network #####
+	n_intg = 3  # [dopri, euler, rk4] 
+	aux_layers = [AuxiliaryBlock(model.latent_dim, n_intg)]
+	aux_net = nn.Sequential(*aux_layers).to(device)
+	aux_opt = optim.Adamax(aux_net.parameters(), lr=args.lr)
+
+	##################################################################
+
+	if args.viz:
+		viz = Visualizations(device)
+
+	##################################################################
+	
+	#Load checkpoint and evaluate the model
+	utils.get_ckpt_model(ckpt_path, model, device)
+
+	##################################################################
+	# Training
+
+	log_path = "aux_logs/" + file_name + "_" + str(experimentID) + ".log"
+	if not os.path.exists("aux_logs/"):
+		utils.makedirs("aux_logs/")
+	logger = utils.get_logger(logpath=log_path, filepath=os.path.abspath(__file__))
+	logger.info(input_command)
+
+	# aux_criterion = nn.NLLLoss().cuda()
+	aux_criterion = nn.MSELoss().to(device)
+
+	num_batches = data_obj["n_train_batches"]  # 64
+
+	##### Train Aux Net #####
+	logger.info("### Auxiliary Network ### ")
+	for itr in range(1, num_batches * (args.niters + 1)):  # 100
+		print('Iter: ' + str(itr))
+		wait_until_kl_inc = 10
+		if itr // num_batches < wait_until_kl_inc:
+			kl_coef = 0.
+		else:
+			kl_coef = (1-0.99** (itr // num_batches - wait_until_kl_inc))
+
+		batch_dict = utils.get_next_batch(data_obj["train_dataloader"])
+		#### Dynamic Integrators #####
+		# dict_keys(['observed_data', 'observed_tp', 'data_to_predict', 'tp_to_predict', 
+		# 'observed_mask', 'mask_predicted_data', 'labels', 'mode'])
+		with torch.no_grad():
+			dopri_res, fp_enc = model.compute_all_losses(batch_dict, n_traj_samples = 3, kl_coef = kl_coef)
+			euler_res, _ = model.compute_all_losses(batch_dict, method='euler', n_traj_samples=3, kl_coef=kl_coef)
+			rk4_res, _ = model.compute_all_losses(batch_dict, method='rk4', n_traj_samples=3, kl_coef=kl_coef)
+		##############################
+
+		##### Auxiliary Network #####
+		n_traj_samples, n_traj, n_dims = fp_enc.size()  # 3, 50, 20
+
+		dopri_intg = torch.tensor([1, 0, 0]).repeat(n_traj_samples, n_traj, 1).type(torch.FloatTensor)  # [3, 50, 3]
+		dopri_reward = dopri_res['reward'].unsqueeze(2).type(dopri_intg.type())  # [3, 50, 1]
+		dopri_truth = (dopri_reward * dopri_intg).to(device)  # [3, 50, 3]
+
+		euler_intg = torch.tensor([0, 1, 0]).repeat(n_traj_samples, n_traj, 1).type(torch.FloatTensor)  # [3, 50, 3]
+		euler_reward = euler_res['reward'].unsqueeze(2).type(euler_intg.type())  # [3, 50, 1]
+		euler_truth = (euler_reward * euler_intg).to(device)  # [3, 50, 3]
+
+		rk4_intg = torch.tensor([0, 0, 1]).repeat(n_traj_samples, n_traj, 1).type(torch.FloatTensor)  # [3, 50, 3]
+		rk4_reward = rk4_res['reward'].unsqueeze(2).type(rk4_intg.type())  # [3, 50, 1]
+		rk4_truth = (rk4_reward * rk4_intg).to(device)  # [3, 50, 3]
+
+		aux_truth = dopri_truth + euler_truth + rk4_truth  # [3, 50, 3]
+		aux_truth =  aux_truth.view(-1, n_intg) # [150, 3]
+		# aux_truth = torch.max(aux_truth, 1)[1]  # [150]
+
+		aux_opt.zero_grad()
+		aux_net.train()
+		utils.update_learning_rate(aux_opt, decay_rate = 0.999, lowest = args.lr / 10)
+		aux_y = aux_net(fp_enc.clone().detach())  # [3, 50, 3]
+		aux_y = aux_y.view(-1, n_intg).type(aux_truth.type()) # [150, 3]
+
+		aux_loss = torch.sqrt(aux_criterion(aux_y, aux_truth))  #341.0933
+		logger.info("Train loss (one batch): {}".format(aux_loss.detach()))
+		aux_loss.backward()
+		aux_opt.step()
+		##############################
+	##############################
+
+	############ TEST ############
+	with torch.no_grad():
+		#### Dynamic Integrators #####
+		test_dopri, fp_enc = compute_loss_all_batches(model,
+			data_obj["test_dataloader"], args,
+			n_batches = data_obj["n_test_batches"],
+			experimentID = experimentID,
+			device = device,
+			n_traj_samples = 3, kl_coef = kl_coef)
+		test_euler, _ = compute_loss_all_batches(model,
+			data_obj["test_dataloader"], args,
+			n_batches = data_obj["n_test_batches"],
+			experimentID = experimentID,
+			device = device,
+			method = 'euler',
+			n_traj_samples = 3, kl_coef = kl_coef)
+		test_rk4, _ = compute_loss_all_batches(model,
+			data_obj["test_dataloader"], args,
+			n_batches = data_obj["n_test_batches"],
+			experimentID = experimentID,
+			device = device,
+			method = 'rk4',
+			n_traj_samples = 3, kl_coef = kl_coef)
+
+		logger.info("Experiment " + str(experimentID))
+		##############################
+
+		##### Auxiliary Network #####
+		num_batches = data_obj["n_test_batches"]  # 50
+		dopri_cnt, euler_cnt, rk4_cnt = 0, 0, 0
+		for itr in range(1, num_batches + 1):
+			wait_until_kl_inc = 10
+			if itr // num_batches < wait_until_kl_inc:
+				kl_coef = 0.
+			else:
+				kl_coef = (1-0.99** (itr // num_batches - wait_until_kl_inc))
+
+			batch_dict = utils.get_next_batch(data_obj["test_dataloader"])
+			dopri_res, fp_enc = model.compute_all_losses(batch_dict, n_traj_samples = 3, kl_coef = kl_coef)
+			euler_res, _ = model.compute_all_losses(batch_dict, method='euler', n_traj_samples=3, kl_coef=kl_coef)
+			rk4_res, _ = model.compute_all_losses(batch_dict, method='rk4', n_traj_samples=3, kl_coef=kl_coef)
+
+			n_traj_samples, n_traj, n_dims = fp_enc.size()  # 3, 16, 20
+
+			dopri_intg = torch.tensor([1, 0, 0]).repeat(n_traj_samples, n_traj, 1).type(torch.FloatTensor)
+			dopri_reward = dopri_res['reward'].unsqueeze(2).type(dopri_intg.type())
+			dopri_truth = (dopri_reward * dopri_intg).to(device)
+
+			euler_intg = torch.tensor([0, 1, 0]).repeat(n_traj_samples, n_traj, 1).type(torch.FloatTensor)
+			euler_reward = euler_res['reward'].unsqueeze(2).type(euler_intg.type())
+			euler_truth = (euler_reward * euler_intg).to(device)
+
+			rk4_intg = torch.tensor([0, 0, 1]).repeat(n_traj_samples, n_traj, 1).type(torch.FloatTensor)
+			rk4_reward = rk4_res['reward'].unsqueeze(2).type(rk4_intg.type())
+			rk4_truth = (rk4_reward * rk4_intg).to(device)
+
+			aux_truth = dopri_truth + euler_truth + rk4_truth
+			aux_truth =  aux_truth.view(-1, n_intg)
+
+			aux_net.eval()
+			aux_y = aux_net(fp_enc)  # [3, 800, 3]
+			aux_y =  aux_y.view(-1, n_intg) # [2400, 3]
+			aux_test_loss = torch.sqrt(aux_criterion(aux_y, aux_truth))
+
+			# Choice of integrator
+			aux_y_sum = torch.sum(aux_y, dim=0)  # [3]
+			pred_y = torch.min(aux_y_sum, 0)[1].item()  # 0: dopri5, 1: euler, 2: rk4
+			auc_choice = []
+			if pred_y == 0:
+				pred_integrator = 'dopri5'
+				dopri_cnt += 1
+				auc_choice.append(dopri_res['auc'])
+			elif pred_y == 1:
+				pred_integrator = 'euler'
+				euler_cnt += 1
+				auc_choice.append(euler_res['auc'])
+			else:
+				pred_integrator = 'rk4'
+				rk4_cnt += 1
+				auc_choice.append(rk4_res['auc'])
+
+			# Actual rewards
+			total_reward_dopri = torch.sum(dopri_reward.squeeze().view(-1)).item()  # total Dopri reward
+			total_reward_euler = torch.sum(euler_reward.squeeze().view(-1)).item()  # total Euler reward
+			total_reward_rk4 = torch.sum(rk4_reward.squeeze().view(-1)).item()  # total RK4 reward
+
+			logger.info("Test loss (one batch): {}".format(aux_test_loss))
+			logger.info("Loss for Dopri integrator: {}".format(total_reward_dopri))
+			logger.info("Loss for Euler integrator: {}".format(total_reward_euler))
+			logger.info("Loss for RK4 integrator: {}".format(total_reward_rk4))
+			logger.info("Choice of integrator: {}".format(pred_integrator))
+			logger.info("AUC of the choice: {}".format(auc_choice[-1]))
+
+			torch.save({
+				'args': args,
+				'state_dict': aux_net.state_dict(),
+			}, ckpt_path)
+		##############################
+
+	############## LOGGER ###############
+	logger.info('##############################')
+	logger.info("Classification AUC (DOPRI): {:.4f}".format(test_dopri["auc"]))
+	logger.info("Classification AUC (EULER): {:.4f}".format(test_euler["auc"]))
+	logger.info("Classification AUC (RK4): {:.4f}".format(test_rk4["auc"]))
+	logger.info("NFE (DOPRI): {:.4f}".format(test_dopri['nfe']))
+	logger.info("NFE (EULER): {:.4f}".format(test_euler['nfe']))
+	logger.info("NFE (RK4): {:.4f}".format(test_rk4['nfe']))
+	avg_auc = np.mean(np.array(auc_choice))
+	message = 'Total AUC {:.4f} | Dopri5 {} | Euler {} | RK4 {}'.format(
+		avg_auc, dopri_cnt, euler_cnt, rk4_cnt)
+	logger.info(message)
+
+	############## SAVE MODEL ###############
+	torch.save({
+		'args': args,
+		'state_dict': aux_net.state_dict(),
+	}, ckpt_path)
+
