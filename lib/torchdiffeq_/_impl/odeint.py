@@ -128,12 +128,13 @@ def odeint_err(func, y0, t, rtol=1e-7, atol=1e-9, method=None, options=None):
     elif method is None:
         raise ValueError('cannot supply `options` without specifying `method`')
     
-    if method != 'dopri5_err':
-        print('odeint_err can only be called with method name dopri5_err')
-        method = 'dopri5_err'
-        
-    solver = SOLVERS[method](func, y0, rtol=rtol, atol=atol, **options)
-    solution, tot_err = solver.integrate(t)
+    solver = SOLVERS[method](func, y0, rtol=rtol, atol=atol, step_size=options['step_size'])
+
+    if method == 'dopri5_err':
+        solution, tot_err = solver.integrate(t)
+    else:
+        solution = solver.integrate(t)
+        tot_err = 0
 
     if tensor_input:
         solution = solution[0]

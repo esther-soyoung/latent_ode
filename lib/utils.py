@@ -514,6 +514,7 @@ def split_and_subsample_batch(data_dict, args, data_type = "train"):
 def compute_loss_all_batches(model,
 	test_dataloader, args,
 	n_batches, experimentID, device,
+	method = 'dopri5_err',
 	n_traj_samples = 1, kl_coef = 1., 
 	max_samples_for_eval = None):
 
@@ -526,6 +527,7 @@ def compute_loss_all_batches(model,
 	total["pois_likelihood"] = 0
 	total["ce_loss"] = 0
 	total['nfe'] = 0
+	total['reward'] = 0
 
 	n_test_batches = 0
 	
@@ -537,9 +539,8 @@ def compute_loss_all_batches(model,
 		
 		batch_dict = get_next_batch(test_dataloader)
 
-		results, fp_enc = model.compute_all_losses(batch_dict,
+		results, fp_enc = model.compute_all_losses(batch_dict, method,
 			n_traj_samples = n_traj_samples, kl_coef = kl_coef)
-		total['nfe'] = model.get_nfe()
 
 		if args.classif:
 			n_labels = model.n_labels #batch_dict["labels"].size(-1)
@@ -594,24 +595,7 @@ def compute_loss_all_batches(model,
 			else:
 				print("Warning: Couldn't compute AUC -- all examples are from the same class")
 		
-		if args.dataset == "activity":
-			all_test_labels = all_test_labels.repeat(n_traj_samples,1,1)
-
-			labeled_tp = torch.sum(all_test_labels, -1) > 0.
-
-			all_test_labels = all_test_labels[labeled_tp]
-			classif_predictions = classif_predictions[labeled_tp]
-
-			# classif_predictions and all_test_labels are in on-hot-encoding -- convert to class ids
-			_, pred_class_id = torch.max(classif_predictions, -1)
-			_, class_labels = torch.max(all_test_labels, -1)
-
-			pred_class_id = pred_class_id.reshape(-1) 
-
-			total["accuracy"] = sk.metrics.accuracy_score(
-					class_labels.cpu().numpy(), 
-					pred_class_id.cpu().numpy())
-	return total
+	return total, fp_enc
 
 def check_mask(data, mask):
 	#check that "mask" argument indeed contains a mask for data

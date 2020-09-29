@@ -18,4 +18,4 @@ python run_models.py \
 	--reg_kinetic $2 \
 	--reg_l1 $3 \
 	--reg_l2 $4 \
-	--gpu 3
+	--step_size $5
