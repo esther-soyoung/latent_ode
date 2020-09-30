@@ -1,7 +1,7 @@
 #!/bin/sh
 
 python train_aux.py \
-        --niters 100 \
+        --niters 5 \
         -n 8000 \
         -l 20 \
         --latent-ode \

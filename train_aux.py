@@ -97,7 +97,7 @@ parser.add_argument('--reg_l1', type=float, default=0, help="Lambda for L1 regul
 parser.add_argument('--reg_l2', type=float, default=0, help="Lambda for L2 regularizer(weight decay).")
 
 parser.add_argument('--method', type=str, default='dopri5_err', help="Integrator method: euler, rk4, dopri5_err")
-parser.add_argument('--step_size', type=float, default=30, help="Step size for fixed grid integrators")
+parser.add_argument('--step_size', type=float, default=None, help="Step size for fixed grid integrators")
 parser.add_argument('--alpha', type=float, default=0.1, help="Alpha for aux loss function")
 
 args = parser.parse_args()
@@ -122,6 +122,11 @@ if __name__ == '__main__':
 	if experimentID is None:
 		raise Exception("Please provide experiment ID to load")
 	ckpt_path = os.path.join(args.save, "experiment_" + str(experimentID) + '.ckpt')
+
+	AUXexperimentID = int(SystemRandom().random()*100000)
+	if not os.path.exists("aux_experiments/"):
+		utils.makedirs("aux_experiments/")
+	aux_ckpt_path = os.path.join('aux_experiments/', "experiment_" + str(experimentID) + "_" + str(AUXexperimentID) + '.ckpt')
 
 	start = time.time()
 	print("Sampling dataset of {} training examples".format(args.n))
@@ -183,7 +188,6 @@ if __name__ == '__main__':
 	##################################################################
 	# Training
 
-	AUXexperimentID = int(SystemRandom().random()*100000)
 	log_path = "aux_logs/" + file_name + "_" + str(experimentID) + "_" + str(AUXexperimentID) + ".log"
 	if not os.path.exists("aux_logs/"):
 		utils.makedirs("aux_logs/")
@@ -347,7 +351,7 @@ if __name__ == '__main__':
 			torch.save({
 				'args': args,
 				'state_dict': aux_net.state_dict(),
-			}, ckpt_path)
+			}, aux_ckpt_path)
 		##############################
 
 	############## LOGGER ###############
@@ -364,5 +368,5 @@ if __name__ == '__main__':
 	torch.save({
 		'args': args,
 		'state_dict': aux_net.state_dict(),
-	}, ckpt_path)
+	}, aux_ckpt_path)
 
