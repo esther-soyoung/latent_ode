@@ -279,7 +279,7 @@ class VAE_Baseline(nn.Module):
 		# Condition on subsampled points
 		# Make predictions for all the points
 		pred_y, dopri_err, kinetic, info = self.get_reconstruction(
-			batch_dict["tp_to_predict"],  # union of 83 tps of all patients removed nan (ex. 2208)
+			batch_dict["tp_to_predict"],  # union of 83 tps of all patients removed nan (ex. 2208), [0~1]
 			batch_dict["observed_data"],  # truth, [batch_size, union tp, num_features] (ex. [50, 2208, 41])
 			batch_dict["observed_tp"],  # [2208]
 			method=method,  # integrator method
