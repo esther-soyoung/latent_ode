@@ -31,6 +31,7 @@ class LatentODE(VAE_Baseline):
 		n_labels = 1,
 		train_classif_w_reconstr = False,
 		step_size = 0,
+		alpha = 0.1,
 		reg_dopri = 0, reg_kinetic = 0, reg_l1 = 0):
 
 		super(LatentODE, self).__init__(
@@ -45,6 +46,7 @@ class LatentODE(VAE_Baseline):
 			n_labels = n_labels,
 			train_classif_w_reconstr = train_classif_w_reconstr,
 			step_size = step_size,
+			alpha = alpha,
 			reg_dopri = reg_dopri, reg_kinetic = reg_kinetic, reg_l1 = reg_l1)
 
 		self.encoder_z0 = encoder_z0
@@ -53,6 +55,7 @@ class LatentODE(VAE_Baseline):
 		self.use_poisson_proc = use_poisson_proc
 
 		self.step_size = step_size
+		self.alpha = alpha
 
 		self.reg_dopri = reg_dopri
 		self.reg_kinetic = reg_kinetic

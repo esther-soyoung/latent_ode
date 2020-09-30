@@ -130,7 +130,7 @@ def odeint_err(func, y0, t, rtol=1e-7, atol=1e-9, method=None, options=None):
 
     step_size = options['step_size']  # Euler: 40
     if method == 'rk4':
-        step_size = step_size //4
+        step_size = step_size//4
 
     solver = SOLVERS[method](func, y0, rtol=rtol, atol=atol, step_size=step_size)
 

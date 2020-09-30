@@ -98,6 +98,7 @@ parser.add_argument('--reg_l2', type=float, default=0, help="Lambda for L2 regul
 
 parser.add_argument('--method', type=str, default='dopri5_err', help="Integrator method: euler, rk4, dopri5_err")
 parser.add_argument('--step_size', type=float, default=30, help="Step size for fixed grid integrators")
+parser.add_argument('--alpha', type=float, default=0.1, help="Alpha for aux loss function")
 
 args = parser.parse_args()
 
@@ -194,7 +195,7 @@ if __name__ == '__main__':
 	num_batches = data_obj["n_train_batches"]  # 64
 
 	##### Train Aux Net #####
-	logger.info("### Auxiliary Network ### ")
+	logger.info("### Auxiliary Network : Euler step size {} | RK4 step size {} ###".format(args.step_size, args.step_size//4))
 	for itr in range(1, num_batches * (args.niters + 1)):  # 100
 		print('Iter: ' + str(itr))
 		wait_until_kl_inc = 10
@@ -239,7 +240,7 @@ if __name__ == '__main__':
 		aux_y = aux_y.view(-1, n_intg).type(aux_truth.type()) # [150, 3]
 
 		aux_loss = torch.sqrt(aux_criterion(aux_y, aux_truth))  #341.0933
-		logger.info("Train loss (one batch): {}".format(aux_loss.detach()))
+		logger.info("Iter: {} | Train loss (one batch): {}".format(itr, aux_loss.detach()))
 		aux_loss.backward()
 		aux_opt.step()
 		##############################
@@ -275,6 +276,7 @@ if __name__ == '__main__':
 		##### Auxiliary Network #####
 		num_batches = data_obj["n_test_batches"]  # 50
 		dopri_cnt, euler_cnt, rk4_cnt = 0, 0, 0
+		logger.info("### Auxiliary Network : n_test_batches {} ###".format(num_batches))
 		for itr in range(1, num_batches + 1):
 			wait_until_kl_inc = 10
 			if itr // num_batches < wait_until_kl_inc:
@@ -331,12 +333,12 @@ if __name__ == '__main__':
 			total_reward_euler = torch.sum(euler_reward.squeeze().view(-1)).item()  # total Euler reward
 			total_reward_rk4 = torch.sum(rk4_reward.squeeze().view(-1)).item()  # total RK4 reward
 
-			logger.info("Test loss (one batch): {}".format(aux_test_loss))
-			logger.info("Loss for Dopri integrator: {}".format(total_reward_dopri))
-			logger.info("Loss for Euler integrator: {}".format(total_reward_euler))
-			logger.info("Loss for RK4 integrator: {}".format(total_reward_rk4))
-			logger.info("Choice of integrator: {}".format(pred_integrator))
-			logger.info("AUC of the choice: {}".format(auc_choice[-1]))
+			logger.info("Iter {} | Test loss (one batch): {}".format(itr, aux_test_loss))
+			logger.info("NFE**{} for Dopri integrator (one batch): {}".format(args.alpha, total_reward_dopri))
+			logger.info("NFE**{} for Euler integrator (one batch): {}".format(args.alpha, total_reward_euler))
+			logger.info("NFE**{} for RK4 integrator (one batch): {}".format(args.alpha, total_reward_rk4))
+			logger.info("Choice of integrator (one batch): {}".format(pred_integrator))
+			logger.info("AUC of the choice (one batch): {}".format(auc_choice[-1]))
 
 			torch.save({
 				'args': args,
@@ -345,15 +347,16 @@ if __name__ == '__main__':
 		##############################
 
 	############## LOGGER ###############
-	logger.info('##############################')
+	logger.info('############### TOTAL ###############')
 	logger.info("Classification AUC (DOPRI): {:.4f}".format(test_dopri["auc"]))
 	logger.info("Classification AUC (EULER): {:.4f}".format(test_euler["auc"]))
 	logger.info("Classification AUC (RK4): {:.4f}".format(test_rk4["auc"]))
 	logger.info("NFE (DOPRI): {:.4f}".format(test_dopri['nfe']))
 	logger.info("NFE (EULER): {:.4f}".format(test_euler['nfe']))
 	logger.info("NFE (RK4): {:.4f}".format(test_rk4['nfe']))
+	logger.info('############### Aux Net Average ###############')
 	avg_auc = np.mean(np.array(auc_choice))
-	message = 'Total AUC {:.4f} | Dopri5 {} | Euler {} | RK4 {}'.format(
+	message = 'Avg AUC {:.4f} | Choice of Dopri5 {} | Euler {} | RK4 {}'.format(
 		avg_auc, dopri_cnt, euler_cnt, rk4_cnt)
 	logger.info(message)
 

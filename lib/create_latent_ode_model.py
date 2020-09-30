@@ -106,6 +106,7 @@ def create_LatentODE_model(args, input_dim, z0_prior, obsrv_std, device,
 		n_labels = n_labels,
 		train_classif_w_reconstr = (args.dataset == "physionet"),
 		step_size = args.step_size,
+		alpha = args.alpha,
 		reg_dopri = args.reg_dopri, reg_kinetic = args.reg_kinetic, reg_l1 = args.reg_l1
 		).to(device)
 

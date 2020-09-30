@@ -193,6 +193,7 @@ class VAE_Baseline(nn.Module):
 		n_labels = 1,
 		train_classif_w_reconstr = False,
 		step_size = 0,
+		alpha = 0.1,
 		reg_dopri = 0, reg_kinetic = 0, reg_l1 = 0):
 
 		super(VAE_Baseline, self).__init__()
@@ -270,7 +271,7 @@ class VAE_Baseline(nn.Module):
 	def get_loss(self, truth, pred_y):
 		truth = truth.squeeze(1).repeat(pred_y.size(0), 1)  # [3, 50]
 		pred_y = nn.Sigmoid()(pred_y)  # [3, 50]
-		ret = (truth == (pred_y>=0.5)).to(dtype=torch.float) * float(self.get_nfe() ** 0.1)  # [3, 50]
+		ret = (truth == (pred_y>=0.5)).to(dtype=torch.float) * float(self.get_nfe() ** self.alpha)  # [3, 50]
 		ret[ret==0] = 1000 ** 0.1
 		return ret
 
