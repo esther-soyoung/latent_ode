@@ -97,7 +97,7 @@ parser.add_argument('--reg_l1', type=float, default=0, help="Lambda for L1 regul
 parser.add_argument('--reg_l2', type=float, default=0, help="Lambda for L2 regularizer(weight decay).")
 
 parser.add_argument('--method', type=str, default='dopri5_err', help="Integrator method: euler, rk4, dopri5_err")
-parser.add_argument('--step_size', type=float, default=None, help="Step size for fixed grid integrators")
+parser.add_argument('--step_size', type=float, default=15, help="Step size for fixed grid integrators")
 parser.add_argument('--alpha', type=float, default=0.1, help="Alpha for aux loss function")
 
 args = parser.parse_args()
@@ -200,7 +200,7 @@ if __name__ == '__main__':
 	num_batches = data_obj["n_train_batches"]  # 64
 
 	##### Train Aux Net #####
-	logger.info("### Auxiliary Network : Euler step size {} | RK4 step size {} ###".format(args.step_size, args.step_size))
+	logger.info("### Auxiliary Network : Euler step size {} | RK4 step size {} ###".format(args.step_size, args.step_size//4))
 	for itr in range(1, num_batches * (args.niters + 1)):  # 100
 		print('Iter: ' + str(itr))
 		wait_until_kl_inc = 10
