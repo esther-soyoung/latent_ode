@@ -183,7 +183,8 @@ if __name__ == '__main__':
 	##################################################################
 	# Training
 
-	log_path = "aux_logs/" + file_name + "_" + str(experimentID) + ".log"
+	AUXexperimentID = int(SystemRandom().random()*100000)
+	log_path = "aux_logs/" + file_name + "_" + str(experimentID) + "_" + str(AUXexperimentID) + ".log"
 	if not os.path.exists("aux_logs/"):
 		utils.makedirs("aux_logs/")
 	logger = utils.get_logger(logpath=log_path, filepath=os.path.abspath(__file__))
