@@ -97,7 +97,7 @@ parser.add_argument('--reg_l1', type=float, default=0, help="Lambda for L1 regul
 parser.add_argument('--reg_l2', type=float, default=0, help="Lambda for L2 regularizer(weight decay).")
 
 parser.add_argument('--method', type=str, default='dopri5_err', help="Integrator method: euler, rk4, dopri5_err")
-parser.add_argument('--step_size', type=float, default=15, help="Step size for fixed grid integrators")
+parser.add_argument('--step_size', type=float, default=10, help="Step size for fixed grid integrators")
 parser.add_argument('--alpha', type=float, default=0.1, help="Alpha for aux loss function")
 
 args = parser.parse_args()
