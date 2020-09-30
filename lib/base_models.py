@@ -368,6 +368,7 @@ class VAE_Baseline(nn.Module):
 		results["kl_first_p"] =  torch.mean(kldiv_z0).detach()
 		results["std_first_p"] = torch.mean(fp_std).detach()
 		results['nfe'] = self.get_nfe()
+		results['elapsed_time'] = info['elapsed_time']
 		# results['reward'] = self.get_reward(batch_dict['labels'], info['label_predictions'].detach())  # [n_traj_samples, batch_size]
 		results['reward'] = self.get_loss(batch_dict['labels'], info['label_predictions'].detach())  # [n_traj_samples, batch_size]
 

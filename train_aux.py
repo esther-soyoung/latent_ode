@@ -276,6 +276,7 @@ if __name__ == '__main__':
 		##### Auxiliary Network #####
 		num_batches = data_obj["n_test_batches"]  # 50
 		dopri_cnt, euler_cnt, rk4_cnt = 0, 0, 0
+		aux_t = 0
 		logger.info("### Auxiliary Network : n_test_batches {} ###".format(num_batches))
 		for itr in range(1, num_batches + 1):
 			wait_until_kl_inc = 10
@@ -307,7 +308,9 @@ if __name__ == '__main__':
 			aux_truth =  aux_truth.view(-1, n_intg)
 
 			aux_net.eval()
+			t = time.time()
 			aux_y = aux_net(fp_enc)  # [3, 800, 3]
+			aux_t += time.time() - t
 			aux_y =  aux_y.view(-1, n_intg) # [2400, 3]
 			aux_test_loss = torch.sqrt(aux_criterion(aux_y, aux_truth))
 
@@ -334,9 +337,9 @@ if __name__ == '__main__':
 			total_reward_rk4 = torch.sum(rk4_reward.squeeze().view(-1)).item()  # total RK4 reward
 
 			logger.info("Iter {} | Test loss (one batch): {}".format(itr, aux_test_loss))
-			logger.info("NFE**{} for Dopri integrator (one batch): {}".format(args.alpha, total_reward_dopri))
-			logger.info("NFE**{} for Euler integrator (one batch): {}".format(args.alpha, total_reward_euler))
-			logger.info("NFE**{} for RK4 integrator (one batch): {}".format(args.alpha, total_reward_rk4))
+			logger.info("Loss(alpha {}) for Dopri integrator (one batch): {}".format(args.alpha, total_reward_dopri))
+			logger.info("Loss(alpha {}) for Euler integrator (one batch): {}".format(args.alpha, total_reward_euler))
+			logger.info("Loss(alpha {}) for RK4 integrator (one batch): {}".format(args.alpha, total_reward_rk4))
 			logger.info("Choice of integrator (one batch): {}".format(pred_integrator))
 			logger.info("AUC of the choice (one batch): {}".format(auc_choice[-1]))
 
@@ -348,17 +351,13 @@ if __name__ == '__main__':
 
 	############## LOGGER ###############
 	logger.info('############### TOTAL ###############')
-	logger.info("Classification AUC (DOPRI): {:.4f}".format(test_dopri["auc"]))
-	logger.info("Classification AUC (EULER): {:.4f}".format(test_euler["auc"]))
-	logger.info("Classification AUC (RK4): {:.4f}".format(test_rk4["auc"]))
-	logger.info("NFE (DOPRI): {:.4f}".format(test_dopri['nfe']))
-	logger.info("NFE (EULER): {:.4f}".format(test_euler['nfe']))
-	logger.info("NFE (RK4): {:.4f}".format(test_rk4['nfe']))
+	logger.info("Classification AUC : Dopri {:.4f} | Euler {:.4f} | RK4 {:.4f}".format(test_dopri["auc"], test_euler["auc"], test_rk4["auc"]))
+	logger.info("NFE (average): Dopri {} | Euler {} | RK4 {}".format(test_dopri['nfe'], test_euler['nfe'], test_rk4['nfe']))
+	logger.info("Elapsed time (average): Dopri {} | Euler {} | RK4 {}".format(test_dopri['elapsed_time'], test_euler['elapsed_time'], test_rk4['elapsed_time']))
 	logger.info('############### Aux Net Average ###############')
 	avg_auc = np.mean(np.array(auc_choice))
-	message = 'Avg AUC {:.4f} | Choice of Dopri5 {} | Euler {} | RK4 {}'.format(
-		avg_auc, dopri_cnt, euler_cnt, rk4_cnt)
-	logger.info(message)
+	logger.info('Avg AUC {:.4f} | Choice of Dopri5 {} | Euler {} | RK4 {}'.format(avg_auc, dopri_cnt, euler_cnt, rk4_cnt))
+	logger.info('Aux Net Runtime: {:.4f}'.format(t))
 
 	############## SAVE MODEL ###############
 	torch.save({

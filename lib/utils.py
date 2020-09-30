@@ -527,6 +527,7 @@ def compute_loss_all_batches(model,
 	total["pois_likelihood"] = 0
 	total["ce_loss"] = 0
 	total['nfe'] = 0
+	total['elapsed_time'] = 0
 	total['reward'] = 0
 
 	n_test_batches = 0

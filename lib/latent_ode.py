@@ -3,6 +3,8 @@
 # Author: Yulia Rubanova
 ###########################
 
+import time
+
 import numpy as np
 import sklearn as sk
 import numpy as np
@@ -99,7 +101,9 @@ class LatentODE(VAE_Baseline):
 
 		# Shape of sol_y [n_traj_samples, n_samples, n_timepoints, n_latents]
 		self.reset_nfe()
+		t = time.time()
 		sol_y, dopri_err, kinetic = self.diffeq_solver(first_point_enc_aug, time_steps_to_predict, method, step_size=self.step_size)
+		t = time.time() - t
 		if method == 'dopri5_err':
 			dopri_err = torch.mean(torch.stack(dopri_err))
 		kinetic = torch.mean(kinetic)
@@ -108,7 +112,8 @@ class LatentODE(VAE_Baseline):
 
 		all_extra_info = {
 			"first_point": (first_point_mu, first_point_std, first_point_enc),
-			"latent_traj": sol_y.detach()
+			"latent_traj": sol_y.detach(),
+			"elapsed_time": t
 		}
 
 		if self.use_binary_classif:
