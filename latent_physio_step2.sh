@@ -14,5 +14,5 @@ python train_aux.py \
         --gru-units 50 \
         --quantization 0.016 \
         --classif \
-        --load '81209' \
+        --load '77586' \
         --gpu 3
