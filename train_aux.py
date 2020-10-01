@@ -99,7 +99,7 @@ parser.add_argument('--reg_l2', type=float, default=0, help="Lambda for L2 regul
 
 parser.add_argument('--method', type=str, default='dopri5_err', help="Integrator method: euler, rk4, dopri5_err")
 parser.add_argument('--step_size', type=float, default=0.1, help="Step size for fixed grid integrators")
-parser.add_argument('--alpha', type=float, default=0.3, help="Alpha for aux loss function")
+parser.add_argument('--alpha', type=float, default=0.1, help="Alpha for aux loss function")
 
 args = parser.parse_args()
 
