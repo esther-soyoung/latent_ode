@@ -271,7 +271,7 @@ class VAE_Baseline(nn.Module):
 		if cut_off is None:
 			cut_off = self.get_cutoff(truth, pred_y)
 		ret = (truth == (pred_y>=cut_off)) * float(self.get_nfe() ** self.alpha)
-		ret[ret==0] = 100000
+		ret[ret==0] = 1000
 		return ret, cut_off
 
 	def compute_all_losses(self, batch_dict, method='dopri5_err', cut_off=None, n_traj_samples = 1, kl_coef = 1.):
