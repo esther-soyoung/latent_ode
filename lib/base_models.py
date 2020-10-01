@@ -263,21 +263,18 @@ class VAE_Baseline(nn.Module):
 	''' truth: batch_dict["labels"])
 		pred_y: info["label_predictions"]
 	'''
-	def get_reward(self, truth, pred_y):
-		truth = truth.squeeze(1).repeat(pred_y.size(0), 1)  # [3, 50]
-		pred_y = nn.Sigmoid()(pred_y)  # [3, 50]
-		return (truth == (pred_y>=0.5)).to(dtype=torch.float) / float(self.get_nfe())  # [3, 50]
-
-	def get_loss(self, truth, pred_y):
+	def get_cutoff(self, truth, pred_y):
 		fpr, tpr, thresholds = sk.metrics.roc_curve(truth, pred_y)
-		cutoff = thresholds[np.argmax(tpr - fpr)]
+		return thresholds[np.argmax(tpr - fpr)]
 
-		ret = (truth == (pred_y>=cutoff)) * float(self.get_nfe() ** self.alpha)
+	def get_cost(self, truth, pred_y, cut_off=None):
+		if cut_off is None:
+			cut_off = self.get_cutoff(truth, pred_y)
+		ret = (truth == (pred_y>=cut_off)) * float(self.get_nfe() ** self.alpha)
 		ret[ret==0] = 100000
-		# ret[ret==0] = 100000 ** self.alpha
-		return ret
+		return ret, cut_off
 
-	def compute_all_losses(self, batch_dict, method='dopri5_err', n_traj_samples = 1, kl_coef = 1.):
+	def compute_all_losses(self, batch_dict, method='dopri5_err', cut_off=None, n_traj_samples = 1, kl_coef = 1.):
 		# Condition on subsampled points
 		# Make predictions for all the points
 		pred_y, dopri_err, kinetic, info = self.get_reconstruction(
@@ -396,9 +393,8 @@ class VAE_Baseline(nn.Module):
 		else:
 			print("Warning: Couldn't compute AUC -- all examples are from the same class")
 
-		results['reward'] = self.get_loss(all_test_labels.cpu().numpy().reshape(-1), 
-				classif_predictions.cpu().numpy().reshape(-1))
+		# cost
+		results['cost'], cutoff = self.get_cost(all_test_labels.cpu().numpy().reshape(-1),
+				classif_predictions.cpu().numpy().reshape(-1), cut_off)
 
-		return results, fp_enc.detach()
-
-
+		return results, fp_enc.detach(), cutoff

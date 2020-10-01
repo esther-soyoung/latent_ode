@@ -215,25 +215,25 @@ if __name__ == '__main__':
 		# dict_keys(['observed_data', 'observed_tp', 'data_to_predict', 'tp_to_predict', 
 		# 'observed_mask', 'mask_predicted_data', 'labels', 'mode'])
 		with torch.no_grad():
-			dopri_res, fp_enc = model.compute_all_losses(batch_dict, n_traj_samples = 3, kl_coef = kl_coef)
-			euler_res, _ = model.compute_all_losses(batch_dict, method='euler', n_traj_samples=3, kl_coef=kl_coef)
-			rk4_res, _ = model.compute_all_losses(batch_dict, method='rk4', n_traj_samples=3, kl_coef=kl_coef)
+			dopri_res, fp_enc, cutoff = model.compute_all_losses(batch_dict, n_traj_samples = 3, kl_coef = kl_coef)
+			euler_res, _, _ = model.compute_all_losses(batch_dict, method='euler', cut_off=cutoff, n_traj_samples=3, kl_coef=kl_coef)
+			rk4_res, _, _ = model.compute_all_losses(batch_dict, method='rk4', cut_off=cutoff, n_traj_samples=3, kl_coef=kl_coef)
 		##############################
 
 		##### Auxiliary Network #####
 		n_traj_samples, n_traj, n_dims = fp_enc.size()  # 3, 50, 20
 
 		dopri_intg = torch.tensor([1, 0, 0]).repeat(n_traj_samples * n_traj, 1).type(torch.FloatTensor)  # [150, 3]
-		dopri_reward = torch.Tensor(dopri_res['reward']).unsqueeze(-1)  # [150, 1]
-		dopri_truth = (dopri_reward * dopri_intg).to(device)  # [150, 3]
+		dopri_cost = torch.Tensor(dopri_res['cost']).unsqueeze(-1)  # [150, 1]
+		dopri_truth = (dopri_cost * dopri_intg).to(device)  # [150, 3]
 
 		euler_intg = torch.tensor([0, 1, 0]).repeat(n_traj_samples * n_traj, 1).type(torch.FloatTensor)  # [150, 3]
-		euler_reward = torch.Tensor(euler_res['reward']).unsqueeze(-1)  # [150, 1]
-		euler_truth = (euler_reward * euler_intg).to(device)  # [150, 3]
+		euler_cost = torch.Tensor(euler_res['cost']).unsqueeze(-1)  # [150, 1]
+		euler_truth = (euler_cost * euler_intg).to(device)  # [150, 3]
 
 		rk4_intg = torch.tensor([0, 0, 1]).repeat(n_traj_samples * n_traj, 1).type(torch.FloatTensor)  # [150, 3]
-		rk4_reward = torch.Tensor(rk4_res['reward']).unsqueeze(-1)  # [150, 1]
-		rk4_truth = (rk4_reward * rk4_intg).to(device)  # [150, 3]
+		rk4_cost = torch.Tensor(rk4_res['cost']).unsqueeze(-1)  # [150, 1]
+		rk4_truth = (rk4_cost * rk4_intg).to(device)  # [150, 3]
 
 		aux_truth = dopri_truth + euler_truth + rk4_truth  # [150, 3]
 		# aux_truth = torch.max(aux_truth, 1)[1]  # [150]
@@ -294,23 +294,23 @@ if __name__ == '__main__':
 				kl_coef = (1-0.99** (itr // num_batches - wait_until_kl_inc))
 
 			batch_dict = utils.get_next_batch(data_obj["test_dataloader"])
-			dopri_res, fp_enc = model.compute_all_losses(batch_dict, n_traj_samples = 3, kl_coef = kl_coef)
-			euler_res, _ = model.compute_all_losses(batch_dict, method='euler', n_traj_samples=3, kl_coef=kl_coef)
-			rk4_res, _ = model.compute_all_losses(batch_dict, method='rk4', n_traj_samples=3, kl_coef=kl_coef)
+			dopri_res, fp_enc, cutoff = model.compute_all_losses(batch_dict, n_traj_samples = 3, kl_coef = kl_coef)
+			euler_res, _, _ = model.compute_all_losses(batch_dict, method='euler', cut_off=cutoff, n_traj_samples=3, kl_coef=kl_coef)
+			rk4_res, _, _ = model.compute_all_losses(batch_dict, method='rk4', cut_off=cutoff, n_traj_samples=3, kl_coef=kl_coef)
 
 			n_traj_samples, n_traj, n_dims = fp_enc.size()  # 3, 20, 20
 
 			dopri_intg = torch.tensor([1, 0, 0]).repeat(n_traj_samples * n_traj, 1).type(torch.FloatTensor)  # [60, 3]
-			dopri_reward = torch.Tensor(dopri_res['reward']).unsqueeze(-1)  # [60, 1]
-			dopri_truth = (dopri_reward * dopri_intg).to(device)  # [60, 3]
+			dopri_cost = torch.Tensor(dopri_res['cost']).unsqueeze(-1)  # [60, 1]
+			dopri_truth = (dopri_cost * dopri_intg).to(device)  # [60, 3]
 
 			euler_intg = torch.tensor([0, 1, 0]).repeat(n_traj_samples * n_traj, 1).type(torch.FloatTensor)  # [60, 3]
-			euler_reward = torch.Tensor(euler_res['reward']).unsqueeze(-1)  # [60, 1]
-			euler_truth = (euler_reward * euler_intg).to(device)  # [60, 3]
+			euler_cost = torch.Tensor(euler_res['cost']).unsqueeze(-1)  # [60, 1]
+			euler_truth = (euler_cost * euler_intg).to(device)  # [60, 3]
 
 			rk4_intg = torch.tensor([0, 0, 1]).repeat(n_traj_samples * n_traj, 1).type(torch.FloatTensor)  # [60, 3]
-			rk4_reward = torch.Tensor(rk4_res['reward']).unsqueeze(-1)  # [60, 1]
-			rk4_truth = (rk4_reward * rk4_intg).to(device)  # [60, 3]
+			rk4_cost = torch.Tensor(rk4_res['cost']).unsqueeze(-1)  # [60, 1]
+			rk4_truth = (rk4_cost * rk4_intg).to(device)  # [60, 3]
 
 			aux_truth = dopri_truth + euler_truth + rk4_truth  # [60, 3]
 
@@ -344,22 +344,22 @@ if __name__ == '__main__':
 			all_test_labels = torch.cat((all_test_labels, 
 				batch_dict["labels"].reshape(-1, n_labels)),0)
 
-			# Actual rewards
-			total_reward_dopri = torch.sum(dopri_reward.squeeze().view(-1)).item()  # total Dopri reward
-			total_reward_euler = torch.sum(euler_reward.squeeze().view(-1)).item()  # total Euler reward
-			total_reward_rk4 = torch.sum(rk4_reward.squeeze().view(-1)).item()  # total RK4 reward
-			min_loss = min(total_reward_dopri, total_reward_euler, total_reward_rk4)
-			if min_loss == total_reward_dopri:
+			# Actual costs
+			total_cost_dopri = torch.sum(dopri_cost.squeeze().view(-1)).item()
+			total_cost_euler = torch.sum(euler_cost.squeeze().view(-1)).item()
+			total_cost_rk4 = torch.sum(rk4_cost.squeeze().view(-1)).item()
+			min_loss = min(total_cost_dopri, total_cost_euler, total_cost_rk4)
+			if min_loss == total_cost_dopri:
 				label_integrator = 'dopri5'
-			elif min_loss == total_reward_euler:
+			elif min_loss == total_cost_euler:
 				label_integrator = 'euler'
 			else:
 				label_integrator = 'rk4'
 
 			logger.info("Iter {} | Test loss (one batch): {}".format(itr, aux_test_loss))
-			logger.info("Loss(alpha {}) for Dopri integrator (one batch): {}".format(args.alpha, total_reward_dopri))
-			logger.info("Loss(alpha {}) for Euler integrator (one batch): {}".format(args.alpha, total_reward_euler))
-			logger.info("Loss(alpha {}) for RK4 integrator (one batch): {}".format(args.alpha, total_reward_rk4))
+			logger.info("Cost(alpha {}) for Dopri integrator (one batch): {}".format(args.alpha, total_cost_dopri))
+			logger.info("Cost(alpha {}) for Euler integrator (one batch): {}".format(args.alpha, total_cost_euler))
+			logger.info("Cost(alpha {}) for RK4 integrator (one batch): {}".format(args.alpha, total_cost_rk4))
 			logger.info("Choice of integrator (one batch): {}".format(pred_integrator))
 			logger.info("Auxiliary network predicted {}".format(label_integrator == pred_integrator))
 			logger.info("AUC of the choice (one batch): {}".format(results['auc']))
