@@ -98,7 +98,7 @@ parser.add_argument('--reg_l1', type=float, default=0, help="Lambda for L1 regul
 parser.add_argument('--reg_l2', type=float, default=0, help="Lambda for L2 regularizer(weight decay).")
 
 parser.add_argument('--method', type=str, default='dopri5_err', help="Integrator method: euler, rk4, dopri5_err")
-parser.add_argument('--step_size', type=float, default=0.1, help="Step size for fixed grid integrators")
+parser.add_argument('--step_size', type=float, default=0.03, help="Step size for fixed grid integrators")
 parser.add_argument('--alpha', type=float, default=0.01, help="Alpha for aux loss function")
 parser.add_argument('--cutoff_coef', type=float, default=1, help="Coefficient of Dopri cutoff value")
 parser.add_argument('--m', type=float, default=1000, help="Penalty value M for auxiliary cost")
@@ -177,6 +177,8 @@ if __name__ == '__main__':
 	aux_layers = [AuxiliaryBlock(model.latent_dim, n_intg)]
 	aux_net = nn.Sequential(*aux_layers).to(device)
 	aux_opt = optim.Adamax(aux_net.parameters(), lr=args.lr)
+	# aux_criterion = nn.NLLLoss().cuda()
+	aux_criterion = nn.MSELoss().to(device)
 
 	##################################################################
 
@@ -188,39 +190,91 @@ if __name__ == '__main__':
 	#Load checkpoint and evaluate the model
 	utils.get_ckpt_model(ckpt_path, model, device)
 
-	##################################################################
-	# Training
-
 	log_path = "aux_logs/" + file_name + "_" + str(experimentID) + "_" + str(AUXexperimentID) + ".log"
 	if not os.path.exists("aux_logs/"):
 		utils.makedirs("aux_logs/")
 	logger = utils.get_logger(logpath=log_path, filepath=os.path.abspath(__file__))
 	logger.info(input_command)
 
-	# aux_criterion = nn.NLLLoss().cuda()
-	aux_criterion = nn.MSELoss().to(device)
+	############ Without Aux Net ############
+	with torch.no_grad():
+		test_dopri, _ = compute_loss_all_batches(model,
+			data_obj["test_dataloader"], args,
+			n_batches = data_obj["n_test_batches"],
+			experimentID = experimentID,
+			device = device,
+			n_traj_samples = 3)
+		test_euler, _ = compute_loss_all_batches(model,
+			data_obj["test_dataloader"], args,
+			n_batches = data_obj["n_test_batches"],
+			experimentID = experimentID,
+			device = device,
+			method = 'euler',
+			n_traj_samples = 3)
+		test_rk4, _ = compute_loss_all_batches(model,
+			data_obj["test_dataloader"], args,
+			n_batches = data_obj["n_test_batches"],
+			experimentID = experimentID,
+			device = device,
+			method = 'rk4',
+			n_traj_samples = 3)
 
+	logger.info("Experiment " + str(experimentID) + "_" + str(AUXexperimentID))
+	logger.info('############### TOTAL ###############')
+	logger.info("Classification AUC : Dopri {:.4f} | Euler {:.4f} | RK4 {:.4f}".format(test_dopri["auc"], test_euler["auc"], test_rk4["auc"]))
+	logger.info("NFE (average): Dopri {} | Euler {} | RK4 {}".format(test_dopri['nfe'], test_euler['nfe'], test_rk4['nfe']))
+	logger.info("Elapsed time (average): Dopri {} | Euler {} | RK4 {}".format(test_dopri['elapsed_time'], test_euler['elapsed_time'], test_rk4['elapsed_time']))
+	##################################################################
+
+	##### True Values #####
+	## Train ##
 	num_batches = data_obj["n_train_batches"]  # 64
-
-	##### Train Aux Net #####
-	logger.info("### Auxiliary Network : step size {}###".format(args.step_size))
-	for itr in range(1, num_batches * (args.niters + 1)):  # 100
-		print('Iter: ' + str(itr))
-		wait_until_kl_inc = 10
-		if itr // num_batches < wait_until_kl_inc:
-			kl_coef = 0.
-		else:
-			kl_coef = (1-0.99** (itr // num_batches - wait_until_kl_inc))
-
+	true_res = {}
+	true_res['fp_enc'] = []
+	true_res['dopri5'] = []	
+	true_res['euler'] = []	
+	true_res['rk4'] = []	
+	for i in range(num_batches):
 		batch_dict = utils.get_next_batch(data_obj["train_dataloader"])
-		#### Dynamic Integrators #####
 		# dict_keys(['observed_data', 'observed_tp', 'data_to_predict', 'tp_to_predict', 
 		# 'observed_mask', 'mask_predicted_data', 'labels', 'mode'])
 		with torch.no_grad():
-			dopri_res, fp_enc, cutoff = model.compute_all_losses(batch_dict, m=args.m, n_traj_samples = 3, kl_coef = kl_coef)
-			euler_res, _, _ = model.compute_all_losses(batch_dict, method='euler', cut_off=cutoff*args.cutoff_coef, m=args.m, n_traj_samples=3, kl_coef=kl_coef)
-			rk4_res, _, _ = model.compute_all_losses(batch_dict, method='rk4', cut_off=cutoff*args.cutoff_coef, m=args.m, n_traj_samples=3, kl_coef=kl_coef)
-		##############################
+			dopri_res, fp_enc, cutoff = model.compute_all_losses(batch_dict, m=args.m, n_traj_samples = 3)
+			euler_res, _, _ = model.compute_all_losses(batch_dict, method='euler', cut_off=cutoff*args.cutoff_coef, m=args.m, n_traj_samples=3)
+			rk4_res, _, _ = model.compute_all_losses(batch_dict, method='rk4', cut_off=cutoff*args.cutoff_coef, m=args.m, n_traj_samples=3)
+		true_res['fp_enc'].append(fp_enc) 
+		true_res['dopri5'].append(dopri_res)
+		true_res['euler'].append(euler_res)
+		true_res['rk4'].append(rk4_res)
+	## Test ##
+	num_test_batches = data_obj["n_test_batches"]  # 40
+	true_test = {}
+	true_test['fp_enc'] = []
+	true_test['dopri5'] = []	
+	true_test['euler'] = []	
+	true_test['rk4'] = []	
+	for i in range(num_test_batches):
+		batch_dict = utils.get_next_batch(data_obj["test_dataloader"])
+		with torch.no_grad():
+			dopri_res, fp_enc, cutoff = model.compute_all_losses(batch_dict, m=args.m, n_traj_samples = 3)
+			euler_res, _, _ = model.compute_all_losses(batch_dict, method='euler', cut_off=cutoff*args.cutoff_coef, m=args.m, n_traj_samples=3)
+			rk4_res, _, _ = model.compute_all_losses(batch_dict, method='rk4', cut_off=cutoff*args.cutoff_coef, m=args.m, n_traj_samples=3)
+		true_test['fp_enc'].append(fp_enc) 
+		true_test['dopri5'].append(dopri_res)
+		true_test['euler'].append(euler_res)
+		true_test['rk4'].append(rk4_res)
+
+
+	##### Train Aux Net #####
+	logger.info("### Auxiliary Network : step size {} ###".format(args.step_size))
+	for itr in range(1, num_batches * args.niters + 1):  # 64 *
+		logger.info('Train Iter: {}, Batch #{}/{}'.format(itr, itr % num_batches, num_batches))
+
+		##### Get True values #####
+		fp_enc = true_res['fp_enc'][(itr-1)%num_batches]
+		dopri_res = true_res['dopri5'][(itr-1)%num_batches]
+		euler_res = true_res['euler'][(itr-1)%num_batches]
+		rk4_res = true_res['rk4'][(itr-1)%num_batches]
 
 		##### Auxiliary Network #####
 		n_traj_samples, n_traj, n_dims = fp_enc.size()  # 3, 50, 20
@@ -247,159 +301,127 @@ if __name__ == '__main__':
 		aux_y = aux_y.view(-1, n_intg).type(aux_truth.type()) # [150, 3]
 
 		aux_loss = torch.sqrt(aux_criterion(aux_y, aux_truth))
-		logger.info("Iter: {} | Train loss (one batch): {}".format(itr, aux_loss.detach()))
+		# logger.info("Iter: {} | Train loss (one batch): {}".format(itr, aux_loss.detach()))
 		aux_loss.backward()
 		aux_opt.step()
-		##############################
-	##############################
 
-	############ TEST ############
-	with torch.no_grad():
-		#### Dynamic Integrators #####
-		test_dopri, fp_enc = compute_loss_all_batches(model,
-			data_obj["test_dataloader"], args,
-			n_batches = data_obj["n_test_batches"],
-			experimentID = experimentID,
-			device = device,
-			n_traj_samples = 3, kl_coef = kl_coef)
-		test_euler, _ = compute_loss_all_batches(model,
-			data_obj["test_dataloader"], args,
-			n_batches = data_obj["n_test_batches"],
-			experimentID = experimentID,
-			device = device,
-			method = 'euler',
-			n_traj_samples = 3, kl_coef = kl_coef)
-		test_rk4, _ = compute_loss_all_batches(model,
-			data_obj["test_dataloader"], args,
-			n_batches = data_obj["n_test_batches"],
-			experimentID = experimentID,
-			device = device,
-			method = 'rk4',
-			n_traj_samples = 3, kl_coef = kl_coef)
+		##### Validation #####
+		if itr % (num_batches * 5) == 0:  # validate every 5 trains
+			logger.info("########## Iter: {}".format((itr-1)//num_batches+1))
+			with torch.no_grad():
+				dopri_cnt, euler_cnt, rk4_cnt = 0, 0, 0
+				aux_acc = 0
+				aux_t = 0
+				classif_predictions = torch.Tensor([]).to(device)
+				all_test_labels =  torch.Tensor([]).to(device)
 
-		logger.info("Experiment " + str(experimentID))
-		##############################
+				for _itr in range(num_test_batches):  # 40
+					##### Get True values #####
+					fp_enc = true_test['fp_enc'][_itr]
+					dopri_res = true_test['dopri5'][_itr]
+					euler_res = true_test['euler'][_itr]
+					rk4_res = true_test['rk4'][_itr]
 
-		##### Auxiliary Network #####
-		num_batches = data_obj["n_test_batches"]  # 50
-		dopri_cnt, euler_cnt, rk4_cnt = 0, 0, 0
-		aux_t = 0
-		classif_predictions = torch.Tensor([]).to(device)
-		all_test_labels =  torch.Tensor([]).to(device)
+					n_traj_samples, n_traj, n_dims = fp_enc.size()  # 3, 20, 20
 
-		logger.info("### Auxiliary Network : n_test_batches {} ###".format(num_batches))
-		for itr in range(1, num_batches + 1):
-			wait_until_kl_inc = 10
-			if itr // num_batches < wait_until_kl_inc:
-				kl_coef = 0.
-			else:
-				kl_coef = (1-0.99** (itr // num_batches - wait_until_kl_inc))
+					dopri_intg = torch.tensor([1, 0, 0]).repeat(n_traj_samples * n_traj, 1).type(torch.FloatTensor)  # [60, 3]
+					dopri_cost = torch.Tensor(dopri_res['cost']).unsqueeze(-1)  # [60, 1]
+					dopri_truth = (dopri_cost * dopri_intg).to(device)  # [60, 3]
 
-			batch_dict = utils.get_next_batch(data_obj["test_dataloader"])
-			dopri_res, fp_enc, cutoff = model.compute_all_losses(batch_dict, m=args.m, n_traj_samples = 3, kl_coef = kl_coef)
-			euler_res, _, _ = model.compute_all_losses(batch_dict, method='euler', cut_off=cutoff*args.cutoff_coef, m=args.m, n_traj_samples=3, kl_coef=kl_coef)
-			rk4_res, _, _ = model.compute_all_losses(batch_dict, method='rk4', cut_off=cutoff*args.cutoff_coef, m=args.m, n_traj_samples=3, kl_coef=kl_coef)
+					euler_intg = torch.tensor([0, 1, 0]).repeat(n_traj_samples * n_traj, 1).type(torch.FloatTensor)  # [60, 3]
+					euler_cost = torch.Tensor(euler_res['cost']).unsqueeze(-1)  # [60, 1]
+					euler_truth = (euler_cost * euler_intg).to(device)  # [60, 3]
 
-			n_traj_samples, n_traj, n_dims = fp_enc.size()  # 3, 20, 20
+					rk4_intg = torch.tensor([0, 0, 1]).repeat(n_traj_samples * n_traj, 1).type(torch.FloatTensor)  # [60, 3]
+					rk4_cost = torch.Tensor(rk4_res['cost']).unsqueeze(-1)  # [60, 1]
+					rk4_truth = (rk4_cost * rk4_intg).to(device)  # [60, 3]
 
-			dopri_intg = torch.tensor([1, 0, 0]).repeat(n_traj_samples * n_traj, 1).type(torch.FloatTensor)  # [60, 3]
-			dopri_cost = torch.Tensor(dopri_res['cost']).unsqueeze(-1)  # [60, 1]
-			dopri_truth = (dopri_cost * dopri_intg).to(device)  # [60, 3]
+					aux_truth = dopri_truth + euler_truth + rk4_truth  # [60, 3]
 
-			euler_intg = torch.tensor([0, 1, 0]).repeat(n_traj_samples * n_traj, 1).type(torch.FloatTensor)  # [60, 3]
-			euler_cost = torch.Tensor(euler_res['cost']).unsqueeze(-1)  # [60, 1]
-			euler_truth = (euler_cost * euler_intg).to(device)  # [60, 3]
+					aux_net.eval()
+					t = time.time()
+					aux_y = aux_net(fp_enc)  # [3, 20, 3]
+					aux_t += time.time() - t
+					aux_y = aux_y.view(-1, n_intg) # [60, 3]
+					aux_test_loss = torch.sqrt(aux_criterion(aux_y, aux_truth))
 
-			rk4_intg = torch.tensor([0, 0, 1]).repeat(n_traj_samples * n_traj, 1).type(torch.FloatTensor)  # [60, 3]
-			rk4_cost = torch.Tensor(rk4_res['cost']).unsqueeze(-1)  # [60, 1]
-			rk4_truth = (rk4_cost * rk4_intg).to(device)  # [60, 3]
+					# Choice of integrator
+					aux_y_sum = torch.sum(aux_y, dim=0)  # [3]
+					pred_y = torch.min(aux_y_sum, 0)[1].item()  # 0: dopri5, 1: euler, 2: rk4
+					results = {}
+					if pred_y == 0:
+						pred_integrator = 'dopri5'
+						dopri_cnt += 1
+						results = dopri_res
+					elif pred_y == 1:
+						pred_integrator = 'euler'
+						euler_cnt += 1
+						results = euler_res
+					else:
+						pred_integrator = 'rk4'
+						rk4_cnt += 1
+						results = rk4_res
 
-			aux_truth = dopri_truth + euler_truth + rk4_truth  # [60, 3]
+					# overall AUC
+					classif_predictions = torch.cat((classif_predictions, 
+						results["label_predictions"].reshape(n_traj_samples, -1, n_labels)),1)
+					all_test_labels = torch.cat((all_test_labels, 
+						batch_dict["labels"].reshape(-1, n_labels)),0)
 
-			aux_net.eval()
-			t = time.time()
-			aux_y = aux_net(fp_enc)  # [3, 20, 3]
-			aux_t += time.time() - t
-			aux_y = aux_y.view(-1, n_intg) # [60, 3]
-			aux_test_loss = torch.sqrt(aux_criterion(aux_y, aux_truth))
+					# Actual costs
+					total_cost_dopri = torch.sum(dopri_cost.squeeze().view(-1)).item()
+					total_cost_euler = torch.sum(euler_cost.squeeze().view(-1)).item()
+					total_cost_rk4 = torch.sum(rk4_cost.squeeze().view(-1)).item()
+					min_loss = min(total_cost_dopri, total_cost_euler, total_cost_rk4)
+					if min_loss == total_cost_dopri:
+						label_integrator = 'dopri5'
+					elif min_loss == total_cost_euler:
+						label_integrator = 'euler'
+					else:
+						label_integrator = 'rk4'
 
-			# Choice of integrator
-			aux_y_sum = torch.sum(aux_y, dim=0)  # [3]
-			pred_y = torch.min(aux_y_sum, 0)[1].item()  # 0: dopri5, 1: euler, 2: rk4
-			results = {}
-			if pred_y == 0:
-				pred_integrator = 'dopri5'
-				dopri_cnt += 1
-				results = dopri_res
-			elif pred_y == 1:
-				pred_integrator = 'euler'
-				euler_cnt += 1
-				results = euler_res
-			else:
-				pred_integrator = 'rk4'
-				rk4_cnt += 1
-				results = rk4_res
+					logger.info("----- Test Iter {} | Test loss (one batch): {}".format(_itr, aux_test_loss))
+					logger.info("Cost(alpha {}) for Dopri integrator (one batch): {}".format(args.alpha, total_cost_dopri))
+					logger.info("Cost(alpha {}) for Euler integrator (one batch): {}".format(args.alpha, total_cost_euler))
+					logger.info("Cost(alpha {}) for RK4 integrator (one batch): {}".format(args.alpha, total_cost_rk4))
+					logger.info("Choice of integrator (one batch): {} | Predicted Cost: {}".format(pred_integrator, aux_y_sum))
+					logger.info("Auxiliary network predicted {}".format(label_integrator == pred_integrator))
+					logger.info("AUC of the choice (one batch): {}".format(results['auc']))
 
-			# overall AUC
-			classif_predictions = torch.cat((classif_predictions, 
-				results["label_predictions"].reshape(n_traj_samples, -1, n_labels)),1)
-			all_test_labels = torch.cat((all_test_labels, 
-				batch_dict["labels"].reshape(-1, n_labels)),0)
+					if (label_integrator == pred_integrator):
+						aux_acc += 1
 
-			# Actual costs
-			total_cost_dopri = torch.sum(dopri_cost.squeeze().view(-1)).item()
-			total_cost_euler = torch.sum(euler_cost.squeeze().view(-1)).item()
-			total_cost_rk4 = torch.sum(rk4_cost.squeeze().view(-1)).item()
-			min_loss = min(total_cost_dopri, total_cost_euler, total_cost_rk4)
-			if min_loss == total_cost_dopri:
-				label_integrator = 'dopri5'
-			elif min_loss == total_cost_euler:
-				label_integrator = 'euler'
-			else:
-				label_integrator = 'rk4'
+					torch.save({
+						'args': args,
+						'state_dict': aux_net.state_dict(),
+					}, aux_ckpt_path)
+				##############################
 
-			logger.info("Iter {} | Test loss (one batch): {}".format(itr, aux_test_loss))
-			logger.info("Cost(alpha {}) for Dopri integrator (one batch): {}".format(args.alpha, total_cost_dopri))
-			logger.info("Cost(alpha {}) for Euler integrator (one batch): {}".format(args.alpha, total_cost_euler))
-			logger.info("Cost(alpha {}) for RK4 integrator (one batch): {}".format(args.alpha, total_cost_rk4))
-			logger.info("Choice of integrator (one batch): {}".format(pred_integrator))
-			logger.info("Auxiliary network predicted {}".format(label_integrator == pred_integrator))
-			logger.info("AUC of the choice (one batch): {}".format(results['auc']))
+				##### Overall AUC of the Choice #####
 
-			torch.save({
-				'args': args,
-				'state_dict': aux_net.state_dict(),
-			}, aux_ckpt_path)
-		##############################
+				all_test_labels = all_test_labels.repeat(n_traj_samples,1,1)
 
-		##### Overall AUC of the Choice #####
+				idx_not_nan = ~torch.isnan(all_test_labels)
+				classif_predictions = classif_predictions[idx_not_nan]
+				all_test_labels = all_test_labels[idx_not_nan]
 
-		all_test_labels = all_test_labels.repeat(n_traj_samples,1,1)
+				overall_auc = 0.
+				if torch.sum(all_test_labels) != 0.:
+					print("Number of labeled examples: {}".format(len(all_test_labels.reshape(-1))))
+					print("Number of examples with mortality 1: {}".format(torch.sum(all_test_labels == 1.)))
 
-		idx_not_nan = ~torch.isnan(all_test_labels)
-		classif_predictions = classif_predictions[idx_not_nan]
-		all_test_labels = all_test_labels[idx_not_nan]
-
-		overall_auc = 0.
-		if torch.sum(all_test_labels) != 0.:
-			print("Number of labeled examples: {}".format(len(all_test_labels.reshape(-1))))
-			print("Number of examples with mortality 1: {}".format(torch.sum(all_test_labels == 1.)))
-
-			# Cannot compute AUC with only 1 class
-			overall_auc = sk.metrics.roc_auc_score(all_test_labels.cpu().numpy().reshape(-1), 
-				classif_predictions.cpu().numpy().reshape(-1))
-		else:
-			print("Warning: Couldn't compute AUC -- all examples are from the same class")
+					# Cannot compute AUC with only 1 class
+					overall_auc = sk.metrics.roc_auc_score(all_test_labels.cpu().numpy().reshape(-1), 
+						classif_predictions.cpu().numpy().reshape(-1))
+				else:
+					print("Warning: Couldn't compute AUC -- all examples are from the same class")
+				############## LOGGER ###############
+				logger.info('----- Total Test Batches')
+				logger.info('Aux Net Accuracy: {}'.format(aux_acc/40))
+				logger.info('AUC of the choices {:.4f} | Choice of Dopri5 {} | Euler {} | RK4 {}'.format(overall_auc, dopri_cnt, euler_cnt, rk4_cnt))
+				logger.info('Aux Net Runtime: {:.4f}'.format(t))
 		###################################
-
-	############## LOGGER ###############
-	logger.info('############### TOTAL ###############')
-	logger.info("Classification AUC : Dopri {:.4f} | Euler {:.4f} | RK4 {:.4f}".format(test_dopri["auc"], test_euler["auc"], test_rk4["auc"]))
-	logger.info("NFE (average): Dopri {} | Euler {} | RK4 {}".format(test_dopri['nfe'], test_euler['nfe'], test_rk4['nfe']))
-	logger.info("Elapsed time (average): Dopri {} | Euler {} | RK4 {}".format(test_dopri['elapsed_time'], test_euler['elapsed_time'], test_rk4['elapsed_time']))
-	logger.info('############### Aux Net Average ###############')
-	logger.info('AUC of the choice {:.4f} | Choice of Dopri5 {} | Euler {} | RK4 {}'.format(overall_auc, dopri_cnt, euler_cnt, rk4_cnt))
-	logger.info('Aux Net Runtime: {:.4f}'.format(t))
+	##############################
 
 	############## SAVE MODEL ###############
 	torch.save({
