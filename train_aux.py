@@ -298,27 +298,27 @@ if __name__ == '__main__':
 			euler_res, _ = model.compute_all_losses(batch_dict, method='euler', n_traj_samples=3, kl_coef=kl_coef)
 			rk4_res, _ = model.compute_all_losses(batch_dict, method='rk4', n_traj_samples=3, kl_coef=kl_coef)
 
-			n_traj_samples, n_traj, n_dims = fp_enc.size()  # 3, 16, 20
+			n_traj_samples, n_traj, n_dims = fp_enc.size()  # 3, 20, 20
 
-			dopri_intg = torch.tensor([1, 0, 0]).repeat(n_traj_samples * n_traj, 1).type(torch.FloatTensor)  # [150, 3]
-			dopri_reward = torch.Tensor(dopri_res['reward']).unsqueeze(-1)  # [150, 1]
-			dopri_truth = (dopri_reward * dopri_intg).to(device)  # [150, 3]
+			dopri_intg = torch.tensor([1, 0, 0]).repeat(n_traj_samples * n_traj, 1).type(torch.FloatTensor)  # [60, 3]
+			dopri_reward = torch.Tensor(dopri_res['reward']).unsqueeze(-1)  # [60, 1]
+			dopri_truth = (dopri_reward * dopri_intg).to(device)  # [60, 3]
 
-			euler_intg = torch.tensor([0, 1, 0]).repeat(n_traj_samples * n_traj, 1).type(torch.FloatTensor)  # [150, 3]
-			euler_reward = torch.Tensor(euler_res['reward']).unsqueeze(-1)  # [150, 1]
-			euler_truth = (euler_reward * euler_intg).to(device)  # [150, 3]
+			euler_intg = torch.tensor([0, 1, 0]).repeat(n_traj_samples * n_traj, 1).type(torch.FloatTensor)  # [60, 3]
+			euler_reward = torch.Tensor(euler_res['reward']).unsqueeze(-1)  # [60, 1]
+			euler_truth = (euler_reward * euler_intg).to(device)  # [60, 3]
 
-			rk4_intg = torch.tensor([0, 0, 1]).repeat(n_traj_samples * n_traj, 1).type(torch.FloatTensor)  # [150, 3]
-			rk4_reward = torch.Tensor(rk4_res['reward']).unsqueeze(-1)  # [150, 1]
-			rk4_truth = (rk4_reward * rk4_intg).to(device)  # [150, 3]
+			rk4_intg = torch.tensor([0, 0, 1]).repeat(n_traj_samples * n_traj, 1).type(torch.FloatTensor)  # [60, 3]
+			rk4_reward = torch.Tensor(rk4_res['reward']).unsqueeze(-1)  # [60, 1]
+			rk4_truth = (rk4_reward * rk4_intg).to(device)  # [60, 3]
 
-			aux_truth = dopri_truth + euler_truth + rk4_truth  # [150, 3]
+			aux_truth = dopri_truth + euler_truth + rk4_truth  # [60, 3]
 
 			aux_net.eval()
 			t = time.time()
-			aux_y = aux_net(fp_enc)  # [3, 800, 3]
+			aux_y = aux_net(fp_enc)  # [3, 20, 3]
 			aux_t += time.time() - t
-			aux_y = aux_y.view(-1, n_intg) # [2400, 3]
+			aux_y = aux_y.view(-1, n_intg) # [60, 3]
 			aux_test_loss = torch.sqrt(aux_criterion(aux_y, aux_truth))
 
 			# Choice of integrator
