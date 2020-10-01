@@ -350,12 +350,20 @@ if __name__ == '__main__':
 			total_reward_dopri = torch.sum(dopri_reward.squeeze().view(-1)).item()  # total Dopri reward
 			total_reward_euler = torch.sum(euler_reward.squeeze().view(-1)).item()  # total Euler reward
 			total_reward_rk4 = torch.sum(rk4_reward.squeeze().view(-1)).item()  # total RK4 reward
+			min_loss = min(total_reward_dopri, total_reward_euler, total_reward_rk4)
+			if min_loss == total_reward_dopri:
+				label_integrator = 'dopri5'
+			elif min_loss == total_reward_euler:
+				label_integrator = 'euler'
+			else:
+				label_integrator = 'rk4'
 
 			logger.info("Iter {} | Test loss (one batch): {}".format(itr, aux_test_loss))
 			logger.info("Loss(alpha {}) for Dopri integrator (one batch): {}".format(args.alpha, total_reward_dopri))
 			logger.info("Loss(alpha {}) for Euler integrator (one batch): {}".format(args.alpha, total_reward_euler))
 			logger.info("Loss(alpha {}) for RK4 integrator (one batch): {}".format(args.alpha, total_reward_rk4))
 			logger.info("Choice of integrator (one batch): {}".format(pred_integrator))
+			logger.info("Auxiliary network predicted {}".format(label_integrator == pred_integrator))
 			logger.info("AUC of the choice (one batch): {}".format(results['auc']))
 
 			torch.save({
