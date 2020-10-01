@@ -267,14 +267,14 @@ class VAE_Baseline(nn.Module):
 		fpr, tpr, thresholds = sk.metrics.roc_curve(truth, pred_y)
 		return thresholds[np.argmax(tpr - fpr)]
 
-	def get_cost(self, truth, pred_y, cut_off=None):
+	def get_cost(self, truth, pred_y, cut_off=None, m=1000):
 		if cut_off is None:
 			cut_off = self.get_cutoff(truth, pred_y)
 		ret = (truth == (pred_y>=cut_off)) * float(self.get_nfe() ** self.alpha)
-		ret[ret==0] = 1000
+		ret[ret==0] = m
 		return ret, cut_off
 
-	def compute_all_losses(self, batch_dict, method='dopri5_err', cut_off=None, n_traj_samples = 1, kl_coef = 1.):
+	def compute_all_losses(self, batch_dict, method='dopri5_err', cut_off=None, m=1000, n_traj_samples = 1, kl_coef = 1.):
 		# Condition on subsampled points
 		# Make predictions for all the points
 		pred_y, dopri_err, kinetic, info = self.get_reconstruction(
@@ -395,6 +395,6 @@ class VAE_Baseline(nn.Module):
 
 		# cost
 		results['cost'], cutoff = self.get_cost(all_test_labels.cpu().numpy().reshape(-1),
-				classif_predictions.cpu().numpy().reshape(-1), cut_off)
+				classif_predictions.cpu().numpy().reshape(-1), cut_off, m)
 
 		return results, fp_enc.detach(), cutoff

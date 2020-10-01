@@ -101,6 +101,7 @@ parser.add_argument('--method', type=str, default='dopri5_err', help="Integrator
 parser.add_argument('--step_size', type=float, default=0.1, help="Step size for fixed grid integrators")
 parser.add_argument('--alpha', type=float, default=0.01, help="Alpha for aux loss function")
 parser.add_argument('--cutoff_coef', type=float, default=1, help="Coefficient of Dopri cutoff value")
+parser.add_argument('--m', type=float, default=1000, help="Penalty value M for auxiliary cost")
 
 args = parser.parse_args()
 
@@ -216,9 +217,9 @@ if __name__ == '__main__':
 		# dict_keys(['observed_data', 'observed_tp', 'data_to_predict', 'tp_to_predict', 
 		# 'observed_mask', 'mask_predicted_data', 'labels', 'mode'])
 		with torch.no_grad():
-			dopri_res, fp_enc, cutoff = model.compute_all_losses(batch_dict, n_traj_samples = 3, kl_coef = kl_coef)
-			euler_res, _, _ = model.compute_all_losses(batch_dict, method='euler', cut_off=cutoff*args.cutoff_coef, n_traj_samples=3, kl_coef=kl_coef)
-			rk4_res, _, _ = model.compute_all_losses(batch_dict, method='rk4', cut_off=cutoff*args.cutoff_coef, n_traj_samples=3, kl_coef=kl_coef)
+			dopri_res, fp_enc, cutoff = model.compute_all_losses(batch_dict, m=args.m, n_traj_samples = 3, kl_coef = kl_coef)
+			euler_res, _, _ = model.compute_all_losses(batch_dict, method='euler', cut_off=cutoff*args.cutoff_coef, m=args.m, n_traj_samples=3, kl_coef=kl_coef)
+			rk4_res, _, _ = model.compute_all_losses(batch_dict, method='rk4', cut_off=cutoff*args.cutoff_coef, m=args.m, n_traj_samples=3, kl_coef=kl_coef)
 		##############################
 
 		##### Auxiliary Network #####
@@ -295,9 +296,9 @@ if __name__ == '__main__':
 				kl_coef = (1-0.99** (itr // num_batches - wait_until_kl_inc))
 
 			batch_dict = utils.get_next_batch(data_obj["test_dataloader"])
-			dopri_res, fp_enc, cutoff = model.compute_all_losses(batch_dict, n_traj_samples = 3, kl_coef = kl_coef)
-			euler_res, _, _ = model.compute_all_losses(batch_dict, method='euler', cut_off=cutoff*args.cutoff_coef, n_traj_samples=3, kl_coef=kl_coef)
-			rk4_res, _, _ = model.compute_all_losses(batch_dict, method='rk4', cut_off=cutoff*args.cutoff_coef, n_traj_samples=3, kl_coef=kl_coef)
+			dopri_res, fp_enc, cutoff = model.compute_all_losses(batch_dict, m=args.m, n_traj_samples = 3, kl_coef = kl_coef)
+			euler_res, _, _ = model.compute_all_losses(batch_dict, method='euler', cut_off=cutoff*args.cutoff_coef, m=args.m, n_traj_samples=3, kl_coef=kl_coef)
+			rk4_res, _, _ = model.compute_all_losses(batch_dict, method='rk4', cut_off=cutoff*args.cutoff_coef, m=args.m, n_traj_samples=3, kl_coef=kl_coef)
 
 			n_traj_samples, n_traj, n_dims = fp_enc.size()  # 3, 20, 20
 
