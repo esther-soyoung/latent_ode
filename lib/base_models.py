@@ -269,10 +269,11 @@ class VAE_Baseline(nn.Module):
 		return (truth == (pred_y>=0.5)).to(dtype=torch.float) / float(self.get_nfe())  # [3, 50]
 
 	def get_loss(self, truth, pred_y):
-		truth = truth.squeeze(1).repeat(pred_y.size(0), 1)  # [3, 50]
-		pred_y = nn.Sigmoid()(pred_y)  # [3, 50]
-		ret = (truth == (pred_y>=0.5)).to(dtype=torch.float) * float(self.get_nfe() ** self.alpha)  # [3, 50]
-		ret[ret==0] = 1000 ** 0.1
+		fpr, tpr, thresholds = sk.metrics.roc_curve(truth, pred_y)
+		cutoff = thresholds[np.argmax(tpr - fpr)]
+
+		ret = (truth == (pred_y>=cutoff)) * float(self.get_nfe() ** self.alpha)
+		ret[ret==0] = 100000 ** self.alpha
 		return ret
 
 	def compute_all_losses(self, batch_dict, method='dopri5_err', n_traj_samples = 1, kl_coef = 1.):
@@ -369,19 +370,14 @@ class VAE_Baseline(nn.Module):
 		results["std_first_p"] = torch.mean(fp_std).detach()
 		results['nfe'] = self.get_nfe()
 		results['elapsed_time'] = info['elapsed_time']
-		# results['reward'] = self.get_reward(batch_dict['labels'], info['label_predictions'].detach())  # [n_traj_samples, batch_size]
-		results['reward'] = self.get_loss(batch_dict['labels'], info['label_predictions'].detach())  # [n_traj_samples, batch_size]
 
 		if batch_dict["labels"] is not None and self.use_binary_classif:
 			results["label_predictions"] = info["label_predictions"].detach()
 
 		# auc
-		classif_predictions = torch.Tensor([]).to(device)
-		all_test_labels =  torch.Tensor([]).to(device)
-		classif_predictions = torch.cat((classif_predictions, 
-			results["label_predictions"].reshape(n_traj_samples, -1, self.n_labels)),1)
-		all_test_labels = torch.cat((all_test_labels, 
-			batch_dict["labels"].reshape(-1, self.n_labels)),0)
+		classif_predictions = results["label_predictions"].reshape(n_traj_samples, -1, self.n_labels)
+
+		all_test_labels = batch_dict["labels"].reshape(-1, self.n_labels)
 		all_test_labels = all_test_labels.repeat(n_traj_samples,1,1)
 
 		idx_not_nan = ~torch.isnan(all_test_labels)
@@ -398,6 +394,9 @@ class VAE_Baseline(nn.Module):
 				classif_predictions.cpu().numpy().reshape(-1))
 		else:
 			print("Warning: Couldn't compute AUC -- all examples are from the same class")
+
+		results['reward'] = self.get_loss(all_test_labels.cpu().numpy().reshape(-1), 
+				classif_predictions.cpu().numpy().reshape(-1))
 
 		return results, fp_enc.detach()
 

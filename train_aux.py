@@ -223,20 +223,19 @@ if __name__ == '__main__':
 		##### Auxiliary Network #####
 		n_traj_samples, n_traj, n_dims = fp_enc.size()  # 3, 50, 20
 
-		dopri_intg = torch.tensor([1, 0, 0]).repeat(n_traj_samples, n_traj, 1).type(torch.FloatTensor)  # [3, 50, 3]
-		dopri_reward = dopri_res['reward'].unsqueeze(2).type(dopri_intg.type())  # [3, 50, 1]
-		dopri_truth = (dopri_reward * dopri_intg).to(device)  # [3, 50, 3]
+		dopri_intg = torch.tensor([1, 0, 0]).repeat(n_traj_samples * n_traj, 1).type(torch.FloatTensor)  # [150, 3]
+		dopri_reward = torch.Tensor(dopri_res['reward']).unsqueeze(-1)  # [150, 1]
+		dopri_truth = (dopri_reward * dopri_intg).to(device)  # [150, 3]
 
-		euler_intg = torch.tensor([0, 1, 0]).repeat(n_traj_samples, n_traj, 1).type(torch.FloatTensor)  # [3, 50, 3]
-		euler_reward = euler_res['reward'].unsqueeze(2).type(euler_intg.type())  # [3, 50, 1]
-		euler_truth = (euler_reward * euler_intg).to(device)  # [3, 50, 3]
+		euler_intg = torch.tensor([0, 1, 0]).repeat(n_traj_samples * n_traj, 1).type(torch.FloatTensor)  # [150, 3]
+		euler_reward = torch.Tensor(euler_res['reward']).unsqueeze(-1)  # [150, 1]
+		euler_truth = (euler_reward * euler_intg).to(device)  # [150, 3]
 
-		rk4_intg = torch.tensor([0, 0, 1]).repeat(n_traj_samples, n_traj, 1).type(torch.FloatTensor)  # [3, 50, 3]
-		rk4_reward = rk4_res['reward'].unsqueeze(2).type(rk4_intg.type())  # [3, 50, 1]
-		rk4_truth = (rk4_reward * rk4_intg).to(device)  # [3, 50, 3]
+		rk4_intg = torch.tensor([0, 0, 1]).repeat(n_traj_samples * n_traj, 1).type(torch.FloatTensor)  # [150, 3]
+		rk4_reward = torch.Tensor(rk4_res['reward']).unsqueeze(-1)  # [150, 1]
+		rk4_truth = (rk4_reward * rk4_intg).to(device)  # [150, 3]
 
-		aux_truth = dopri_truth + euler_truth + rk4_truth  # [3, 50, 3]
-		aux_truth =  aux_truth.view(-1, n_intg) # [150, 3]
+		aux_truth = dopri_truth + euler_truth + rk4_truth  # [150, 3]
 		# aux_truth = torch.max(aux_truth, 1)[1]  # [150]
 
 		aux_opt.zero_grad()
@@ -245,7 +244,7 @@ if __name__ == '__main__':
 		aux_y = aux_net(fp_enc.clone().detach())  # [3, 50, 3]
 		aux_y = aux_y.view(-1, n_intg).type(aux_truth.type()) # [150, 3]
 
-		aux_loss = torch.sqrt(aux_criterion(aux_y, aux_truth))  #341.0933
+		aux_loss = torch.sqrt(aux_criterion(aux_y, aux_truth))
 		logger.info("Iter: {} | Train loss (one batch): {}".format(itr, aux_loss.detach()))
 		aux_loss.backward()
 		aux_opt.step()
@@ -301,26 +300,25 @@ if __name__ == '__main__':
 
 			n_traj_samples, n_traj, n_dims = fp_enc.size()  # 3, 16, 20
 
-			dopri_intg = torch.tensor([1, 0, 0]).repeat(n_traj_samples, n_traj, 1).type(torch.FloatTensor)
-			dopri_reward = dopri_res['reward'].unsqueeze(2).type(dopri_intg.type())
-			dopri_truth = (dopri_reward * dopri_intg).to(device)
+			dopri_intg = torch.tensor([1, 0, 0]).repeat(n_traj_samples * n_traj, 1).type(torch.FloatTensor)  # [150, 3]
+			dopri_reward = torch.Tensor(dopri_res['reward']).unsqueeze(-1)  # [150, 1]
+			dopri_truth = (dopri_reward * dopri_intg).to(device)  # [150, 3]
 
-			euler_intg = torch.tensor([0, 1, 0]).repeat(n_traj_samples, n_traj, 1).type(torch.FloatTensor)
-			euler_reward = euler_res['reward'].unsqueeze(2).type(euler_intg.type())
-			euler_truth = (euler_reward * euler_intg).to(device)
+			euler_intg = torch.tensor([0, 1, 0]).repeat(n_traj_samples * n_traj, 1).type(torch.FloatTensor)  # [150, 3]
+			euler_reward = torch.Tensor(euler_res['reward']).unsqueeze(-1)  # [150, 1]
+			euler_truth = (euler_reward * euler_intg).to(device)  # [150, 3]
 
-			rk4_intg = torch.tensor([0, 0, 1]).repeat(n_traj_samples, n_traj, 1).type(torch.FloatTensor)
-			rk4_reward = rk4_res['reward'].unsqueeze(2).type(rk4_intg.type())
-			rk4_truth = (rk4_reward * rk4_intg).to(device)
+			rk4_intg = torch.tensor([0, 0, 1]).repeat(n_traj_samples * n_traj, 1).type(torch.FloatTensor)  # [150, 3]
+			rk4_reward = torch.Tensor(rk4_res['reward']).unsqueeze(-1)  # [150, 1]
+			rk4_truth = (rk4_reward * rk4_intg).to(device)  # [150, 3]
 
-			aux_truth = dopri_truth + euler_truth + rk4_truth
-			aux_truth =  aux_truth.view(-1, n_intg)
+			aux_truth = dopri_truth + euler_truth + rk4_truth  # [150, 3]
 
 			aux_net.eval()
 			t = time.time()
 			aux_y = aux_net(fp_enc)  # [3, 800, 3]
 			aux_t += time.time() - t
-			aux_y =  aux_y.view(-1, n_intg) # [2400, 3]
+			aux_y = aux_y.view(-1, n_intg) # [2400, 3]
 			aux_test_loss = torch.sqrt(aux_criterion(aux_y, aux_truth))
 
 			# Choice of integrator
