@@ -540,7 +540,7 @@ def compute_loss_all_batches(model,
 		
 		batch_dict = get_next_batch(test_dataloader)
 
-		results, fp_enc = model.compute_all_losses(batch_dict, method,
+		results, fp_enc, _ = model.compute_all_losses(batch_dict, method,
 			n_traj_samples = n_traj_samples, kl_coef = kl_coef)
 
 		if args.classif:
