@@ -201,7 +201,7 @@ if __name__ == '__main__':
 	num_batches = data_obj["n_train_batches"]  # 64
 
 	##### Train Aux Net #####
-	logger.info("### Auxiliary Network : Euler step size {} | RK4 step size {} ###".format(args.step_size, args.step_size//4))
+	logger.info("### Auxiliary Network : step size {}###".format(args.step_size))
 	for itr in range(1, num_batches * (args.niters + 1)):  # 100
 		print('Iter: ' + str(itr))
 		wait_until_kl_inc = 10

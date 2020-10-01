@@ -14,6 +14,7 @@ python train_aux.py \
         --gru-units 50 \
         --quantization 0.016 \
         --classif \
-        --load '5755' \
+        --load '50522' \
 	--step_size 0.15 \
+	--alpha 0.1 \
         --gpu 3
