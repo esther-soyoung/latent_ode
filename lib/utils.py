@@ -608,8 +608,3 @@ def check_mask(data, mask):
 
 	# all masked out elements should be zeros
 	assert(torch.sum(data[mask == 0.] != 0.) == 0)
-
-
-
-
-

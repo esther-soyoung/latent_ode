@@ -15,6 +15,5 @@ python train_aux.py \
         --quantization 0.016 \
         --classif \
         --load '5755' \
-	--alpha 0.3 \
-	--step_size 0.1 \
+	--step_size 0.15 \
         --gpu 3

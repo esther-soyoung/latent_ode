@@ -9,6 +9,7 @@ import matplotlib
 matplotlib.use('Agg')
 import matplotlib.pyplot
 import matplotlib.pyplot as plt
+import sklearn as sk
 
 import time
 import datetime
@@ -282,6 +283,9 @@ if __name__ == '__main__':
 		num_batches = data_obj["n_test_batches"]  # 50
 		dopri_cnt, euler_cnt, rk4_cnt = 0, 0, 0
 		aux_t = 0
+		classif_predictions = torch.Tensor([]).to(device)
+		all_test_labels =  torch.Tensor([]).to(device)
+
 		logger.info("### Auxiliary Network : n_test_batches {} ###".format(num_batches))
 		for itr in range(1, num_batches + 1):
 			wait_until_kl_inc = 10
@@ -322,19 +326,25 @@ if __name__ == '__main__':
 			# Choice of integrator
 			aux_y_sum = torch.sum(aux_y, dim=0)  # [3]
 			pred_y = torch.min(aux_y_sum, 0)[1].item()  # 0: dopri5, 1: euler, 2: rk4
-			auc_choice = []
+			results = {}
 			if pred_y == 0:
 				pred_integrator = 'dopri5'
 				dopri_cnt += 1
-				auc_choice.append(dopri_res['auc'])
+				results = dopri_res
 			elif pred_y == 1:
 				pred_integrator = 'euler'
 				euler_cnt += 1
-				auc_choice.append(euler_res['auc'])
+				results = euler_res
 			else:
 				pred_integrator = 'rk4'
 				rk4_cnt += 1
-				auc_choice.append(rk4_res['auc'])
+				results = rk4_res
+
+			# overall AUC
+			classif_predictions = torch.cat((classif_predictions, 
+				results["label_predictions"].reshape(n_traj_samples, -1, n_labels)),1)
+			all_test_labels = torch.cat((all_test_labels, 
+				batch_dict["labels"].reshape(-1, n_labels)),0)
 
 			# Actual rewards
 			total_reward_dopri = torch.sum(dopri_reward.squeeze().view(-1)).item()  # total Dopri reward
@@ -346,7 +356,7 @@ if __name__ == '__main__':
 			logger.info("Loss(alpha {}) for Euler integrator (one batch): {}".format(args.alpha, total_reward_euler))
 			logger.info("Loss(alpha {}) for RK4 integrator (one batch): {}".format(args.alpha, total_reward_rk4))
 			logger.info("Choice of integrator (one batch): {}".format(pred_integrator))
-			logger.info("AUC of the choice (one batch): {}".format(auc_choice[-1]))
+			logger.info("AUC of the choice (one batch): {}".format(results['auc']))
 
 			torch.save({
 				'args': args,
@@ -354,14 +364,33 @@ if __name__ == '__main__':
 			}, aux_ckpt_path)
 		##############################
 
+		##### Overall AUC of the Choice #####
+
+		all_test_labels = all_test_labels.repeat(n_traj_samples,1,1)
+
+		idx_not_nan = ~torch.isnan(all_test_labels)
+		classif_predictions = classif_predictions[idx_not_nan]
+		all_test_labels = all_test_labels[idx_not_nan]
+
+		overall_auc = 0.
+		if torch.sum(all_test_labels) != 0.:
+			print("Number of labeled examples: {}".format(len(all_test_labels.reshape(-1))))
+			print("Number of examples with mortality 1: {}".format(torch.sum(all_test_labels == 1.)))
+
+			# Cannot compute AUC with only 1 class
+			overall_auc = sk.metrics.roc_auc_score(all_test_labels.cpu().numpy().reshape(-1), 
+				classif_predictions.cpu().numpy().reshape(-1))
+		else:
+			print("Warning: Couldn't compute AUC -- all examples are from the same class")
+		###################################
+
 	############## LOGGER ###############
 	logger.info('############### TOTAL ###############')
 	logger.info("Classification AUC : Dopri {:.4f} | Euler {:.4f} | RK4 {:.4f}".format(test_dopri["auc"], test_euler["auc"], test_rk4["auc"]))
 	logger.info("NFE (average): Dopri {} | Euler {} | RK4 {}".format(test_dopri['nfe'], test_euler['nfe'], test_rk4['nfe']))
 	logger.info("Elapsed time (average): Dopri {} | Euler {} | RK4 {}".format(test_dopri['elapsed_time'], test_euler['elapsed_time'], test_rk4['elapsed_time']))
 	logger.info('############### Aux Net Average ###############')
-	avg_auc = np.mean(np.array(auc_choice))
-	logger.info('Avg AUC {:.4f} | Choice of Dopri5 {} | Euler {} | RK4 {}'.format(avg_auc, dopri_cnt, euler_cnt, rk4_cnt))
+	logger.info('AUC of the choice {:.4f} | Choice of Dopri5 {} | Euler {} | RK4 {}'.format(overall_auc, dopri_cnt, euler_cnt, rk4_cnt))
 	logger.info('Aux Net Runtime: {:.4f}'.format(t))
 
 	############## SAVE MODEL ###############
