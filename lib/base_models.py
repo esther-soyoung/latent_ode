@@ -273,7 +273,7 @@ class VAE_Baseline(nn.Module):
 		cutoff = thresholds[np.argmax(tpr - fpr)]
 
 		ret = (truth == (pred_y>=cutoff)) * float(self.get_nfe() ** self.alpha)
-		ret[ret==0] = 1000
+		ret[ret==0] = 100000
 		# ret[ret==0] = 100000 ** self.alpha
 		return ret
 
