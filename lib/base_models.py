@@ -414,6 +414,6 @@ class VAE_Baseline(nn.Module):
 
 		# confusion matrix
 		conf = confusion_matrix(all_test_labels.cpu().numpy().reshape(-1),
-				classif_predictions.cpu().numpy().reshape(-1) >= results['cutoff']).ravel()  # tn, fp, fn, tp
+				classif_predictions.cpu().numpy().reshape(-1) >= results['cutoff'], labels=np.array([0, 1])).ravel()  # tn, fp, fn, tp
 
 		return results, fp_enc.detach(), conf
