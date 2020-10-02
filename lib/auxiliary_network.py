@@ -26,13 +26,13 @@ class AuxiliaryBlock(nn.Module):
         # x = x.view(-1, self.input_dim)
         x = self.fc1(x)
         x = F.relu(x)
-        # x = self.fc2(x)
-        # x = F.relu(x)
+        x = self.fc2(x)
+        x = F.relu(x)
         x = self.fc3(x)
         x = F.relu(x)
-        # x = self.fc4(x)
-        # x = F.relu(x)
-        x = self.dropout(x)
+        x = self.fc4(x)
+        x = F.relu(x)
+        # x = self.dropout(x)
         out = self.fc5(x)
 
         return out  # [3, 50, n_intg]
