@@ -38,7 +38,6 @@ from lib.ode_func import ODEFunc, ODEFunc_w_Poisson
 from lib.diffeq_solver import DiffeqSolver
 from mujoco_physics import HopperPhysics
 
-from lib.utils import compute_loss_all_batches
 
 # Generative model for noisy data based on ODE
 parser = argparse.ArgumentParser('Latent ODE')
@@ -133,7 +132,7 @@ if __name__ == '__main__':
 	if not os.path.exists("aux_experiments/"):
 		utils.makedirs("aux_experiments/")
 	aux_ckpt_path = os.path.join('aux_experiments/', "experiment_" + str(experimentID) + "_" + str(AUXexperimentID) + '.ckpt')
-	
+
 
 	start = time.time()
 	print("Sampling dataset of {} training examples".format(args.n))
@@ -229,18 +228,21 @@ if __name__ == '__main__':
 		# dict_keys(['observed_data', 'observed_tp', 'data_to_predict', 'tp_to_predict', 
 		# 'observed_mask', 'mask_predicted_data', 'labels', 'mode'])
 		with torch.no_grad():
-			dopri_res, fp_enc, d_conf = model.compute_all_losses(batch_dict, m=args.m, n_traj_samples = 3)
+			dopri_res, fp_enc = model.compute_all_losses(batch_dict, m=args.m, n_traj_samples = 3)
+			d_conf = dopri_res['conf']
 			dopri_classif_predictions = torch.cat((dopri_classif_predictions, 
 				dopri_res["label_predictions"].reshape(3, -1, 1)),1)
 			all_test_labels = torch.cat((all_test_labels, 
 				batch_dict["labels"].reshape(-1, 1)),0)
 
 			cutoff = dopri_res['cutoff']
-			euler_res, _, e_conf = model.compute_all_losses(batch_dict, method='euler', cut_off=cutoff*args.cutoff_coef, m=args.m, n_traj_samples=3)
+			euler_res, _ = model.compute_all_losses(batch_dict, method='euler', cut_off=cutoff*args.cutoff_coef, m=args.m, n_traj_samples=3)
+			e_conf = euler_res['conf']
 			euler_classif_predictions = torch.cat((euler_classif_predictions, 
 				euler_res["label_predictions"].reshape(3, -1, 1)),1)
 
-			rk4_res, _, r_conf = model.compute_all_losses(batch_dict, method='rk4', cut_off=cutoff*args.cutoff_coef, m=args.m, n_traj_samples=3)
+			rk4_res, _ = model.compute_all_losses(batch_dict, method='rk4', cut_off=cutoff*args.cutoff_coef, m=args.m, n_traj_samples=3)
+			r_conf = rk4_res['conf']
 			rk4_classif_predictions = torch.cat((rk4_classif_predictions, 
 				rk4_res["label_predictions"].reshape(3, -1, 1)),1)
 
@@ -365,10 +367,10 @@ if __name__ == '__main__':
 				classif_predictions = classif_predictions[idx_not_nan]
 				all_test_labels = all_test_labels[idx_not_nan]
 
-				cutoff = dopri_res['cutoff']
-				a_conf = confusion_matrix(all_test_labels.cpu().numpy().reshape(-1),
-						classif_predictions.cpu().numpy().reshape(-1) >= cutoff).ravel()  # tn, fp, fn, tp
-				aux_conf = [sum(x) for x in zip(aux_conf, a_conf)]
+				# cutoff = dopri_res['cutoff']
+				# a_conf = confusion_matrix(all_test_labels.cpu().numpy().reshape(-1),
+				# 		classif_predictions.cpu().numpy().reshape(-1) >= cutoff).ravel()  # tn, fp, fn, tp
+				aux_conf = [sum(x) for x in zip(aux_conf, results['conf'])]
 
 				# Actual costs
 				total_cost_dopri = torch.sum(dopri_cost.squeeze().view(-1)).item()
@@ -423,10 +425,10 @@ if __name__ == '__main__':
 		# dict_keys(['observed_data', 'observed_tp', 'data_to_predict', 'tp_to_predict', 
 		# 'observed_mask', 'mask_predicted_data', 'labels', 'mode'])
 		with torch.no_grad():
-			dopri_res, fp_enc, _ = model.compute_all_losses(batch_dict, m=args.m, n_traj_samples = 3)
+			dopri_res, fp_enc = model.compute_all_losses(batch_dict, m=args.m, n_traj_samples = 3)
 			cutoff = dopri_res['cutoff']
-			euler_res, _, _ = model.compute_all_losses(batch_dict, method='euler', cut_off=cutoff*args.cutoff_coef, m=args.m, n_traj_samples=3)
-			rk4_res, _, _ = model.compute_all_losses(batch_dict, method='rk4', cut_off=cutoff*args.cutoff_coef, m=args.m, n_traj_samples=3)
+			euler_res, _ = model.compute_all_losses(batch_dict, method='euler', cut_off=cutoff*args.cutoff_coef, m=args.m, n_traj_samples=3)
+			rk4_res, _ = model.compute_all_losses(batch_dict, method='rk4', cut_off=cutoff*args.cutoff_coef, m=args.m, n_traj_samples=3)
 
 		true_res['fp_enc'].append(fp_enc) 
 		true_res['dopri5'].append(dopri_res)
@@ -547,10 +549,10 @@ if __name__ == '__main__':
 					classif_predictions = classif_predictions[idx_not_nan]
 					all_test_labels = all_test_labels[idx_not_nan]
 
-					cutoff = dopri_res['cutoff']
-					a_conf = confusion_matrix(all_test_labels.cpu().numpy().reshape(-1),
-							classif_predictions.cpu().numpy().reshape(-1) >= cutoff).ravel()  # tn, fp, fn, tp
-					aux_conf = [sum(x) for x in zip(aux_conf, a_conf)]
+					# cutoff = dopri_res['cutoff']
+					# a_conf = confusion_matrix(all_test_labels.cpu().numpy().reshape(-1),
+					# 		classif_predictions.cpu().numpy().reshape(-1) >= cutoff).ravel()  # tn, fp, fn, tp
+					aux_conf = [sum(x) for x in zip(aux_conf, results['conf'])]
 
 					# Actual costs
 					total_cost_dopri = torch.sum(dopri_cost.squeeze().view(-1)).item()
