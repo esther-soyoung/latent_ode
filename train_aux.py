@@ -311,6 +311,7 @@ if __name__ == '__main__':
 			overall_auc = []
 			aux_conf = [0, 0, 0, 0]
 			for _itr in range(num_test_batches):  # 40
+				batch_dict = utils.get_next_batch(data_obj["test_dataloader"])
 				##### Get True values #####
 				fp_enc = true_test['fp_enc'][_itr]
 				dopri_res = true_test['dopri5'][_itr]
@@ -438,6 +439,7 @@ if __name__ == '__main__':
 	############ Train Aux Net ############
 	logger.info("### Auxiliary Network : step size {} ###".format(args.step_size))
 	for itr in range(1, num_batches * args.niters + 1):  # 64 *
+		batch_dict = utils.get_next_batch(data_obj["train_dataloader"])
 		logger.info('Train Iter: {}, Batch #{}/{}'.format(itr, itr % num_batches, num_batches))
 
 		##### Get True values #####
@@ -488,6 +490,7 @@ if __name__ == '__main__':
 				overall_auc = []
 				aux_conf = [0, 0, 0, 0]
 				for _itr in range(num_test_batches):  # 40
+					batch_dict = utils.get_next_batch(data_obj["test_dataloader"])
 					##### Get True values #####
 					fp_enc = true_test['fp_enc'][_itr]
 					dopri_res = true_test['dopri5'][_itr]
