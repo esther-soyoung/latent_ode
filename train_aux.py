@@ -410,7 +410,7 @@ if __name__ == '__main__':
 			logger.info('Aux Net Accuracy: {}'.format(aux_acc/40))
 			logger.info('AUC of the choices {:.4f} | Choice of Dopri5 {} | Euler {} | RK4 {}'.format(overall_auc, dopri_cnt, euler_cnt, rk4_cnt))
 			logger.info("TN, FP, FN, TP | AuxNet {}, {}, {}, {}".format(aux_conf[0], aux_conf[1], aux_conf[2], aux_conf[3]))
-			logger.info('Aux Net Runtime: {:.4f}'.format(aux_t))
+			logger.info('Avg Aux Net Runtime (per batch): {:.4f}'.format(aux_t/num_test_batches))
 
 		sys.exit()
 	#####################################################################################################
