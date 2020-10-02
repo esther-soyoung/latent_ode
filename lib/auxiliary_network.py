@@ -32,7 +32,7 @@ class AuxiliaryBlock(nn.Module):
         x = F.relu(x)
         x = self.fc4(x)
         x = F.relu(x)
-        x = self.dropout(x)
+        # x = self.dropout(x)
         out = self.fc5(x)
 
         return out  # [3, 50, n_intg]
