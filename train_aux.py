@@ -48,7 +48,6 @@ parser.add_argument('-b', '--batch-size', type=int, default=50)
 parser.add_argument('--viz', action='store_true', help="Show plots while training")
 
 parser.add_argument('--save', type=str, default='experiments/', help="Path for save checkpoints")
-parser.add_argument('--load', type=str, default='81209', help="ID of the experiment to load for evaluation. If None, run a new experiment.")
 parser.add_argument('-r', '--random-seed', type=int, default=1991, help="Random_seed")
 
 parser.add_argument('--dataset', type=str, default='physionet', help="Dataset to load. Available: physionet, activity, hopper, periodic")
@@ -99,9 +98,12 @@ parser.add_argument('--reg_l2', type=float, default=0, help="Lambda for L2 regul
 
 parser.add_argument('--method', type=str, default='dopri5_err', help="Integrator method: euler, rk4, dopri5_err")
 parser.add_argument('--step_size', type=float, default=0.03, help="Step size for fixed grid integrators")
-parser.add_argument('--alpha', type=float, default=0.01, help="Alpha for aux loss function")
+parser.add_argument('--alpha', type=float, default=0.05, help="Alpha for aux loss function")
 parser.add_argument('--cutoff_coef', type=float, default=1, help="Coefficient of Dopri cutoff value")
 parser.add_argument('--m', type=float, default=1000, help="Penalty value M for auxiliary cost")
+
+parser.add_argument('--load', type=str, default=None, help="ID of the experiment to load for evaluation. If None, run a new experiment.")
+parser.add_argument('--load_aux', type=str, default=None, help="ID of the experiment to load for evaluation. If None, run a new experiment.")
 
 args = parser.parse_args()
 
@@ -154,7 +156,7 @@ if __name__ == '__main__':
 	n_labels = 1
 	if args.classif:
 		if ("n_labels" in data_obj):
-			n_labels = data_obj["n_labels"]
+			n_labels = data_obj["n_labels"]  #
 		else:
 			raise Exception("Please provide number of labels for classification task")
 
@@ -182,13 +184,12 @@ if __name__ == '__main__':
 
 	##################################################################
 
-	if args.viz:
-		viz = Visualizations(device)
-
-	##################################################################
-	
 	#Load checkpoint and evaluate the model
 	utils.get_ckpt_model(ckpt_path, model, device)
+	# if args.load_aux is not None:
+	# 	experimentID = args.load
+	# 	aux_ckpt_path = os.path.join('aux_experiment/', "experiment_" + str(experimentID) + "_" + str(AUXexperimentID) + '.ckpt')
+	# 	utils.get_ckpt_model(aux_ckpt_path, aux_net, device)
 
 	log_path = "aux_logs/" + file_name + "_" + str(experimentID) + "_" + str(AUXexperimentID) + ".log"
 	if not os.path.exists("aux_logs/"):
@@ -196,37 +197,7 @@ if __name__ == '__main__':
 	logger = utils.get_logger(logpath=log_path, filepath=os.path.abspath(__file__))
 	logger.info(input_command)
 
-	############ Without Aux Net ############
-	with torch.no_grad():
-		test_dopri, _ = compute_loss_all_batches(model,
-			data_obj["test_dataloader"], args,
-			n_batches = data_obj["n_test_batches"],
-			experimentID = experimentID,
-			device = device,
-			n_traj_samples = 3)
-		test_euler, _ = compute_loss_all_batches(model,
-			data_obj["test_dataloader"], args,
-			n_batches = data_obj["n_test_batches"],
-			experimentID = experimentID,
-			device = device,
-			method = 'euler',
-			n_traj_samples = 3)
-		test_rk4, _ = compute_loss_all_batches(model,
-			data_obj["test_dataloader"], args,
-			n_batches = data_obj["n_test_batches"],
-			experimentID = experimentID,
-			device = device,
-			method = 'rk4',
-			n_traj_samples = 3)
-
-	logger.info("Experiment " + str(experimentID) + "_" + str(AUXexperimentID))
-	logger.info('############### TOTAL ###############')
-	logger.info("Classification AUC : Dopri {:.4f} | Euler {:.4f} | RK4 {:.4f}".format(test_dopri["auc"], test_euler["auc"], test_rk4["auc"]))
-	logger.info("NFE (average): Dopri {} | Euler {} | RK4 {}".format(test_dopri['nfe'], test_euler['nfe'], test_rk4['nfe']))
-	logger.info("Elapsed time (average): Dopri {} | Euler {} | RK4 {}".format(test_dopri['elapsed_time'], test_euler['elapsed_time'], test_rk4['elapsed_time']))
-	##################################################################
-
-	##### True Values #####
+	############ True Values Without Aux Net ############
 	## Train ##
 	num_batches = data_obj["n_train_batches"]  # 64
 	true_res = {}
@@ -239,33 +210,116 @@ if __name__ == '__main__':
 		# dict_keys(['observed_data', 'observed_tp', 'data_to_predict', 'tp_to_predict', 
 		# 'observed_mask', 'mask_predicted_data', 'labels', 'mode'])
 		with torch.no_grad():
-			dopri_res, fp_enc, cutoff = model.compute_all_losses(batch_dict, m=args.m, n_traj_samples = 3)
+			dopri_res, fp_enc, _ = model.compute_all_losses(batch_dict, m=args.m, n_traj_samples = 3)
+			cutoff = dopri_res['cutoff']
 			euler_res, _, _ = model.compute_all_losses(batch_dict, method='euler', cut_off=cutoff*args.cutoff_coef, m=args.m, n_traj_samples=3)
 			rk4_res, _, _ = model.compute_all_losses(batch_dict, method='rk4', cut_off=cutoff*args.cutoff_coef, m=args.m, n_traj_samples=3)
+
 		true_res['fp_enc'].append(fp_enc) 
 		true_res['dopri5'].append(dopri_res)
 		true_res['euler'].append(euler_res)
 		true_res['rk4'].append(rk4_res)
+
 	## Test ##
+	dopri_classif_predictions = torch.Tensor([]).to(device)
+	euler_classif_predictions = torch.Tensor([]).to(device)
+	rk4_classif_predictions = torch.Tensor([]).to(device)
+	all_test_labels =  torch.Tensor([]).to(device)
+
 	num_test_batches = data_obj["n_test_batches"]  # 40
 	true_test = {}
 	true_test['fp_enc'] = []
 	true_test['dopri5'] = []	
 	true_test['euler'] = []	
 	true_test['rk4'] = []	
+
+	total_d = {}
+	total_d['nfe'] = 0
+	total_d['elapsed_time'] = 0
+	total_e = {}
+	total_e['nfe'] = 0
+	total_e['elapsed_time'] = 0
+	total_r = {}
+	total_r['nfe'] = 0
+	total_r['elapsed_time'] = 0
+
+	dopri_conf = [0, 0, 0, 0]
+	euler_conf = [0, 0, 0, 0]
+	rk4_conf = [0, 0, 0, 0]
 	for i in range(num_test_batches):
 		batch_dict = utils.get_next_batch(data_obj["test_dataloader"])
+		# dict_keys(['observed_data', 'observed_tp', 'data_to_predict', 'tp_to_predict', 
+		# 'observed_mask', 'mask_predicted_data', 'labels', 'mode'])
 		with torch.no_grad():
-			dopri_res, fp_enc, cutoff = model.compute_all_losses(batch_dict, m=args.m, n_traj_samples = 3)
-			euler_res, _, _ = model.compute_all_losses(batch_dict, method='euler', cut_off=cutoff*args.cutoff_coef, m=args.m, n_traj_samples=3)
-			rk4_res, _, _ = model.compute_all_losses(batch_dict, method='rk4', cut_off=cutoff*args.cutoff_coef, m=args.m, n_traj_samples=3)
+			dopri_res, fp_enc, d_conf = model.compute_all_losses(batch_dict, m=args.m, n_traj_samples = 3)
+			dopri_classif_predictions = torch.cat((dopri_classif_predictions, 
+				dopri_res["label_predictions"].reshape(3, -1, 1)),1)
+			all_test_labels = torch.cat((all_test_labels, 
+				batch_dict["labels"].reshape(-1, 1)),0)
+
+			cutoff = dopri_res['cutoff']
+			euler_res, _, e_conf = model.compute_all_losses(batch_dict, method='euler', cut_off=cutoff*args.cutoff_coef, m=args.m, n_traj_samples=3)
+			euler_classif_predictions = torch.cat((euler_classif_predictions, 
+				euler_res["label_predictions"].reshape(3, -1, 1)),1)
+
+			rk4_res, _, r_conf = model.compute_all_losses(batch_dict, method='rk4', cut_off=cutoff*args.cutoff_coef, m=args.m, n_traj_samples=3)
+			rk4_classif_predictions = torch.cat((rk4_classif_predictions, 
+				rk4_res["label_predictions"].reshape(3, -1, 1)),1)
+
 		true_test['fp_enc'].append(fp_enc) 
 		true_test['dopri5'].append(dopri_res)
 		true_test['euler'].append(euler_res)
 		true_test['rk4'].append(rk4_res)
 
+		dopri_conf = [sum(x) for x in zip(dopri_conf, d_conf)]
+		euler_conf = [sum(x) for x in zip(euler_conf, e_conf)]
+		rk4_conf = [sum(x) for x in zip(rk4_conf, r_conf)]
 
-	##### Train Aux Net #####
+		for key in total_d.keys():
+			total_d[key] += dopri_res[key]
+			total_e[key] += euler_res[key]
+			total_r[key] += rk4_res[key]
+
+	for key in total_d.keys():
+		total_d[key] = total_d[key] / num_test_batches
+		total_e[key] = total_e[key] / num_test_batches
+		total_r[key] = total_r[key] / num_test_batches
+
+	all_test_labels = all_test_labels.repeat(3,1,1)
+	idx_not_nan = ~torch.isnan(all_test_labels)  # torch.Size([3, 800, 1])
+	all_test_labels = all_test_labels[idx_not_nan]  # torch.Size([2400])
+	dopri_classif_predictions = dopri_classif_predictions[idx_not_nan]  # torch.Size([2400])
+	euler_classif_predictions = euler_classif_predictions[idx_not_nan]
+	rk4_classif_predictions = rk4_classif_predictions[idx_not_nan]
+	# import pdb;pdb.set_trace()
+
+	dopri_auc = 0.
+	euler_auc = 0.
+	rk4_auc = 0.
+	if torch.sum(all_test_labels) != 0.:
+		print("Number of labeled examples: {}".format(len(all_test_labels.reshape(-1))))
+		print("Number of examples with mortality 1: {}".format(torch.sum(all_test_labels == 1.)))
+		# Cannot compute AUC with only 1 class
+		dopri_auc = sk.metrics.roc_auc_score(all_test_labels.cpu().numpy().reshape(-1), 
+			dopri_classif_predictions.cpu().numpy().reshape(-1))
+		euler_auc = sk.metrics.roc_auc_score(all_test_labels.cpu().numpy().reshape(-1), 
+			euler_classif_predictions.cpu().numpy().reshape(-1))
+		rk4_auc = sk.metrics.roc_auc_score(all_test_labels.cpu().numpy().reshape(-1), 
+			euler_classif_predictions.cpu().numpy().reshape(-1))
+	else:
+		print("Warning: Couldn't compute AUC -- all examples are from the same class")
+
+	logger.info("Experiment " + str(experimentID) + "_" + str(AUXexperimentID))
+	logger.info('############### TOTAL ###############')
+	logger.info("TPR, FPR, TNR, FNR | Dopri {}, {}, {}, {}".format(dopri_conf[0], dopri_conf[1], dopri_conf[2], dopri_conf[3]))
+	logger.info("TPR, FPR, TNR, FNR | Euler {}, {}, {}, {}".format(euler_conf[0], euler_conf[1], euler_conf[2], euler_conf[3]))
+	logger.info("TPR, FPR, TNR, FNR | RK4 {}, {}, {}, {}".format(rk4_conf[0], rk4_conf[1], rk4_conf[2], rk4_conf[3]))
+	logger.info("Classification AUC : Dopri {:.4f} | Euler {:.4f} | RK4 {:.4f}".format(dopri_auc, euler_auc, rk4_auc))
+	logger.info("NFE (average): Dopri {} | Euler {} | RK4 {}".format(total_d['nfe'], total_e['nfe'], total_r['nfe']))
+	logger.info("Elapsed time (average): Dopri {} | Euler {} | RK4 {}".format(total_d['elapsed_time'], total_e['elapsed_time'], total_r['elapsed_time']))
+	##################################################################
+
+	############ Train Aux Net ############
 	logger.info("### Auxiliary Network : step size {} ###".format(args.step_size))
 	for itr in range(1, num_batches * args.niters + 1):  # 64 *
 		logger.info('Train Iter: {}, Batch #{}/{}'.format(itr, itr % num_batches, num_batches))
@@ -312,9 +366,11 @@ if __name__ == '__main__':
 				dopri_cnt, euler_cnt, rk4_cnt = 0, 0, 0
 				aux_acc = 0
 				aux_t = 0
-				classif_predictions = torch.Tensor([]).to(device)
-				all_test_labels =  torch.Tensor([]).to(device)
+				# classif_predictions = torch.Tensor([]).to(device)
+				# all_test_labels =  torch.Tensor([]).to(device)
 
+				overall_auc = []
+				aux_conf = [0, 0, 0, 0]
 				for _itr in range(num_test_batches):  # 40
 					##### Get True values #####
 					fp_enc = true_test['fp_enc'][_itr]
@@ -363,10 +419,18 @@ if __name__ == '__main__':
 						results = rk4_res
 
 					# overall AUC
-					classif_predictions = torch.cat((classif_predictions, 
-						results["label_predictions"].reshape(n_traj_samples, -1, n_labels)),1)
-					all_test_labels = torch.cat((all_test_labels, 
-						batch_dict["labels"].reshape(-1, n_labels)),0)
+					# import pdb;pdb.set_trace()
+					# classif_predictions = torch.cat((classif_predictions, 
+					# 	results["label_predictions"].reshape(n_traj_samples, -1, n_labels)),1)  # torch.Size([3, 20, 1])
+					# all_test_labels = torch.cat((all_test_labels, 
+					# 	batch_dict["labels"].reshape(-1, n_labels)),0)  # torch.Size([20, 1])
+					overall_auc.append(results['auc'])
+
+					all_test_labels = batch_dict["labels"].reshape(-1, n_labels)
+					classif_predictions = results["label_predictions"].reshape(n_traj_samples, -1, n_labels)
+					cutoff = dopri_res['cutoff']
+					a_conf = model.confusion_mat(all_test_labels, classif_predictions, cutoff)
+					aux_conf = [sum(x) for x in zip(aux_conf, a_conf)]
 
 					# Actual costs
 					total_cost_dopri = torch.sum(dopri_cost.squeeze().view(-1)).item()
@@ -399,26 +463,28 @@ if __name__ == '__main__':
 
 				##### Overall AUC of the Choice #####
 
-				all_test_labels = all_test_labels.repeat(n_traj_samples,1,1)
+				overall_auc = np.mean(np.array(overall_auc))
+				# all_test_labels = all_test_labels.repeat(n_traj_samples,1,1)  # torch.Size([3, 20, 1])
 
-				idx_not_nan = ~torch.isnan(all_test_labels)
-				classif_predictions = classif_predictions[idx_not_nan]
-				all_test_labels = all_test_labels[idx_not_nan]
+				# idx_not_nan = ~torch.isnan(all_test_labels)  # torch.Size([3, 20, 1])
+				# classif_predictions = classif_predictions[idx_not_nan]  # torch.Size([60]) 
+				# all_test_labels = all_test_labels[idx_not_nan]  # torch.Size([60])
 
-				overall_auc = 0.
-				if torch.sum(all_test_labels) != 0.:
-					print("Number of labeled examples: {}".format(len(all_test_labels.reshape(-1))))
-					print("Number of examples with mortality 1: {}".format(torch.sum(all_test_labels == 1.)))
+				# overall_auc = 0.
+				# if torch.sum(all_test_labels) != 0.:
+				# 	print("Number of labeled examples: {}".format(len(all_test_labels.reshape(-1))))
+				# 	print("Number of examples with mortality 1: {}".format(torch.sum(all_test_labels == 1.)))
 
-					# Cannot compute AUC with only 1 class
-					overall_auc = sk.metrics.roc_auc_score(all_test_labels.cpu().numpy().reshape(-1), 
-						classif_predictions.cpu().numpy().reshape(-1))
-				else:
-					print("Warning: Couldn't compute AUC -- all examples are from the same class")
+				# 	# Cannot compute AUC with only 1 class
+				# 	overall_auc = sk.metrics.roc_auc_score(all_test_labels.cpu().numpy().reshape(-1), 
+				# 		classif_predictions.cpu().numpy().reshape(-1))
+				# else:
+				# 	print("Warning: Couldn't compute AUC -- all examples are from the same class")
 				############## LOGGER ###############
 				logger.info('----- Total Test Batches')
 				logger.info('Aux Net Accuracy: {}'.format(aux_acc/40))
 				logger.info('AUC of the choices {:.4f} | Choice of Dopri5 {} | Euler {} | RK4 {}'.format(overall_auc, dopri_cnt, euler_cnt, rk4_cnt))
+				logger.info("TPR, FPR, TNR, FNR | AuxNet {}, {}, {}, {}".format(aux_conf[0], aux_conf[1], aux_conf[2], aux_conf[3]))
 				logger.info('Aux Net Runtime: {:.4f}'.format(t))
 		###################################
 	##############################

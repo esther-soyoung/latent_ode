@@ -274,6 +274,20 @@ class VAE_Baseline(nn.Module):
 		ret[ret==0] = m
 		return ret, cut_off
 
+	def confusion_mat(self, truth, pred_y, cut_off=None):
+		if cut_off is None:
+			cut_off = self.get_cutoff(truth, pred_y)
+		ret = [0, 0, 0, 0]  # tpr, fpr, tnr, fnr
+		# tpr
+		ret[0] += np.sum((truth == 1) and (truth == (pred_y>=cut_off)))
+		# fpr
+		ret[1] += np.sum((truth == 0) and (truth == (pred_y>=cut_off)))
+		# tnr
+		ret[2] += np.sum((truth == 1) and (truth != (pred_y>=cut_off)))
+		# fnr
+		ret[3] += np.sum((truth == 0) and (truth != (pred_y>=cut_off)))
+		return ret
+
 	def compute_all_losses(self, batch_dict, method='dopri5_err', cut_off=None, m=1000, n_traj_samples = 1, kl_coef = 1.):
 		# Condition on subsampled points
 		# Make predictions for all the points
@@ -394,7 +408,11 @@ class VAE_Baseline(nn.Module):
 			print("Warning: Couldn't compute AUC -- all examples are from the same class")
 
 		# cost
-		results['cost'], cutoff = self.get_cost(all_test_labels.cpu().numpy().reshape(-1),
+		results['cost'], results['cutoff'] = self.get_cost(all_test_labels.cpu().numpy().reshape(-1),
 				classif_predictions.cpu().numpy().reshape(-1), cut_off, m)
 
-		return results, fp_enc.detach(), cutoff
+		# confusion matrix
+		conf = self.confusion_mat(all_test_labels.cpu().numpy().reshape(-1),
+				classif_predictions.cpu().numpy().reshape(-1), cut_off)
+
+		return results, fp_enc.detach(), conf
