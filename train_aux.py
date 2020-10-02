@@ -133,6 +133,7 @@ if __name__ == '__main__':
 	if not os.path.exists("aux_experiments/"):
 		utils.makedirs("aux_experiments/")
 	aux_ckpt_path = os.path.join('aux_experiments/', "experiment_" + str(experimentID) + "_" + str(AUXexperimentID) + '.ckpt')
+	
 
 	start = time.time()
 	print("Sampling dataset of {} training examples".format(args.n))
@@ -188,6 +189,8 @@ if __name__ == '__main__':
 	#Load checkpoint and evaluate the model
 	utils.get_ckpt_model(ckpt_path, model, device)
 
+	if args.load_aux:
+		experimentID = args.load_aux
 	log_path = "aux_logs/" + file_name + "_" + str(experimentID) + "_" + str(AUXexperimentID) + ".log"
 	if not os.path.exists("aux_logs/"):
 		utils.makedirs("aux_logs/")
