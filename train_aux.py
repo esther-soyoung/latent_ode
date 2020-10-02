@@ -187,10 +187,6 @@ if __name__ == '__main__':
 
 	#Load checkpoint and evaluate the model
 	utils.get_ckpt_model(ckpt_path, model, device)
-	# if args.load_aux is not None:
-	# 	experimentID = args.load
-	# 	aux_ckpt_path = os.path.join('aux_experiment/', "experiment_" + str(experimentID) + "_" + str(AUXexperimentID) + '.ckpt')
-	# 	utils.get_ckpt_model(aux_ckpt_path, aux_net, device)
 
 	log_path = "aux_logs/" + file_name + "_" + str(experimentID) + "_" + str(AUXexperimentID) + ".log"
 	if not os.path.exists("aux_logs/"):
@@ -199,28 +195,6 @@ if __name__ == '__main__':
 	logger.info(input_command)
 
 	############ True Values Without Aux Net ############
-	## Train ##
-	num_batches = data_obj["n_train_batches"]  # 64
-	true_res = {}
-	true_res['fp_enc'] = []
-	true_res['dopri5'] = []	
-	true_res['euler'] = []	
-	true_res['rk4'] = []	
-	for i in range(num_batches):
-		batch_dict = utils.get_next_batch(data_obj["train_dataloader"])
-		# dict_keys(['observed_data', 'observed_tp', 'data_to_predict', 'tp_to_predict', 
-		# 'observed_mask', 'mask_predicted_data', 'labels', 'mode'])
-		with torch.no_grad():
-			dopri_res, fp_enc, _ = model.compute_all_losses(batch_dict, m=args.m, n_traj_samples = 3)
-			cutoff = dopri_res['cutoff']
-			euler_res, _, _ = model.compute_all_losses(batch_dict, method='euler', cut_off=cutoff*args.cutoff_coef, m=args.m, n_traj_samples=3)
-			rk4_res, _, _ = model.compute_all_losses(batch_dict, method='rk4', cut_off=cutoff*args.cutoff_coef, m=args.m, n_traj_samples=3)
-
-		true_res['fp_enc'].append(fp_enc) 
-		true_res['dopri5'].append(dopri_res)
-		true_res['euler'].append(euler_res)
-		true_res['rk4'].append(rk4_res)
-
 	## Test ##
 	dopri_classif_predictions = torch.Tensor([]).to(device)
 	euler_classif_predictions = torch.Tensor([]).to(device)
@@ -320,6 +294,141 @@ if __name__ == '__main__':
 	logger.info("NFE (average): Dopri {} | Euler {} | RK4 {}".format(total_d['nfe'], total_e['nfe'], total_r['nfe']))
 	logger.info("Elapsed time (average): Dopri {} | Euler {} | RK4 {}".format(total_d['elapsed_time'], total_e['elapsed_time'], total_r['elapsed_time']))
 	##################################################################
+
+	if args.load_aux is not None:
+		aux_ckpt_path = os.path.join('aux_experiments/', "experiment_" + str(args.load_aux) + '.ckpt')
+		utils.get_ckpt_model(aux_ckpt_path, aux_net, device)
+		with torch.no_grad():
+			dopri_cnt, euler_cnt, rk4_cnt = 0, 0, 0
+			aux_acc = 0
+			aux_t = 0
+
+			overall_auc = []
+			aux_conf = [0, 0, 0, 0]
+			for _itr in range(num_test_batches):  # 40
+				##### Get True values #####
+				fp_enc = true_test['fp_enc'][_itr]
+				dopri_res = true_test['dopri5'][_itr]
+				euler_res = true_test['euler'][_itr]
+				rk4_res = true_test['rk4'][_itr]
+
+				n_traj_samples, n_traj, n_dims = fp_enc.size()  # 3, 20, 20
+
+				dopri_intg = torch.tensor([1, 0, 0]).repeat(n_traj_samples * n_traj, 1).type(torch.FloatTensor)  # [60, 3]
+				dopri_cost = torch.Tensor(dopri_res['cost']).unsqueeze(-1)  # [60, 1]
+				dopri_truth = (dopri_cost * dopri_intg).to(device)  # [60, 3]
+
+				euler_intg = torch.tensor([0, 1, 0]).repeat(n_traj_samples * n_traj, 1).type(torch.FloatTensor)  # [60, 3]
+				euler_cost = torch.Tensor(euler_res['cost']).unsqueeze(-1)  # [60, 1]
+				euler_truth = (euler_cost * euler_intg).to(device)  # [60, 3]
+
+				rk4_intg = torch.tensor([0, 0, 1]).repeat(n_traj_samples * n_traj, 1).type(torch.FloatTensor)  # [60, 3]
+				rk4_cost = torch.Tensor(rk4_res['cost']).unsqueeze(-1)  # [60, 1]
+				rk4_truth = (rk4_cost * rk4_intg).to(device)  # [60, 3]
+
+				aux_truth = dopri_truth + euler_truth + rk4_truth  # [60, 3]
+
+				aux_net.eval()
+				t = time.time()
+				aux_y = aux_net(fp_enc)  # [3, 20, 3]
+				aux_t += time.time() - t
+				aux_y = aux_y.view(-1, n_intg) # [60, 3]
+				aux_test_loss = torch.sqrt(aux_criterion(aux_y, aux_truth))
+
+				# Choice of integrator
+				aux_y_sum = torch.sum(aux_y, dim=0)  # [3]
+				pred_y = torch.min(aux_y_sum, 0)[1].item()  # 0: dopri5, 1: euler, 2: rk4
+				results = {}
+				if pred_y == 0:
+					pred_integrator = 'dopri5'
+					dopri_cnt += 1
+					results = dopri_res
+				elif pred_y == 1:
+					pred_integrator = 'euler'
+					euler_cnt += 1
+					results = euler_res
+				else:
+					pred_integrator = 'rk4'
+					rk4_cnt += 1
+					results = rk4_res
+
+				# overall AUC
+				overall_auc.append(results['auc'])
+
+				all_test_labels = batch_dict["labels"].reshape(-1, n_labels)
+				classif_predictions = results["label_predictions"].reshape(n_traj_samples, -1, n_labels)
+				all_test_labels = all_test_labels.repeat(n_traj_samples,1,1)
+				idx_not_nan = ~torch.isnan(all_test_labels)
+				classif_predictions = classif_predictions[idx_not_nan]
+				all_test_labels = all_test_labels[idx_not_nan]
+
+				cutoff = dopri_res['cutoff']
+				a_conf = confusion_matrix(all_test_labels.cpu().numpy().reshape(-1),
+						classif_predictions.cpu().numpy().reshape(-1) >= cutoff).ravel()  # tn, fp, fn, tp
+				aux_conf = [sum(x) for x in zip(aux_conf, a_conf)]
+
+				# Actual costs
+				total_cost_dopri = torch.sum(dopri_cost.squeeze().view(-1)).item()
+				total_cost_euler = torch.sum(euler_cost.squeeze().view(-1)).item()
+				total_cost_rk4 = torch.sum(rk4_cost.squeeze().view(-1)).item()
+				min_loss = min(total_cost_dopri, total_cost_euler, total_cost_rk4)
+				if min_loss == total_cost_dopri:
+					label_integrator = 'dopri5'
+				elif min_loss == total_cost_euler:
+					label_integrator = 'euler'
+				else:
+					label_integrator = 'rk4'
+
+				logger.info("----- Test Iter {} | Test loss (one batch): {}".format(_itr, aux_test_loss))
+				logger.info("Cost(alpha {}) for Dopri integrator (one batch): {}".format(args.alpha, total_cost_dopri))
+				logger.info("Cost(alpha {}) for Euler integrator (one batch): {}".format(args.alpha, total_cost_euler))
+				logger.info("Cost(alpha {}) for RK4 integrator (one batch): {}".format(args.alpha, total_cost_rk4))
+				logger.info("Choice of integrator (one batch): {} | Predicted Cost: {}".format(pred_integrator, aux_y_sum))
+				logger.info("Auxiliary network predicted {}".format(label_integrator == pred_integrator))
+				logger.info("AUC of the choice (one batch): {}".format(results['auc']))
+
+				if (label_integrator == pred_integrator):
+					aux_acc += 1
+
+				torch.save({
+					'args': args,
+					'state_dict': aux_net.state_dict(),
+				}, aux_ckpt_path)
+			##############################
+
+			##### Overall AUC of the Choice #####
+
+			overall_auc = np.mean(np.array(overall_auc))
+			############## LOGGER ###############
+			logger.info('----- Total Test Batches')
+			logger.info('Aux Net Accuracy: {}'.format(aux_acc/40))
+			logger.info('AUC of the choices {:.4f} | Choice of Dopri5 {} | Euler {} | RK4 {}'.format(overall_auc, dopri_cnt, euler_cnt, rk4_cnt))
+			logger.info("TN, FP, FN, TP | AuxNet {}, {}, {}, {}".format(aux_conf[0], aux_conf[1], aux_conf[2], aux_conf[3]))
+			logger.info('Aux Net Runtime: {:.4f}'.format(t))
+
+		sys.exit()
+	#####################################################################################################
+	## Train ##
+	num_batches = data_obj["n_train_batches"]  # 64
+	true_res = {}
+	true_res['fp_enc'] = []
+	true_res['dopri5'] = []
+	true_res['euler'] = []
+	true_res['rk4'] = []
+	for i in range(num_batches):
+		batch_dict = utils.get_next_batch(data_obj["train_dataloader"])
+		# dict_keys(['observed_data', 'observed_tp', 'data_to_predict', 'tp_to_predict', 
+		# 'observed_mask', 'mask_predicted_data', 'labels', 'mode'])
+		with torch.no_grad():
+			dopri_res, fp_enc, _ = model.compute_all_losses(batch_dict, m=args.m, n_traj_samples = 3)
+			cutoff = dopri_res['cutoff']
+			euler_res, _, _ = model.compute_all_losses(batch_dict, method='euler', cut_off=cutoff*args.cutoff_coef, m=args.m, n_traj_samples=3)
+			rk4_res, _, _ = model.compute_all_losses(batch_dict, method='rk4', cut_off=cutoff*args.cutoff_coef, m=args.m, n_traj_samples=3)
+
+		true_res['fp_enc'].append(fp_enc) 
+		true_res['dopri5'].append(dopri_res)
+		true_res['euler'].append(euler_res)
+		true_res['rk4'].append(rk4_res)
 
 	############ Train Aux Net ############
 	logger.info("### Auxiliary Network : step size {} ###".format(args.step_size))
