@@ -19,6 +19,7 @@ import pandas as pd
 import random
 from random import SystemRandom
 from sklearn import model_selection
+from sklearn.metrics import confusion_matrix
 
 import torch
 import torch.nn as nn
@@ -243,7 +244,7 @@ if __name__ == '__main__':
 	total_r['nfe'] = 0
 	total_r['elapsed_time'] = 0
 
-	dopri_conf = [0, 0, 0, 0]
+	dopri_conf = [0, 0, 0, 0]  # tn, fp, fn, tp
 	euler_conf = [0, 0, 0, 0]
 	rk4_conf = [0, 0, 0, 0]
 	for i in range(num_test_batches):
@@ -274,6 +275,7 @@ if __name__ == '__main__':
 		dopri_conf = [sum(x) for x in zip(dopri_conf, d_conf)]
 		euler_conf = [sum(x) for x in zip(euler_conf, e_conf)]
 		rk4_conf = [sum(x) for x in zip(rk4_conf, r_conf)]
+		# import pdb;pdb.set_trace()
 
 		for key in total_d.keys():
 			total_d[key] += dopri_res[key]
@@ -311,9 +313,9 @@ if __name__ == '__main__':
 
 	logger.info("Experiment " + str(experimentID) + "_" + str(AUXexperimentID))
 	logger.info('############### TOTAL ###############')
-	logger.info("TPR, FPR, TNR, FNR | Dopri {}, {}, {}, {}".format(dopri_conf[0], dopri_conf[1], dopri_conf[2], dopri_conf[3]))
-	logger.info("TPR, FPR, TNR, FNR | Euler {}, {}, {}, {}".format(euler_conf[0], euler_conf[1], euler_conf[2], euler_conf[3]))
-	logger.info("TPR, FPR, TNR, FNR | RK4 {}, {}, {}, {}".format(rk4_conf[0], rk4_conf[1], rk4_conf[2], rk4_conf[3]))
+	logger.info("TN, FP, FN, TP | Dopri {}, {}, {}, {}".format(dopri_conf[0], dopri_conf[1], dopri_conf[2], dopri_conf[3]))
+	logger.info("TN, FP, FN, TP | Euler {}, {}, {}, {}".format(euler_conf[0], euler_conf[1], euler_conf[2], euler_conf[3]))
+	logger.info("TN, FP, FN, TP | RK4 {}, {}, {}, {}".format(rk4_conf[0], rk4_conf[1], rk4_conf[2], rk4_conf[3]))
 	logger.info("Classification AUC : Dopri {:.4f} | Euler {:.4f} | RK4 {:.4f}".format(dopri_auc, euler_auc, rk4_auc))
 	logger.info("NFE (average): Dopri {} | Euler {} | RK4 {}".format(total_d['nfe'], total_e['nfe'], total_r['nfe']))
 	logger.info("Elapsed time (average): Dopri {} | Euler {} | RK4 {}".format(total_d['elapsed_time'], total_e['elapsed_time'], total_r['elapsed_time']))
@@ -428,8 +430,14 @@ if __name__ == '__main__':
 
 					all_test_labels = batch_dict["labels"].reshape(-1, n_labels)
 					classif_predictions = results["label_predictions"].reshape(n_traj_samples, -1, n_labels)
+					all_test_labels = all_test_labels.repeat(n_traj_samples,1,1)
+					idx_not_nan = ~torch.isnan(all_test_labels)
+					classif_predictions = classif_predictions[idx_not_nan]
+					all_test_labels = all_test_labels[idx_not_nan]
+
 					cutoff = dopri_res['cutoff']
-					a_conf = model.confusion_mat(all_test_labels, classif_predictions, cutoff)
+					a_conf = confusion_matrix(all_test_labels.cpu().numpy().reshape(-1),
+							classif_predictions.cpu().numpy().reshape(-1) >= cutoff).ravel()  # tn, fp, fn, tp
 					aux_conf = [sum(x) for x in zip(aux_conf, a_conf)]
 
 					# Actual costs
@@ -484,7 +492,7 @@ if __name__ == '__main__':
 				logger.info('----- Total Test Batches')
 				logger.info('Aux Net Accuracy: {}'.format(aux_acc/40))
 				logger.info('AUC of the choices {:.4f} | Choice of Dopri5 {} | Euler {} | RK4 {}'.format(overall_auc, dopri_cnt, euler_cnt, rk4_cnt))
-				logger.info("TPR, FPR, TNR, FNR | AuxNet {}, {}, {}, {}".format(aux_conf[0], aux_conf[1], aux_conf[2], aux_conf[3]))
+				logger.info("TN, FP, FN, TP | AuxNet {}, {}, {}, {}".format(aux_conf[0], aux_conf[1], aux_conf[2], aux_conf[3]))
 				logger.info('Aux Net Runtime: {:.4f}'.format(t))
 		###################################
 	##############################

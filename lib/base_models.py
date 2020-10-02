@@ -21,6 +21,7 @@ from torch.distributions import Independent
 from torch.nn.parameter import Parameter
 
 import sklearn as sk
+from sklearn.metrics import confusion_matrix
 
 def create_classifier(z0_dim, n_labels):
 	return nn.Sequential(
@@ -412,7 +413,7 @@ class VAE_Baseline(nn.Module):
 				classif_predictions.cpu().numpy().reshape(-1), cut_off, m)
 
 		# confusion matrix
-		conf = self.confusion_mat(all_test_labels.cpu().numpy().reshape(-1),
-				classif_predictions.cpu().numpy().reshape(-1), cut_off)
+		conf = confusion_matrix(all_test_labels.cpu().numpy().reshape(-1),
+				classif_predictions.cpu().numpy().reshape(-1) >= results['cutoff']).ravel()  # tn, fp, fn, tp
 
 		return results, fp_enc.detach(), conf
