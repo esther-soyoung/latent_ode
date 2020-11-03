@@ -1,0 +1,6 @@
+/home/soyoung/latent_ode0/train_aux.py
+train_aux.py --niters 100 -n 8000 -l 20 --latent-ode --z0-encoder rnn --dataset physionet --rec-dims 40 --rec-layers 3 --gen-layers 3 --units 50 --gru-units 50 --quantization 0.016 --classif --step_size 0.03 --alpha 0.3 --m 10 --load_aux 59645_42889
+Experiment 59645_6158
+############### TOTAL ###############
+NFE (average): Dopri 72.5 | Euler 34.0 | RK4 136.0
+Elapsed time (average): Dopri 0.2972298264503479 | Euler 0.1292711913585663 | RK4 0.15575859546661378
