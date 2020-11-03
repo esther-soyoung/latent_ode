@@ -1,0 +1,635 @@
+/home/soyoung/latent_ode0/train_aux.py
+train_aux.py --niters 5 -n 8000 -l 20 --latent-ode --z0-encoder rnn --dataset physionet --rec-dims 40 --rec-layers 3 --gen-layers 3 --units 50 --gru-units 50 --quantization 0.016 --classif --step_size 0.1 --alpha 0.07
+### Auxiliary Network : Euler step size 0.1 | RK4 step size 0.0 ###
+Iter: 1 | Train loss (one batch): 1.578355073928833
+Iter: 2 | Train loss (one batch): 1.6278539896011353
+Iter: 3 | Train loss (one batch): 1.5408580303192139
+Iter: 4 | Train loss (one batch): 1.572707176208496
+Iter: 5 | Train loss (one batch): 1.5040582418441772
+Iter: 6 | Train loss (one batch): 1.4698420763015747
+Iter: 7 | Train loss (one batch): 1.4342186450958252
+Iter: 8 | Train loss (one batch): 1.4311354160308838
+Iter: 9 | Train loss (one batch): 1.4912797212600708
+Iter: 10 | Train loss (one batch): 1.4692277908325195
+Iter: 11 | Train loss (one batch): 1.3317950963974
+Iter: 12 | Train loss (one batch): 1.3496125936508179
+Iter: 13 | Train loss (one batch): 1.3547558784484863
+Iter: 14 | Train loss (one batch): 1.3387659788131714
+Iter: 15 | Train loss (one batch): 1.2847269773483276
+Iter: 16 | Train loss (one batch): 1.3286274671554565
+Iter: 17 | Train loss (one batch): 1.250014066696167
+Iter: 18 | Train loss (one batch): 1.1654962301254272
+Iter: 19 | Train loss (one batch): 1.152557611465454
+Iter: 20 | Train loss (one batch): 1.1242213249206543
+Iter: 21 | Train loss (one batch): 1.1094249486923218
+Iter: 22 | Train loss (one batch): 1.1601073741912842
+Iter: 23 | Train loss (one batch): 1.0731815099716187
+Iter: 24 | Train loss (one batch): 1.0820176601409912
+Iter: 25 | Train loss (one batch): 1.0743191242218018
+Iter: 26 | Train loss (one batch): 0.9826372861862183
+Iter: 27 | Train loss (one batch): 1.0144747495651245
+Iter: 28 | Train loss (one batch): 0.9554468393325806
+Iter: 29 | Train loss (one batch): 0.8728343844413757
+Iter: 30 | Train loss (one batch): 0.9151136875152588
+Iter: 31 | Train loss (one batch): 0.876788318157196
+Iter: 32 | Train loss (one batch): 0.8204759955406189
+Iter: 33 | Train loss (one batch): 0.7494552731513977
+Iter: 34 | Train loss (one batch): 0.7711642980575562
+Iter: 35 | Train loss (one batch): 0.7258092761039734
+Iter: 36 | Train loss (one batch): 0.6946903467178345
+Iter: 37 | Train loss (one batch): 0.6217820644378662
+Iter: 38 | Train loss (one batch): 0.6167145371437073
+Iter: 39 | Train loss (one batch): 0.6494643688201904
+Iter: 40 | Train loss (one batch): 0.615373969078064
+Iter: 41 | Train loss (one batch): 0.6478453278541565
+Iter: 42 | Train loss (one batch): 0.6006784439086914
+Iter: 43 | Train loss (one batch): 0.5388663411140442
+Iter: 44 | Train loss (one batch): 0.5835683345794678
+Iter: 45 | Train loss (one batch): 0.6232942342758179
+Iter: 46 | Train loss (one batch): 0.6351590752601624
+Iter: 47 | Train loss (one batch): 0.5343852043151855
+Iter: 48 | Train loss (one batch): 0.609219491481781
+Iter: 49 | Train loss (one batch): 0.5500404834747314
+Iter: 50 | Train loss (one batch): 0.572345495223999
+Iter: 51 | Train loss (one batch): 0.596430778503418
+Iter: 52 | Train loss (one batch): 0.5090810060501099
+Iter: 53 | Train loss (one batch): 0.543326199054718
+Iter: 54 | Train loss (one batch): 0.5610603094100952
+Iter: 55 | Train loss (one batch): 0.5561487674713135
+Iter: 56 | Train loss (one batch): 0.5638146996498108
+Iter: 57 | Train loss (one batch): 0.5310450792312622
+Iter: 58 | Train loss (one batch): 0.472351998090744
+Iter: 59 | Train loss (one batch): 0.5464539527893066
+Iter: 60 | Train loss (one batch): 0.593890905380249
+Iter: 61 | Train loss (one batch): 0.4921034276485443
+Iter: 62 | Train loss (one batch): 0.5200120806694031
+Iter: 63 | Train loss (one batch): 0.5068854093551636
+Iter: 64 | Train loss (one batch): 0.5198670625686646
+Iter: 65 | Train loss (one batch): 0.46375373005867004
+Iter: 66 | Train loss (one batch): 0.6204313635826111
+Iter: 67 | Train loss (one batch): 0.48297685384750366
+Iter: 68 | Train loss (one batch): 0.508918821811676
+Iter: 69 | Train loss (one batch): 0.4731190800666809
+Iter: 70 | Train loss (one batch): 0.49855315685272217
+Iter: 71 | Train loss (one batch): 0.44612836837768555
+Iter: 72 | Train loss (one batch): 0.4571543037891388
+Iter: 73 | Train loss (one batch): 0.5372505187988281
+Iter: 74 | Train loss (one batch): 0.5399038791656494
+Iter: 75 | Train loss (one batch): 0.4409175217151642
+Iter: 76 | Train loss (one batch): 0.4666321277618408
+Iter: 77 | Train loss (one batch): 0.48948752880096436
+Iter: 78 | Train loss (one batch): 0.5272440910339355
+Iter: 79 | Train loss (one batch): 0.4925732910633087
+Iter: 80 | Train loss (one batch): 0.5183749794960022
+Iter: 81 | Train loss (one batch): 0.5189124345779419
+Iter: 82 | Train loss (one batch): 0.42977291345596313
+Iter: 83 | Train loss (one batch): 0.42121759057044983
+Iter: 84 | Train loss (one batch): 0.43590083718299866
+Iter: 85 | Train loss (one batch): 0.4813635051250458
+Iter: 86 | Train loss (one batch): 0.5429518818855286
+Iter: 87 | Train loss (one batch): 0.4463026523590088
+Iter: 88 | Train loss (one batch): 0.49465563893318176
+Iter: 89 | Train loss (one batch): 0.5280022025108337
+Iter: 90 | Train loss (one batch): 0.4276431202888489
+Iter: 91 | Train loss (one batch): 0.49377208948135376
+Iter: 92 | Train loss (one batch): 0.4841223657131195
+Iter: 93 | Train loss (one batch): 0.44226330518722534
+Iter: 94 | Train loss (one batch): 0.48369094729423523
+Iter: 95 | Train loss (one batch): 0.45469215512275696
+Iter: 96 | Train loss (one batch): 0.4409228265285492
+Iter: 97 | Train loss (one batch): 0.47405195236206055
+Iter: 98 | Train loss (one batch): 0.4776768088340759
+Iter: 99 | Train loss (one batch): 0.443655788898468
+Iter: 100 | Train loss (one batch): 0.425902396440506
+Iter: 101 | Train loss (one batch): 0.38787028193473816
+Iter: 102 | Train loss (one batch): 0.44022977352142334
+Iter: 103 | Train loss (one batch): 0.4309529960155487
+Iter: 104 | Train loss (one batch): 0.40804266929626465
+Iter: 105 | Train loss (one batch): 0.4118291139602661
+Iter: 106 | Train loss (one batch): 0.4045676589012146
+Iter: 107 | Train loss (one batch): 0.42336541414260864
+Iter: 108 | Train loss (one batch): 0.3969017565250397
+Iter: 109 | Train loss (one batch): 0.46716511249542236
+Iter: 110 | Train loss (one batch): 0.41903889179229736
+Iter: 111 | Train loss (one batch): 0.4186132848262787
+Iter: 112 | Train loss (one batch): 0.43166688084602356
+Iter: 113 | Train loss (one batch): 0.42412033677101135
+Iter: 114 | Train loss (one batch): 0.4300379753112793
+Iter: 115 | Train loss (one batch): 0.41503003239631653
+Iter: 116 | Train loss (one batch): 0.3958738446235657
+Iter: 117 | Train loss (one batch): 0.40580829977989197
+Iter: 118 | Train loss (one batch): 0.4496819078922272
+Iter: 119 | Train loss (one batch): 0.4461488723754883
+Iter: 120 | Train loss (one batch): 0.4500330686569214
+Iter: 121 | Train loss (one batch): 0.4001743793487549
+Iter: 122 | Train loss (one batch): 0.38456282019615173
+Iter: 123 | Train loss (one batch): 0.3936389684677124
+Iter: 124 | Train loss (one batch): 0.4168473780155182
+Iter: 125 | Train loss (one batch): 0.4653410017490387
+Iter: 126 | Train loss (one batch): 0.46310222148895264
+Iter: 127 | Train loss (one batch): 0.44900813698768616
+Iter: 128 | Train loss (one batch): 0.44310882687568665
+Iter: 129 | Train loss (one batch): 0.409094899892807
+Iter: 130 | Train loss (one batch): 0.48398521542549133
+Iter: 131 | Train loss (one batch): 0.43758827447891235
+Iter: 132 | Train loss (one batch): 0.442304402589798
+Iter: 133 | Train loss (one batch): 0.3885188400745392
+Iter: 134 | Train loss (one batch): 0.3743106424808502
+Iter: 135 | Train loss (one batch): 0.3757261335849762
+Iter: 136 | Train loss (one batch): 0.4128773808479309
+Iter: 137 | Train loss (one batch): 0.4672650098800659
+Iter: 138 | Train loss (one batch): 0.44406336545944214
+Iter: 139 | Train loss (one batch): 0.3568139672279358
+Iter: 140 | Train loss (one batch): 0.3913862109184265
+Iter: 141 | Train loss (one batch): 0.4195609390735626
+Iter: 142 | Train loss (one batch): 0.4119439125061035
+Iter: 143 | Train loss (one batch): 0.37536802887916565
+Iter: 144 | Train loss (one batch): 0.4678672254085541
+Iter: 145 | Train loss (one batch): 0.38910019397735596
+Iter: 146 | Train loss (one batch): 0.3567221462726593
+Iter: 147 | Train loss (one batch): 0.3717532753944397
+Iter: 148 | Train loss (one batch): 0.38645657896995544
+Iter: 149 | Train loss (one batch): 0.3820264935493469
+Iter: 150 | Train loss (one batch): 0.43738988041877747
+Iter: 151 | Train loss (one batch): 0.38921505212783813
+Iter: 152 | Train loss (one batch): 0.3882634937763214
+Iter: 153 | Train loss (one batch): 0.45476266741752625
+Iter: 154 | Train loss (one batch): 0.3594825565814972
+Iter: 155 | Train loss (one batch): 0.42074933648109436
+Iter: 156 | Train loss (one batch): 0.37945467233657837
+Iter: 157 | Train loss (one batch): 0.34893298149108887
+Iter: 158 | Train loss (one batch): 0.40779009461402893
+Iter: 159 | Train loss (one batch): 0.41801515221595764
+Iter: 160 | Train loss (one batch): 0.4010317921638489
+Iter: 161 | Train loss (one batch): 0.363726407289505
+Iter: 162 | Train loss (one batch): 0.4180169701576233
+Iter: 163 | Train loss (one batch): 0.35580000281333923
+Iter: 164 | Train loss (one batch): 0.38809359073638916
+Iter: 165 | Train loss (one batch): 0.3430499732494354
+Iter: 166 | Train loss (one batch): 0.34566831588745117
+Iter: 167 | Train loss (one batch): 0.3357431888580322
+Iter: 168 | Train loss (one batch): 0.3612826466560364
+Iter: 169 | Train loss (one batch): 0.3578373193740845
+Iter: 170 | Train loss (one batch): 0.3314952552318573
+Iter: 171 | Train loss (one batch): 0.33702051639556885
+Iter: 172 | Train loss (one batch): 0.3453023135662079
+Iter: 173 | Train loss (one batch): 0.3869535028934479
+Iter: 174 | Train loss (one batch): 0.36786580085754395
+Iter: 175 | Train loss (one batch): 0.3971141278743744
+Iter: 176 | Train loss (one batch): 0.3706631362438202
+Iter: 177 | Train loss (one batch): 0.36272871494293213
+Iter: 178 | Train loss (one batch): 0.39959821105003357
+Iter: 179 | Train loss (one batch): 0.36809369921684265
+Iter: 180 | Train loss (one batch): 0.31854578852653503
+Iter: 181 | Train loss (one batch): 0.32681703567504883
+Iter: 182 | Train loss (one batch): 0.36650609970092773
+Iter: 183 | Train loss (one batch): 0.3955051898956299
+Iter: 184 | Train loss (one batch): 0.395097017288208
+Iter: 185 | Train loss (one batch): 0.37383246421813965
+Iter: 186 | Train loss (one batch): 0.3958396017551422
+Iter: 187 | Train loss (one batch): 0.3565101623535156
+Iter: 188 | Train loss (one batch): 0.4211543798446655
+Iter: 189 | Train loss (one batch): 0.3706133961677551
+Iter: 190 | Train loss (one batch): 0.395523339509964
+Iter: 191 | Train loss (one batch): 0.36649709939956665
+Iter: 192 | Train loss (one batch): 0.3584994077682495
+Iter: 193 | Train loss (one batch): 0.32703888416290283
+Iter: 194 | Train loss (one batch): 0.42551326751708984
+Iter: 195 | Train loss (one batch): 0.3537614941596985
+Iter: 196 | Train loss (one batch): 0.41020897030830383
+Iter: 197 | Train loss (one batch): 0.3820318281650543
+Iter: 198 | Train loss (one batch): 0.3345489501953125
+Iter: 199 | Train loss (one batch): 0.3204434812068939
+Iter: 200 | Train loss (one batch): 0.3446532189846039
+Iter: 201 | Train loss (one batch): 0.42375844717025757
+Iter: 202 | Train loss (one batch): 0.4062821865081787
+Iter: 203 | Train loss (one batch): 0.31169697642326355
+Iter: 204 | Train loss (one batch): 0.3316441774368286
+Iter: 205 | Train loss (one batch): 0.34475964307785034
+Iter: 206 | Train loss (one batch): 0.36941778659820557
+Iter: 207 | Train loss (one batch): 0.3578222692012787
+Iter: 208 | Train loss (one batch): 0.39048996567726135
+Iter: 209 | Train loss (one batch): 0.3441537618637085
+Iter: 210 | Train loss (one batch): 0.32793688774108887
+Iter: 211 | Train loss (one batch): 0.33512383699417114
+Iter: 212 | Train loss (one batch): 0.3123493790626526
+Iter: 213 | Train loss (one batch): 0.34920185804367065
+Iter: 214 | Train loss (one batch): 0.39752718806266785
+Iter: 215 | Train loss (one batch): 0.3254741132259369
+Iter: 216 | Train loss (one batch): 0.36831897497177124
+Iter: 217 | Train loss (one batch): 0.3958325684070587
+Iter: 218 | Train loss (one batch): 0.3480774164199829
+Iter: 219 | Train loss (one batch): 0.35734307765960693
+Iter: 220 | Train loss (one batch): 0.35898277163505554
+Iter: 221 | Train loss (one batch): 0.30203479528427124
+Iter: 222 | Train loss (one batch): 0.37947967648506165
+Iter: 223 | Train loss (one batch): 0.35986194014549255
+Iter: 224 | Train loss (one batch): 0.3957007825374603
+Iter: 225 | Train loss (one batch): 0.32079026103019714
+Iter: 226 | Train loss (one batch): 0.40350615978240967
+Iter: 227 | Train loss (one batch): 0.3337782323360443
+Iter: 228 | Train loss (one batch): 0.32540854811668396
+Iter: 229 | Train loss (one batch): 0.3104970157146454
+Iter: 230 | Train loss (one batch): 0.31833288073539734
+Iter: 231 | Train loss (one batch): 0.30350327491760254
+Iter: 232 | Train loss (one batch): 0.31594306230545044
+Iter: 233 | Train loss (one batch): 0.34065690636634827
+Iter: 234 | Train loss (one batch): 0.29116976261138916
+Iter: 235 | Train loss (one batch): 0.2941674292087555
+Iter: 236 | Train loss (one batch): 0.3397325575351715
+Iter: 237 | Train loss (one batch): 0.33765271306037903
+Iter: 238 | Train loss (one batch): 0.3560132384300232
+Iter: 239 | Train loss (one batch): 0.3412439227104187
+Iter: 240 | Train loss (one batch): 0.31179189682006836
+Iter: 241 | Train loss (one batch): 0.3360058665275574
+Iter: 242 | Train loss (one batch): 0.3324533998966217
+Iter: 243 | Train loss (one batch): 0.31235799193382263
+Iter: 244 | Train loss (one batch): 0.28182655572891235
+Iter: 245 | Train loss (one batch): 0.28986856341362
+Iter: 246 | Train loss (one batch): 0.3241773247718811
+Iter: 247 | Train loss (one batch): 0.38413119316101074
+Iter: 248 | Train loss (one batch): 0.35879194736480713
+Iter: 249 | Train loss (one batch): 0.3137264847755432
+Iter: 250 | Train loss (one batch): 0.3341013491153717
+Iter: 251 | Train loss (one batch): 0.33212193846702576
+Iter: 252 | Train loss (one batch): 0.4129253029823303
+Iter: 253 | Train loss (one batch): 0.35382241010665894
+Iter: 254 | Train loss (one batch): 0.36965450644493103
+Iter: 255 | Train loss (one batch): 0.3091209828853607
+Iter: 256 | Train loss (one batch): 0.3570600748062134
+Iter: 257 | Train loss (one batch): 0.3184907138347626
+Iter: 258 | Train loss (one batch): 0.3551279306411743
+Iter: 259 | Train loss (one batch): 0.32103365659713745
+Iter: 260 | Train loss (one batch): 0.3548659384250641
+Iter: 261 | Train loss (one batch): 0.26757994294166565
+Iter: 262 | Train loss (one batch): 0.2710014581680298
+Iter: 263 | Train loss (one batch): 0.31045135855674744
+Iter: 264 | Train loss (one batch): 0.28524094820022583
+Iter: 265 | Train loss (one batch): 0.39466869831085205
+Iter: 266 | Train loss (one batch): 0.3538363575935364
+Iter: 267 | Train loss (one batch): 0.2428601086139679
+Iter: 268 | Train loss (one batch): 0.29933419823646545
+Iter: 269 | Train loss (one batch): 0.3274401128292084
+Iter: 270 | Train loss (one batch): 0.3508622348308563
+Iter: 271 | Train loss (one batch): 0.32368895411491394
+Iter: 272 | Train loss (one batch): 0.38653793931007385
+Iter: 273 | Train loss (one batch): 0.3372138738632202
+Iter: 274 | Train loss (one batch): 0.30769434571266174
+Iter: 275 | Train loss (one batch): 0.3023722767829895
+Iter: 276 | Train loss (one batch): 0.2946275472640991
+Iter: 277 | Train loss (one batch): 0.277230829000473
+Iter: 278 | Train loss (one batch): 0.36181965470314026
+Iter: 279 | Train loss (one batch): 0.320684015750885
+Iter: 280 | Train loss (one batch): 0.3837364912033081
+Iter: 281 | Train loss (one batch): 0.3649060130119324
+Iter: 282 | Train loss (one batch): 0.3117128312587738
+Iter: 283 | Train loss (one batch): 0.3586946129798889
+Iter: 284 | Train loss (one batch): 0.33525893092155457
+Iter: 285 | Train loss (one batch): 0.2528207004070282
+Iter: 286 | Train loss (one batch): 0.3459639549255371
+Iter: 287 | Train loss (one batch): 0.3167606592178345
+Iter: 288 | Train loss (one batch): 0.3431251347064972
+Iter: 289 | Train loss (one batch): 0.30811670422554016
+Iter: 290 | Train loss (one batch): 0.36860162019729614
+Iter: 291 | Train loss (one batch): 0.2995623052120209
+Iter: 292 | Train loss (one batch): 0.315996915102005
+Iter: 293 | Train loss (one batch): 0.2778204381465912
+Iter: 294 | Train loss (one batch): 0.31504756212234497
+Iter: 295 | Train loss (one batch): 0.28795498609542847
+Iter: 296 | Train loss (one batch): 0.2971782684326172
+Iter: 297 | Train loss (one batch): 0.3003089725971222
+Iter: 298 | Train loss (one batch): 0.26318359375
+Iter: 299 | Train loss (one batch): 0.2693837583065033
+Iter: 300 | Train loss (one batch): 0.2863151431083679
+Iter: 301 | Train loss (one batch): 0.3206113278865814
+Iter: 302 | Train loss (one batch): 0.30268439650535583
+Iter: 303 | Train loss (one batch): 0.28361502289772034
+Iter: 304 | Train loss (one batch): 0.2872941195964813
+Iter: 305 | Train loss (one batch): 0.3117382228374481
+Iter: 306 | Train loss (one batch): 0.3391020894050598
+Iter: 307 | Train loss (one batch): 0.32180145382881165
+Iter: 308 | Train loss (one batch): 0.27824702858924866
+Iter: 309 | Train loss (one batch): 0.2759400010108948
+Iter: 310 | Train loss (one batch): 0.3461613357067108
+Iter: 311 | Train loss (one batch): 0.3673053979873657
+Iter: 312 | Train loss (one batch): 0.36371803283691406
+Iter: 313 | Train loss (one batch): 0.3153916597366333
+Iter: 314 | Train loss (one batch): 0.33713480830192566
+Iter: 315 | Train loss (one batch): 0.3145618438720703
+Iter: 316 | Train loss (one batch): 0.3612159788608551
+Iter: 317 | Train loss (one batch): 0.3453914523124695
+Iter: 318 | Train loss (one batch): 0.3294391334056854
+Iter: 319 | Train loss (one batch): 0.30095916986465454
+Iter: 320 | Train loss (one batch): 0.32735514640808105
+Iter: 321 | Train loss (one batch): 0.28201189637184143
+Iter: 322 | Train loss (one batch): 0.3507217466831207
+Iter: 323 | Train loss (one batch): 0.30016791820526123
+Iter: 324 | Train loss (one batch): 0.3502849042415619
+Iter: 325 | Train loss (one batch): 0.2906387746334076
+Iter: 326 | Train loss (one batch): 0.26427075266838074
+Iter: 327 | Train loss (one batch): 0.2742815315723419
+Iter: 328 | Train loss (one batch): 0.27393192052841187
+Iter: 329 | Train loss (one batch): 0.3433311879634857
+Iter: 330 | Train loss (one batch): 0.3405875265598297
+Iter: 331 | Train loss (one batch): 0.2347145974636078
+Iter: 332 | Train loss (one batch): 0.2679498493671417
+Iter: 333 | Train loss (one batch): 0.3005988299846649
+Iter: 334 | Train loss (one batch): 0.32908886671066284
+Iter: 335 | Train loss (one batch): 0.3005947172641754
+Iter: 336 | Train loss (one batch): 0.34574347734451294
+Iter: 337 | Train loss (one batch): 0.3085757791996002
+Iter: 338 | Train loss (one batch): 0.26799365878105164
+Iter: 339 | Train loss (one batch): 0.27414754033088684
+Iter: 340 | Train loss (one batch): 0.2997156083583832
+Iter: 341 | Train loss (one batch): 0.287949800491333
+Iter: 342 | Train loss (one batch): 0.34407567977905273
+Iter: 343 | Train loss (one batch): 0.28979042172431946
+Iter: 344 | Train loss (one batch): 0.32936546206474304
+Iter: 345 | Train loss (one batch): 0.3492322564125061
+Iter: 346 | Train loss (one batch): 0.27523520588874817
+Iter: 347 | Train loss (one batch): 0.3089238107204437
+Iter: 348 | Train loss (one batch): 0.29378360509872437
+Iter: 349 | Train loss (one batch): 0.2751142382621765
+Iter: 350 | Train loss (one batch): 0.30381888151168823
+Iter: 351 | Train loss (one batch): 0.3224908709526062
+Iter: 352 | Train loss (one batch): 0.3337186574935913
+Iter: 353 | Train loss (one batch): 0.24770252406597137
+Iter: 354 | Train loss (one batch): 0.3591639995574951
+Iter: 355 | Train loss (one batch): 0.2645666003227234
+Iter: 356 | Train loss (one batch): 0.31956732273101807
+Iter: 357 | Train loss (one batch): 0.2533884644508362
+Iter: 358 | Train loss (one batch): 0.2963241934776306
+Iter: 359 | Train loss (one batch): 0.2766461968421936
+Iter: 360 | Train loss (one batch): 0.2671196758747101
+Iter: 361 | Train loss (one batch): 0.25488030910491943
+Iter: 362 | Train loss (one batch): 0.24045534431934357
+Iter: 363 | Train loss (one batch): 0.2183743268251419
+Iter: 364 | Train loss (one batch): 0.2764330506324768
+Iter: 365 | Train loss (one batch): 0.3088826835155487
+Iter: 366 | Train loss (one batch): 0.29926198720932007
+Iter: 367 | Train loss (one batch): 0.2956934869289398
+Iter: 368 | Train loss (one batch): 0.2588988244533539
+Iter: 369 | Train loss (one batch): 0.2871852517127991
+Iter: 370 | Train loss (one batch): 0.2758773863315582
+Iter: 371 | Train loss (one batch): 0.28600823879241943
+Iter: 372 | Train loss (one batch): 0.23842868208885193
+Iter: 373 | Train loss (one batch): 0.26648247241973877
+Iter: 374 | Train loss (one batch): 0.2900601923465729
+Iter: 375 | Train loss (one batch): 0.35602399706840515
+Iter: 376 | Train loss (one batch): 0.3519156575202942
+Iter: 377 | Train loss (one batch): 0.2613603472709656
+Iter: 378 | Train loss (one batch): 0.2616129517555237
+Iter: 379 | Train loss (one batch): 0.27107366919517517
+Iter: 380 | Train loss (one batch): 0.36350560188293457
+Iter: 381 | Train loss (one batch): 0.30713021755218506
+Iter: 382 | Train loss (one batch): 0.31690171360969543
+Iter: 383 | Train loss (one batch): 0.2908407747745514
+Experiment 59645
+### Auxiliary Network : n_test_batches 40 ###
+Iter 1 | Test loss (one batch): 0.2852262854576111
+Loss(alpha 0.07) for Dopri integrator (one batch): 88.43681335449219
+Loss(alpha 0.07) for Euler integrator (one batch): 80.33820343017578
+Loss(alpha 0.07) for RK4 integrator (one batch): 86.08515167236328
+Choice of integrator (one batch): euler
+AUC of the choice (one batch): 0.7821350762527232
+Iter 2 | Test loss (one batch): 0.11016807705163956
+Loss(alpha 0.07) for Dopri integrator (one batch): 80.6170654296875
+Loss(alpha 0.07) for Euler integrator (one batch): 70.49382019042969
+Loss(alpha 0.07) for RK4 integrator (one batch): 77.67750549316406
+Choice of integrator (one batch): euler
+AUC of the choice (one batch): 0.0
+Iter 3 | Test loss (one batch): 0.09195834398269653
+Loss(alpha 0.07) for Dopri integrator (one batch): 81.53943634033203
+Loss(alpha 0.07) for Euler integrator (one batch): 70.49382019042969
+Loss(alpha 0.07) for RK4 integrator (one batch): 77.67750549316406
+Choice of integrator (one batch): euler
+AUC of the choice (one batch): 0.0
+Iter 4 | Test loss (one batch): 0.2445954978466034
+Loss(alpha 0.07) for Dopri integrator (one batch): 86.88862609863281
+Loss(alpha 0.07) for Euler integrator (one batch): 77.87710571289062
+Loss(alpha 0.07) for RK4 integrator (one batch): 83.98323822021484
+Choice of integrator (one batch): euler
+AUC of the choice (one batch): 0.8641975308641975
+Iter 5 | Test loss (one batch): 0.21841584146022797
+Loss(alpha 0.07) for Dopri integrator (one batch): 84.52694702148438
+Loss(alpha 0.07) for Euler integrator (one batch): 75.41600799560547
+Loss(alpha 0.07) for RK4 integrator (one batch): 81.8813247680664
+Choice of integrator (one batch): euler
+AUC of the choice (one batch): 0.5709876543209876
+Iter 6 | Test loss (one batch): 0.2762395441532135
+Loss(alpha 0.07) for Dopri integrator (one batch): 88.81963348388672
+Loss(alpha 0.07) for Euler integrator (one batch): 80.33819580078125
+Loss(alpha 0.07) for RK4 integrator (one batch): 86.08514404296875
+Choice of integrator (one batch): euler
+AUC of the choice (one batch): 0.7986111111111112
+Iter 7 | Test loss (one batch): 0.30754387378692627
+Loss(alpha 0.07) for Dopri integrator (one batch): 89.74009704589844
+Loss(alpha 0.07) for Euler integrator (one batch): 81.1585693359375
+Loss(alpha 0.07) for RK4 integrator (one batch): 88.18706512451172
+Choice of integrator (one batch): euler
+AUC of the choice (one batch): 0.6041666666666667
+Iter 8 | Test loss (one batch): 0.3129885494709015
+Loss(alpha 0.07) for Dopri integrator (one batch): 90.75064086914062
+Loss(alpha 0.07) for Euler integrator (one batch): 82.7992935180664
+Loss(alpha 0.07) for RK4 integrator (one batch): 88.18705749511719
+Choice of integrator (one batch): euler
+AUC of the choice (one batch): 0.873015873015873
+Iter 9 | Test loss (one batch): 0.2557218372821808
+Loss(alpha 0.07) for Dopri integrator (one batch): 87.1335220336914
+Loss(alpha 0.07) for Euler integrator (one batch): 80.33819580078125
+Loss(alpha 0.07) for RK4 integrator (one batch): 85.38450622558594
+Choice of integrator (one batch): euler
+AUC of the choice (one batch): 0.9409722222222222
+Iter 10 | Test loss (one batch): 0.19651342928409576
+Loss(alpha 0.07) for Dopri integrator (one batch): 84.95762634277344
+Loss(alpha 0.07) for Euler integrator (one batch): 75.41600799560547
+Loss(alpha 0.07) for RK4 integrator (one batch): 81.8813247680664
+Choice of integrator (one batch): euler
+AUC of the choice (one batch): 0.9506172839506173
+Iter 11 | Test loss (one batch): 0.2839509844779968
+Loss(alpha 0.07) for Dopri integrator (one batch): 88.81963348388672
+Loss(alpha 0.07) for Euler integrator (one batch): 80.33819580078125
+Loss(alpha 0.07) for RK4 integrator (one batch): 86.08514404296875
+Choice of integrator (one batch): euler
+AUC of the choice (one batch): 0.7211328976034859
+Iter 12 | Test loss (one batch): 0.21940144896507263
+Loss(alpha 0.07) for Dopri integrator (one batch): 84.95762634277344
+Loss(alpha 0.07) for Euler integrator (one batch): 75.41600799560547
+Loss(alpha 0.07) for RK4 integrator (one batch): 81.8813247680664
+Choice of integrator (one batch): euler
+AUC of the choice (one batch): 0.9907407407407408
+Iter 13 | Test loss (one batch): 0.1594797819852829
+Loss(alpha 0.07) for Dopri integrator (one batch): 83.02661895751953
+Loss(alpha 0.07) for Euler integrator (one batch): 72.95491027832031
+Loss(alpha 0.07) for RK4 integrator (one batch): 79.77941131591797
+Choice of integrator (one batch): euler
+AUC of the choice (one batch): 0.9005847953216375
+Iter 14 | Test loss (one batch): 0.18919898569583893
+Loss(alpha 0.07) for Dopri integrator (one batch): 83.02661895751953
+Loss(alpha 0.07) for Euler integrator (one batch): 72.95491027832031
+Loss(alpha 0.07) for RK4 integrator (one batch): 79.77941131591797
+Choice of integrator (one batch): euler
+AUC of the choice (one batch): 0.3508771929824562
+Iter 15 | Test loss (one batch): 0.3200710117816925
+Loss(alpha 0.07) for Dopri integrator (one batch): 90.75064086914062
+Loss(alpha 0.07) for Euler integrator (one batch): 82.7992935180664
+Loss(alpha 0.07) for RK4 integrator (one batch): 88.18705749511719
+Choice of integrator (one batch): euler
+AUC of the choice (one batch): 0.5792592592592593
+Iter 16 | Test loss (one batch): 0.15924061834812164
+Loss(alpha 0.07) for Dopri integrator (one batch): 83.02661895751953
+Loss(alpha 0.07) for Euler integrator (one batch): 72.95491027832031
+Loss(alpha 0.07) for RK4 integrator (one batch): 79.7794189453125
+Choice of integrator (one batch): euler
+AUC of the choice (one batch): 1.0
+Iter 17 | Test loss (one batch): 0.26020872592926025
+Loss(alpha 0.07) for Dopri integrator (one batch): 87.36083984375
+Loss(alpha 0.07) for Euler integrator (one batch): 77.87710571289062
+Loss(alpha 0.07) for RK4 integrator (one batch): 84.68387603759766
+Choice of integrator (one batch): euler
+AUC of the choice (one batch): 0.845486111111111
+Iter 18 | Test loss (one batch): 0.2606895864009857
+Loss(alpha 0.07) for Dopri integrator (one batch): 86.88863372802734
+Loss(alpha 0.07) for Euler integrator (one batch): 77.87710571289062
+Loss(alpha 0.07) for RK4 integrator (one batch): 83.98323822021484
+Choice of integrator (one batch): euler
+AUC of the choice (one batch): 0.49673202614379086
+Iter 19 | Test loss (one batch): 0.23233073949813843
+Loss(alpha 0.07) for Dopri integrator (one batch): 84.95762634277344
+Loss(alpha 0.07) for Euler integrator (one batch): 75.41600799560547
+Loss(alpha 0.07) for RK4 integrator (one batch): 81.8813247680664
+Choice of integrator (one batch): euler
+AUC of the choice (one batch): 0.15432098765432098
+Iter 20 | Test loss (one batch): 0.1568758487701416
+Loss(alpha 0.07) for Dopri integrator (one batch): 82.57200622558594
+Loss(alpha 0.07) for Euler integrator (one batch): 72.95491027832031
+Loss(alpha 0.07) for RK4 integrator (one batch): 79.77941131591797
+Choice of integrator (one batch): euler
+AUC of the choice (one batch): 0.9824561403508771
+Iter 21 | Test loss (one batch): 0.15313690900802612
+Loss(alpha 0.07) for Dopri integrator (one batch): 83.02661895751953
+Loss(alpha 0.07) for Euler integrator (one batch): 72.95491027832031
+Loss(alpha 0.07) for RK4 integrator (one batch): 79.77941131591797
+Choice of integrator (one batch): euler
+AUC of the choice (one batch): 0.9122807017543859
+Iter 22 | Test loss (one batch): 0.1514052301645279
+Loss(alpha 0.07) for Dopri integrator (one batch): 82.38294982910156
+Loss(alpha 0.07) for Euler integrator (one batch): 72.95491027832031
+Loss(alpha 0.07) for RK4 integrator (one batch): 79.77941131591797
+Choice of integrator (one batch): euler
+AUC of the choice (one batch): 0.0
+Iter 23 | Test loss (one batch): 0.2355664074420929
+Loss(alpha 0.07) for Dopri integrator (one batch): 84.95762634277344
+Loss(alpha 0.07) for Euler integrator (one batch): 75.41600799560547
+Loss(alpha 0.07) for RK4 integrator (one batch): 81.8813247680664
+Choice of integrator (one batch): euler
+AUC of the choice (one batch): 0.5277777777777778
+Iter 24 | Test loss (one batch): 0.203070729970932
+Loss(alpha 0.07) for Dopri integrator (one batch): 84.95762634277344
+Loss(alpha 0.07) for Euler integrator (one batch): 75.41600799560547
+Loss(alpha 0.07) for RK4 integrator (one batch): 81.8813247680664
+Choice of integrator (one batch): euler
+AUC of the choice (one batch): 0.8518518518518519
+Iter 25 | Test loss (one batch): 0.31566452980041504
+Loss(alpha 0.07) for Dopri integrator (one batch): 90.75064849853516
+Loss(alpha 0.07) for Euler integrator (one batch): 83.61966705322266
+Loss(alpha 0.07) for RK4 integrator (one batch): 88.88770294189453
+Choice of integrator (one batch): euler
+AUC of the choice (one batch): 0.6597222222222222
+Iter 26 | Test loss (one batch): 0.21405310928821564
+Loss(alpha 0.07) for Dopri integrator (one batch): 84.95762634277344
+Loss(alpha 0.07) for Euler integrator (one batch): 75.41600799560547
+Loss(alpha 0.07) for RK4 integrator (one batch): 81.8813247680664
+Choice of integrator (one batch): euler
+AUC of the choice (one batch): 0.9166666666666667
+Iter 27 | Test loss (one batch): 0.26312172412872314
+Loss(alpha 0.07) for Dopri integrator (one batch): 86.88863372802734
+Loss(alpha 0.07) for Euler integrator (one batch): 77.87710571289062
+Loss(alpha 0.07) for RK4 integrator (one batch): 83.98323822021484
+Choice of integrator (one batch): euler
+AUC of the choice (one batch): 0.8758169934640523
+Iter 28 | Test loss (one batch): 0.15433736145496368
+Loss(alpha 0.07) for Dopri integrator (one batch): 83.6702880859375
+Loss(alpha 0.07) for Euler integrator (one batch): 72.95491027832031
+Loss(alpha 0.07) for RK4 integrator (one batch): 79.77941131591797
+Choice of integrator (one batch): euler
+AUC of the choice (one batch): 0.9473684210526316
+Iter 29 | Test loss (one batch): 0.2714183032512665
+Loss(alpha 0.07) for Dopri integrator (one batch): 88.81963348388672
+Loss(alpha 0.07) for Euler integrator (one batch): 80.33819580078125
+Loss(alpha 0.07) for RK4 integrator (one batch): 86.08514404296875
+Choice of integrator (one batch): euler
+AUC of the choice (one batch): 0.8940972222222222
+Iter 30 | Test loss (one batch): 0.25197526812553406
+Loss(alpha 0.07) for Dopri integrator (one batch): 86.88862609863281
+Loss(alpha 0.07) for Euler integrator (one batch): 77.87710571289062
+Loss(alpha 0.07) for RK4 integrator (one batch): 83.98323822021484
+Choice of integrator (one batch): euler
+AUC of the choice (one batch): 0.9128540305010894
+Iter 31 | Test loss (one batch): 0.31191718578338623
+Loss(alpha 0.07) for Dopri integrator (one batch): 90.3917465209961
+Loss(alpha 0.07) for Euler integrator (one batch): 82.7992935180664
+Loss(alpha 0.07) for RK4 integrator (one batch): 88.18705749511719
+Choice of integrator (one batch): euler
+AUC of the choice (one batch): 0.7881944444444444
+Iter 32 | Test loss (one batch): 0.33065107464790344
+Loss(alpha 0.07) for Dopri integrator (one batch): 92.68164825439453
+Loss(alpha 0.07) for Euler integrator (one batch): 85.26039123535156
+Loss(alpha 0.07) for RK4 integrator (one batch): 90.28897094726562
+Choice of integrator (one batch): euler
+AUC of the choice (one batch): 0.8690476190476191
+Iter 33 | Test loss (one batch): 0.292224645614624
+Loss(alpha 0.07) for Dopri integrator (one batch): 88.81964111328125
+Loss(alpha 0.07) for Euler integrator (one batch): 80.33820343017578
+Loss(alpha 0.07) for RK4 integrator (one batch): 86.08515167236328
+Choice of integrator (one batch): euler
+AUC of the choice (one batch): 0.5815972222222222
+Iter 34 | Test loss (one batch): 0.29018691182136536
+Loss(alpha 0.07) for Dopri integrator (one batch): 88.81964111328125
+Loss(alpha 0.07) for Euler integrator (one batch): 80.33819580078125
+Loss(alpha 0.07) for RK4 integrator (one batch): 86.08514404296875
+Choice of integrator (one batch): euler
+AUC of the choice (one batch): 0.8854166666666667
+Iter 35 | Test loss (one batch): 0.27601158618927
+Loss(alpha 0.07) for Dopri integrator (one batch): 88.43681335449219
+Loss(alpha 0.07) for Euler integrator (one batch): 80.33819580078125
+Loss(alpha 0.07) for RK4 integrator (one batch): 86.08514404296875
+Choice of integrator (one batch): euler
+AUC of the choice (one batch): 0.8975694444444444
+Iter 36 | Test loss (one batch): 0.3137914836406708
+Loss(alpha 0.07) for Dopri integrator (one batch): 90.75064086914062
+Loss(alpha 0.07) for Euler integrator (one batch): 82.79930114746094
+Loss(alpha 0.07) for RK4 integrator (one batch): 88.18706512451172
+Choice of integrator (one batch): euler
+AUC of the choice (one batch): 0.6296296296296297
+Iter 37 | Test loss (one batch): 0.2539246678352356
+Loss(alpha 0.07) for Dopri integrator (one batch): 85.83023071289062
+Loss(alpha 0.07) for Euler integrator (one batch): 77.0567398071289
+Loss(alpha 0.07) for RK4 integrator (one batch): 83.98323822021484
+Choice of integrator (one batch): euler
+AUC of the choice (one batch): 0.6100217864923747
+Iter 38 | Test loss (one batch): 0.2732381224632263
+Loss(alpha 0.07) for Dopri integrator (one batch): 88.81964111328125
+Loss(alpha 0.07) for Euler integrator (one batch): 80.33819580078125
+Loss(alpha 0.07) for RK4 integrator (one batch): 86.08514404296875
+Choice of integrator (one batch): euler
+AUC of the choice (one batch): 0.7152777777777778
+Iter 39 | Test loss (one batch): 0.18795748054981232
+Loss(alpha 0.07) for Dopri integrator (one batch): 83.22364807128906
+Loss(alpha 0.07) for Euler integrator (one batch): 74.59564208984375
+Loss(alpha 0.07) for RK4 integrator (one batch): 80.48005676269531
+Choice of integrator (one batch): euler
+AUC of the choice (one batch): 0.783625730994152
+Iter 40 | Test loss (one batch): 0.2189657837152481
+Loss(alpha 0.07) for Dopri integrator (one batch): 84.95762634277344
+Loss(alpha 0.07) for Euler integrator (one batch): 75.41600799560547
+Loss(alpha 0.07) for RK4 integrator (one batch): 81.8813247680664
+Choice of integrator (one batch): euler
+AUC of the choice (one batch): 0.1228070175438597
+############### TOTAL ###############
+Classification AUC : Dopri 0.7499 | Euler 0.7485 | RK4 0.7501
+NFE (average): Dopri 72.05 | Euler 10.0 | RK4 40.0
+Elapsed time (average): Dopri 0.5780809581279754 | Euler 0.4941745936870575 | RK4 0.5089673101902008
+############### Aux Net Average ###############
+AUC of the choice 0.7536 | Choice of Dopri5 0 | Euler 40 | RK4 0
+Aux Net Runtime: 1601528848.8265
