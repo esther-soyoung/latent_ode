@@ -1,0 +1,295 @@
+/home/soyoung/latent_ode2/train_aux.py
+train_aux.py --niters 100 -n 8000 -l 20 --latent-ode --z0-encoder rnn --dataset physionet --rec-dims 40 --rec-layers 3 --gen-layers 3 --units 50 --gru-units 50 --quantization 0.016 --classif --load_aux 29643_16228 --step_size 0.1 --alpha 0.05 --m 10 --gpu 2
+Experiment 29643_16228_46689
+############### TOTAL ###############
+TN, FP, FN, TP | Dopri 1625, 457, 44, 274
+TN, FP, FN, TP | Euler 1626, 456, 69, 249
+TN, FP, FN, TP | RK4 1616, 466, 75, 243
+Classification AUC : Dopri 0.7613 | Euler 0.7596 | RK4 0.7596
+NFE (average): Dopri 38.0 | Euler 10.0 | RK4 40.0
+Elapsed time (average): Dopri 0.3004506230354309 | Euler 0.12925946712493896 | RK4 0.13746188282966615
+----- Test Iter 0 | Test loss (one batch): 3.271958351135254
+Cost(alpha 0.05) for Dopri integrator (one batch): 212.7765655517578
+Cost(alpha 0.05) for Euler integrator (one batch): 209.36891174316406
+Cost(alpha 0.05) for RK4 integrator (one batch): 221.7095489501953
+Choice of integrator (one batch): dopri5 | Predicted Cost: tensor([227.6301, 229.1714, 231.5205], device='cuda:2')
+Auxiliary network predicted False
+AUC of the choice (one batch): 0.7777777777777778
+----- Test Iter 1 | Test loss (one batch): 2.7262377738952637
+Cost(alpha 0.05) for Dopri integrator (one batch): 71.96819305419922
+Cost(alpha 0.05) for Euler integrator (one batch): 67.3210678100586
+Cost(alpha 0.05) for RK4 integrator (one batch): 72.15298461914062
+Choice of integrator (one batch): dopri5 | Predicted Cost: tensor([205.4382, 206.0760, 208.7900], device='cuda:2')
+Auxiliary network predicted False
+AUC of the choice (one batch): 0.0
+----- Test Iter 2 | Test loss (one batch): 2.2843520641326904
+Cost(alpha 0.05) for Dopri integrator (one batch): 71.96819305419922
+Cost(alpha 0.05) for Euler integrator (one batch): 67.3210678100586
+Cost(alpha 0.05) for RK4 integrator (one batch): 72.15298461914062
+Choice of integrator (one batch): euler | Predicted Cost: tensor([174.1247, 173.6180, 176.5590], device='cuda:2')
+Auxiliary network predicted True
+AUC of the choice (one batch): 0.0
+----- Test Iter 3 | Test loss (one batch): 2.9084360599517822
+Cost(alpha 0.05) for Dopri integrator (one batch): 142.37240600585938
+Cost(alpha 0.05) for Euler integrator (one batch): 156.1009521484375
+Cost(alpha 0.05) for RK4 integrator (one batch): 142.53260803222656
+Choice of integrator (one batch): dopri5 | Predicted Cost: tensor([206.5277, 207.2275, 209.8758], device='cuda:2')
+Auxiliary network predicted True
+AUC of the choice (one batch): 0.9197530864197531
+----- Test Iter 4 | Test loss (one batch): 4.758469104766846
+Cost(alpha 0.05) for Dopri integrator (one batch): 432.78985595703125
+Cost(alpha 0.05) for Euler integrator (one batch): 440.1962890625
+Cost(alpha 0.05) for RK4 integrator (one batch): 441.6458740234375
+Choice of integrator (one batch): dopri5 | Predicted Cost: tensor([249.1800, 251.5964, 253.6337], device='cuda:2')
+Auxiliary network predicted True
+AUC of the choice (one batch): 0.5061728395061729
+----- Test Iter 5 | Test loss (one batch): 3.539094924926758
+Cost(alpha 0.05) for Dopri integrator (one batch): 203.97604370117188
+Cost(alpha 0.05) for Euler integrator (one batch): 173.85696411132812
+Cost(alpha 0.05) for RK4 integrator (one batch): 186.519775390625
+Choice of integrator (one batch): dopri5 | Predicted Cost: tensor([240.4981, 242.5945, 244.6880], device='cuda:2')
+Auxiliary network predicted False
+AUC of the choice (one batch): 0.7916666666666667
+----- Test Iter 6 | Test loss (one batch): 4.689939498901367
+Cost(alpha 0.05) for Dopri integrator (one batch): 388.7872009277344
+Cost(alpha 0.05) for Euler integrator (one batch): 395.806396484375
+Cost(alpha 0.05) for RK4 integrator (one batch): 388.86114501953125
+Choice of integrator (one batch): dopri5 | Predicted Cost: tensor([232.5463, 234.3314, 236.5727], device='cuda:2')
+Auxiliary network predicted True
+AUC of the choice (one batch): 0.5173611111111112
+----- Test Iter 7 | Test loss (one batch): 3.767270088195801
+Cost(alpha 0.05) for Dopri integrator (one batch): 203.97601318359375
+Cost(alpha 0.05) for Euler integrator (one batch): 200.49093627929688
+Cost(alpha 0.05) for RK4 integrator (one batch): 221.70957946777344
+Choice of integrator (one batch): dopri5 | Predicted Cost: tensor([186.8938, 186.8941, 189.6644], device='cuda:2')
+Auxiliary network predicted False
+AUC of the choice (one batch): 0.8174603174603174
+----- Test Iter 8 | Test loss (one batch): 2.724839687347412
+Cost(alpha 0.05) for Dopri integrator (one batch): 124.77137756347656
+Cost(alpha 0.05) for Euler integrator (one batch): 120.5889663696289
+Cost(alpha 0.05) for RK4 integrator (one batch): 133.73519897460938
+Choice of integrator (one batch): dopri5 | Predicted Cost: tensor([203.5343, 204.1195, 206.7926], device='cuda:2')
+Auxiliary network predicted False
+AUC of the choice (one batch): 0.9427083333333334
+----- Test Iter 9 | Test loss (one batch): 2.8236184120178223
+Cost(alpha 0.05) for Dopri integrator (one batch): 115.9708480834961
+Cost(alpha 0.05) for Euler integrator (one batch): 120.58895874023438
+Cost(alpha 0.05) for RK4 integrator (one batch): 116.14031219482422
+Choice of integrator (one batch): dopri5 | Predicted Cost: tensor([192.0500, 192.2025, 195.0200], device='cuda:2')
+Auxiliary network predicted True
+AUC of the choice (one batch): 0.9537037037037037
+----- Test Iter 10 | Test loss (one batch): 3.629488706588745
+Cost(alpha 0.05) for Dopri integrator (one batch): 177.57443237304688
+Cost(alpha 0.05) for Euler integrator (one batch): 164.97897338867188
+Cost(alpha 0.05) for RK4 integrator (one batch): 168.92489624023438
+Choice of integrator (one batch): dopri5 | Predicted Cost: tensor([201.4727, 201.9177, 204.7634], device='cuda:2')
+Auxiliary network predicted False
+AUC of the choice (one batch): 0.7342047930283224
+----- Test Iter 11 | Test loss (one batch): 3.150942087173462
+Cost(alpha 0.05) for Dopri integrator (one batch): 151.17294311523438
+Cost(alpha 0.05) for Euler integrator (one batch): 156.10092163085938
+Cost(alpha 0.05) for RK4 integrator (one batch): 160.12750244140625
+Choice of integrator (one batch): dopri5 | Predicted Cost: tensor([230.4804, 232.2037, 234.4388], device='cuda:2')
+Auxiliary network predicted True
+AUC of the choice (one batch): 0.9197530864197532
+----- Test Iter 12 | Test loss (one batch): 2.321225643157959
+Cost(alpha 0.05) for Dopri integrator (one batch): 98.36978912353516
+Cost(alpha 0.05) for Euler integrator (one batch): 102.83300018310547
+Cost(alpha 0.05) for RK4 integrator (one batch): 116.14030456542969
+Choice of integrator (one batch): euler | Predicted Cost: tensor([185.8326, 185.8027, 188.5814], device='cuda:2')
+Auxiliary network predicted False
+AUC of the choice (one batch): 0.9415204678362573
+----- Test Iter 13 | Test loss (one batch): 4.3310866355896
+Cost(alpha 0.05) for Dopri integrator (one batch): 388.7872009277344
+Cost(alpha 0.05) for Euler integrator (one batch): 369.17242431640625
+Cost(alpha 0.05) for RK4 integrator (one batch): 388.86114501953125
+Choice of integrator (one batch): dopri5 | Predicted Cost: tensor([215.8289, 216.8960, 219.4446], device='cuda:2')
+Auxiliary network predicted False
+AUC of the choice (one batch): 0.391812865497076
+----- Test Iter 14 | Test loss (one batch): 4.164668083190918
+Cost(alpha 0.05) for Dopri integrator (one batch): 177.57444763183594
+Cost(alpha 0.05) for Euler integrator (one batch): 200.49093627929688
+Cost(alpha 0.05) for RK4 integrator (one batch): 186.51979064941406
+Choice of integrator (one batch): dopri5 | Predicted Cost: tensor([207.8732, 208.5687, 211.3083], device='cuda:2')
+Auxiliary network predicted True
+AUC of the choice (one batch): 0.6844444444444444
+----- Test Iter 15 | Test loss (one batch): 2.5487804412841797
+Cost(alpha 0.05) for Dopri integrator (one batch): 71.96819305419922
+Cost(alpha 0.05) for Euler integrator (one batch): 67.3210678100586
+Cost(alpha 0.05) for RK4 integrator (one batch): 89.74790954589844
+Choice of integrator (one batch): dopri5 | Predicted Cost: tensor([194.4019, 194.6199, 197.4230], device='cuda:2')
+Auxiliary network predicted False
+AUC of the choice (one batch): 1.0
+----- Test Iter 16 | Test loss (one batch): 3.6401336193084717
+Cost(alpha 0.05) for Dopri integrator (one batch): 221.57708740234375
+Cost(alpha 0.05) for Euler integrator (one batch): 227.12489318847656
+Cost(alpha 0.05) for RK4 integrator (one batch): 248.10191345214844
+Choice of integrator (one batch): dopri5 | Predicted Cost: tensor([207.0113, 207.8272, 210.2988], device='cuda:2')
+Auxiliary network predicted True
+AUC of the choice (one batch): 0.8055555555555555
+----- Test Iter 17 | Test loss (one batch): 3.8198118209838867
+Cost(alpha 0.05) for Dopri integrator (one batch): 353.5850524902344
+Cost(alpha 0.05) for Euler integrator (one batch): 333.6605224609375
+Cost(alpha 0.05) for RK4 integrator (one batch): 344.8739013671875
+Choice of integrator (one batch): dopri5 | Predicted Cost: tensor([252.8175, 255.4181, 257.3490], device='cuda:2')
+Auxiliary network predicted False
+AUC of the choice (one batch): 0.5272331154684096
+----- Test Iter 18 | Test loss (one batch): 3.7994229793548584
+Cost(alpha 0.05) for Dopri integrator (one batch): 124.77137756347656
+Cost(alpha 0.05) for Euler integrator (one batch): 120.58895874023438
+Cost(alpha 0.05) for RK4 integrator (one batch): 124.93775177001953
+Choice of integrator (one batch): dopri5 | Predicted Cost: tensor([229.0797, 230.6993, 233.0200], device='cuda:2')
+Auxiliary network predicted False
+AUC of the choice (one batch): 0.1234567901234568
+----- Test Iter 19 | Test loss (one batch): 2.880080223083496
+Cost(alpha 0.05) for Dopri integrator (one batch): 98.36978912353516
+Cost(alpha 0.05) for Euler integrator (one batch): 76.19905090332031
+Cost(alpha 0.05) for RK4 integrator (one batch): 107.34286499023438
+Choice of integrator (one batch): dopri5 | Predicted Cost: tensor([218.5857, 219.7560, 222.2888], device='cuda:2')
+Auxiliary network predicted False
+AUC of the choice (one batch): 0.9649122807017545
+----- Test Iter 20 | Test loss (one batch): 3.062391519546509
+Cost(alpha 0.05) for Dopri integrator (one batch): 124.77137756347656
+Cost(alpha 0.05) for Euler integrator (one batch): 120.5889663696289
+Cost(alpha 0.05) for RK4 integrator (one batch): 133.73519897460938
+Choice of integrator (one batch): dopri5 | Predicted Cost: tensor([230.5090, 232.2113, 234.3913], device='cuda:2')
+Auxiliary network predicted False
+AUC of the choice (one batch): 0.8947368421052632
+----- Test Iter 21 | Test loss (one batch): 2.8638947010040283
+Cost(alpha 0.05) for Dopri integrator (one batch): 71.96819305419922
+Cost(alpha 0.05) for Euler integrator (one batch): 67.3210678100586
+Cost(alpha 0.05) for RK4 integrator (one batch): 72.15298461914062
+Choice of integrator (one batch): dopri5 | Predicted Cost: tensor([214.3958, 215.5029, 217.8985], device='cuda:2')
+Auxiliary network predicted False
+AUC of the choice (one batch): 0.0
+----- Test Iter 22 | Test loss (one batch): 2.730501651763916
+Cost(alpha 0.05) for Dopri integrator (one batch): 177.57449340820312
+Cost(alpha 0.05) for Euler integrator (one batch): 200.49093627929688
+Cost(alpha 0.05) for RK4 integrator (one batch): 212.912109375
+Choice of integrator (one batch): dopri5 | Predicted Cost: tensor([193.8118, 193.9846, 196.8337], device='cuda:2')
+Auxiliary network predicted True
+AUC of the choice (one batch): 0.7962962962962963
+----- Test Iter 23 | Test loss (one batch): 2.956700325012207
+Cost(alpha 0.05) for Dopri integrator (one batch): 124.77137756347656
+Cost(alpha 0.05) for Euler integrator (one batch): 120.58895874023438
+Cost(alpha 0.05) for RK4 integrator (one batch): 124.93775939941406
+Choice of integrator (one batch): dopri5 | Predicted Cost: tensor([215.7122, 216.7910, 219.3128], device='cuda:2')
+Auxiliary network predicted False
+AUC of the choice (one batch): 0.9166666666666666
+----- Test Iter 24 | Test loss (one batch): 3.8699381351470947
+Cost(alpha 0.05) for Dopri integrator (one batch): 265.5797119140625
+Cost(alpha 0.05) for Euler integrator (one batch): 280.3927307128906
+Cost(alpha 0.05) for RK4 integrator (one batch): 283.2917175292969
+Choice of integrator (one batch): dopri5 | Predicted Cost: tensor([225.8250, 227.3716, 229.6304], device='cuda:2')
+Auxiliary network predicted True
+AUC of the choice (one batch): 0.6805555555555557
+----- Test Iter 25 | Test loss (one batch): 2.7957136631011963
+Cost(alpha 0.05) for Dopri integrator (one batch): 168.7739715576172
+Cost(alpha 0.05) for Euler integrator (one batch): 164.9789276123047
+Cost(alpha 0.05) for RK4 integrator (one batch): 186.51979064941406
+Choice of integrator (one batch): dopri5 | Predicted Cost: tensor([222.9459, 224.3150, 226.7336], device='cuda:2')
+Auxiliary network predicted False
+AUC of the choice (one batch): 0.845679012345679
+----- Test Iter 26 | Test loss (one batch): 2.964277744293213
+Cost(alpha 0.05) for Dopri integrator (one batch): 221.57704162597656
+Cost(alpha 0.05) for Euler integrator (one batch): 227.12490844726562
+Cost(alpha 0.05) for RK4 integrator (one batch): 239.304443359375
+Choice of integrator (one batch): dopri5 | Predicted Cost: tensor([217.3215, 218.4805, 220.9282], device='cuda:2')
+Auxiliary network predicted True
+AUC of the choice (one batch): 0.8714596949891068
+----- Test Iter 27 | Test loss (one batch): 2.5843422412872314
+Cost(alpha 0.05) for Dopri integrator (one batch): 80.76872253417969
+Cost(alpha 0.05) for Euler integrator (one batch): 93.95501708984375
+Cost(alpha 0.05) for RK4 integrator (one batch): 80.95046997070312
+Choice of integrator (one batch): dopri5 | Predicted Cost: tensor([200.5612, 201.1510, 203.6526], device='cuda:2')
+Auxiliary network predicted True
+AUC of the choice (one batch): 0.9883040935672514
+----- Test Iter 28 | Test loss (one batch): 2.9835832118988037
+Cost(alpha 0.05) for Dopri integrator (one batch): 89.56925964355469
+Cost(alpha 0.05) for Euler integrator (one batch): 93.95501708984375
+Cost(alpha 0.05) for RK4 integrator (one batch): 124.9377670288086
+Choice of integrator (one batch): dopri5 | Predicted Cost: tensor([202.5595, 203.1254, 205.7587], device='cuda:2')
+Auxiliary network predicted True
+AUC of the choice (one batch): 0.9861111111111112
+----- Test Iter 29 | Test loss (one batch): 3.047250986099243
+Cost(alpha 0.05) for Dopri integrator (one batch): 186.37498474121094
+Cost(alpha 0.05) for Euler integrator (one batch): 200.49095153808594
+Cost(alpha 0.05) for RK4 integrator (one batch): 212.912109375
+Choice of integrator (one batch): euler | Predicted Cost: tensor([179.6239, 179.3437, 182.1846], device='cuda:2')
+Auxiliary network predicted False
+AUC of the choice (one batch): 0.7647058823529411
+----- Test Iter 30 | Test loss (one batch): 3.3989968299865723
+Cost(alpha 0.05) for Dopri integrator (one batch): 203.97601318359375
+Cost(alpha 0.05) for Euler integrator (one batch): 209.36891174316406
+Cost(alpha 0.05) for RK4 integrator (one batch): 212.91212463378906
+Choice of integrator (one batch): dopri5 | Predicted Cost: tensor([237.8300, 239.7773, 242.0578], device='cuda:2')
+Auxiliary network predicted True
+AUC of the choice (one batch): 0.8003472222222222
+----- Test Iter 31 | Test loss (one batch): 3.6102092266082764
+Cost(alpha 0.05) for Dopri integrator (one batch): 98.36978912353516
+Cost(alpha 0.05) for Euler integrator (one batch): 120.58895874023438
+Cost(alpha 0.05) for RK4 integrator (one batch): 116.14030456542969
+Choice of integrator (one batch): dopri5 | Predicted Cost: tensor([223.5496, 224.9129, 227.3472], device='cuda:2')
+Auxiliary network predicted True
+AUC of the choice (one batch): 0.9417989417989419
+----- Test Iter 32 | Test loss (one batch): 3.955423593521118
+Cost(alpha 0.05) for Dopri integrator (one batch): 247.97865295410156
+Cost(alpha 0.05) for Euler integrator (one batch): 271.5147705078125
+Cost(alpha 0.05) for RK4 integrator (one batch): 274.4942626953125
+Choice of integrator (one batch): dopri5 | Predicted Cost: tensor([230.7568, 232.4881, 234.7258], device='cuda:2')
+Auxiliary network predicted True
+AUC of the choice (one batch): 0.5138888888888888
+----- Test Iter 33 | Test loss (one batch): 2.7091288566589355
+Cost(alpha 0.05) for Dopri integrator (one batch): 98.36978912353516
+Cost(alpha 0.05) for Euler integrator (one batch): 111.71098327636719
+Cost(alpha 0.05) for RK4 integrator (one batch): 107.34285736083984
+Choice of integrator (one batch): euler | Predicted Cost: tensor([167.7224, 166.9700, 169.9686], device='cuda:2')
+Auxiliary network predicted False
+AUC of the choice (one batch): 0.8993055555555556
+----- Test Iter 34 | Test loss (one batch): 3.217979669570923
+Cost(alpha 0.05) for Dopri integrator (one batch): 177.57443237304688
+Cost(alpha 0.05) for Euler integrator (one batch): 191.61294555664062
+Cost(alpha 0.05) for RK4 integrator (one batch): 186.519775390625
+Choice of integrator (one batch): dopri5 | Predicted Cost: tensor([212.2590, 213.2221, 215.7892], device='cuda:2')
+Auxiliary network predicted True
+AUC of the choice (one batch): 0.8993055555555556
+----- Test Iter 35 | Test loss (one batch): 3.862067937850952
+Cost(alpha 0.05) for Dopri integrator (one batch): 274.3802490234375
+Cost(alpha 0.05) for Euler integrator (one batch): 271.51470947265625
+Cost(alpha 0.05) for RK4 integrator (one batch): 274.4942626953125
+Choice of integrator (one batch): euler | Predicted Cost: tensor([186.2253, 186.1539, 189.0275], device='cuda:2')
+Auxiliary network predicted True
+AUC of the choice (one batch): 0.690631808278867
+----- Test Iter 36 | Test loss (one batch): 4.099630355834961
+Cost(alpha 0.05) for Dopri integrator (one batch): 124.77137756347656
+Cost(alpha 0.05) for Euler integrator (one batch): 120.5889663696289
+Cost(alpha 0.05) for RK4 integrator (one batch): 124.93775939941406
+Choice of integrator (one batch): dopri5 | Predicted Cost: tensor([271.4280, 274.7137, 276.5166], device='cuda:2')
+Auxiliary network predicted False
+AUC of the choice (one batch): 0.6361655773420478
+----- Test Iter 37 | Test loss (one batch): 3.6741247177124023
+Cost(alpha 0.05) for Dopri integrator (one batch): 177.57444763183594
+Cost(alpha 0.05) for Euler integrator (one batch): 182.7349395751953
+Cost(alpha 0.05) for RK4 integrator (one batch): 177.7223358154297
+Choice of integrator (one batch): dopri5 | Predicted Cost: tensor([229.4504, 231.0551, 233.3895], device='cuda:2')
+Auxiliary network predicted True
+AUC of the choice (one batch): 0.6197916666666666
+----- Test Iter 38 | Test loss (one batch): 3.8258047103881836
+Cost(alpha 0.05) for Dopri integrator (one batch): 195.17550659179688
+Cost(alpha 0.05) for Euler integrator (one batch): 200.49098205566406
+Cost(alpha 0.05) for RK4 integrator (one batch): 212.91213989257812
+Choice of integrator (one batch): dopri5 | Predicted Cost: tensor([245.7966, 248.0970, 250.1762], device='cuda:2')
+Auxiliary network predicted True
+AUC of the choice (one batch): 0.7719298245614035
+----- Test Iter 39 | Test loss (one batch): 4.57356595993042
+Cost(alpha 0.05) for Dopri integrator (one batch): 344.7845458984375
+Cost(alpha 0.05) for Euler integrator (one batch): 333.6605224609375
+Cost(alpha 0.05) for RK4 integrator (one batch): 353.6713562011719
+Choice of integrator (one batch): dopri5 | Predicted Cost: tensor([201.1162, 201.5907, 204.3113], device='cuda:2')
+Auxiliary network predicted False
+AUC of the choice (one batch): 0.6432748538011696
+----- Total Test Batches
+Aux Net Accuracy: 0.5
+AUC of the choices 0.7120 | Choice of Dopri5 35 | Euler 5 | RK4 0
+TN, FP, FN, TP | AuxNet 1625, 457, 49, 269
+Avg Aux Net Runtime (per batch): 0.0003

@@ -1,0 +1,1703 @@
+/home/soyoung/latent_ode2/run_models.py
+run_models.py --niters 100 -n 8000 -l 20 --latent-ode --z0-encoder rnn --dataset physionet --rec-dims 40 --rec-layers 3 --gen-layers 3 --units 50 --gru-units 50 --quantization 0.016 --classif --reg_dopri 0 --reg_kinetic 0 --reg_l1 0 --reg_l2 0 --step_size 15 --gpu 2
+dopri5_err15.0
+Experiment 66546
+Epoch 0001 [Test seq (cond on sampled tp)] | Loss 59.426430 | Likelihood -47.254101 | KL fp 4.2761 | FP STD 0.0174 | NFE 14.0000
+KL coef: 0.0
+Train loss (one batch): 58.797359466552734
+Train CE loss (one batch): 0.13049611449241638
+Classification AUC (TEST): 0.5563
+Test MSE: 0.0100
+Poisson likelihood: 0.0
+CE loss: 0.13271595537662506
+NFE: 14.0000
+### Auxiliary Network### 
+Train CE loss (one batch): 0.8586490750312805
+Test CE loss: 1.098529577255249
+Choice of integrator: dopri5
+Reward for Dopri integrator: 347148.0
+Reward for Euler integrator: 320082.0
+Reward for RK4 integrator: 326328.0
+Experiment 66546
+Epoch 0002 [Test seq (cond on sampled tp)] | Loss 45.981773 | Likelihood -33.828979 | KL fp 4.4641 | FP STD 0.0130 | NFE 26.0000
+KL coef: 0.0
+Train loss (one batch): 45.955474853515625
+Train CE loss (one batch): 0.12437357008457184
+Classification AUC (TEST): 0.5290
+Test MSE: 0.0073
+Poisson likelihood: 0.0
+CE loss: 0.13251733779907227
+NFE: 26.0000
+### Auxiliary Network### 
+Train CE loss (one batch): 0.7824437022209167
+Test CE loss: 1.0984256267547607
+Choice of integrator: dopri5
+Reward for Dopri integrator: 372132.0
+Reward for Euler integrator: 320082.0
+Reward for RK4 integrator: 326328.0
+Experiment 66546
+Epoch 0003 [Test seq (cond on sampled tp)] | Loss 42.914394 | Likelihood -30.770430 | KL fp 4.6976 | FP STD 0.0102 | NFE 20.0000
+KL coef: 0.0
+Train loss (one batch): 42.51030731201172
+Train CE loss (one batch): 0.12623481452465057
+Classification AUC (TEST): 0.5462
+Test MSE: 0.0067
+Poisson likelihood: 0.0
+CE loss: 0.1324312388896942
+NFE: 20.0000
+### Auxiliary Network### 
+Train CE loss (one batch): 0.8058627843856812
+Test CE loss: 1.0983940362930298
+Choice of integrator: dopri5
+Reward for Dopri integrator: 359640.0
+Reward for Euler integrator: 320082.0
+Reward for RK4 integrator: 326328.0
+Experiment 66546
+Epoch 0004 [Test seq (cond on sampled tp)] | Loss 40.501202 | Likelihood -28.451208 | KL fp 4.8001 | FP STD 0.0096 | NFE 20.0000
+KL coef: 0.0
+Train loss (one batch): 39.63866424560547
+Train CE loss (one batch): 0.12729217112064362
+Classification AUC (TEST): 0.5858
+Test MSE: 0.0062
+Poisson likelihood: 0.0
+CE loss: 0.1314886212348938
+NFE: 20.0000
+### Auxiliary Network### 
+Train CE loss (one batch): 0.739372730255127
+Test CE loss: 1.0983017683029175
+Choice of integrator: dopri5
+Reward for Dopri integrator: 359640.0
+Reward for Euler integrator: 320082.0
+Reward for RK4 integrator: 326328.0
+Experiment 66546
+Epoch 0005 [Test seq (cond on sampled tp)] | Loss 38.563560 | Likelihood -26.623520 | KL fp 4.8572 | FP STD 0.0090 | NFE 20.0000
+KL coef: 0.0
+Train loss (one batch): 37.891990661621094
+Train CE loss (one batch): 0.128146231174469
+Classification AUC (TEST): 0.6211
+Test MSE: 0.0059
+Poisson likelihood: 0.0
+CE loss: 0.13039273023605347
+NFE: 20.0000
+### Auxiliary Network### 
+Train CE loss (one batch): 0.6846293210983276
+Test CE loss: 1.098304033279419
+Choice of integrator: dopri5
+Reward for Dopri integrator: 359640.0
+Reward for Euler integrator: 320082.0
+Reward for RK4 integrator: 326328.0
+Experiment 66546
+Epoch 0006 [Test seq (cond on sampled tp)] | Loss 37.078003 | Likelihood -25.339376 | KL fp 4.6756 | FP STD 0.0101 | NFE 20.0000
+KL coef: 0.0
+Train loss (one batch): 36.67557144165039
+Train CE loss (one batch): 0.1273983120918274
+Classification AUC (TEST): 0.6392
+Test MSE: 0.0056
+Poisson likelihood: 0.0
+CE loss: 0.1283726692199707
+NFE: 20.0000
+### Auxiliary Network### 
+Train CE loss (one batch): 0.8149546384811401
+Test CE loss: 1.0982091426849365
+Choice of integrator: dopri5
+Reward for Dopri integrator: 359640.0
+Reward for Euler integrator: 320082.0
+Reward for RK4 integrator: 326328.0
+Experiment 66546
+Epoch 0007 [Test seq (cond on sampled tp)] | Loss 36.571655 | Likelihood -24.802893 | KL fp 4.7752 | FP STD 0.0100 | NFE 32.0000
+KL coef: 0.0
+Train loss (one batch): 36.14067459106445
+Train CE loss (one batch): 0.1288071572780609
+Classification AUC (TEST): 0.6436
+Test MSE: 0.0055
+Poisson likelihood: 0.0
+CE loss: 0.12867417931556702
+NFE: 32.0000
+### Auxiliary Network### 
+Train CE loss (one batch): 0.7734425067901611
+Test CE loss: 1.0980477333068848
+Choice of integrator: dopri5
+Reward for Dopri integrator: 384624.0
+Reward for Euler integrator: 320082.0
+Reward for RK4 integrator: 326328.0
+Experiment 66546
+Epoch 0008 [Test seq (cond on sampled tp)] | Loss 36.280239 | Likelihood -24.502623 | KL fp 4.8955 | FP STD 0.0085 | NFE 32.0000
+KL coef: 0.0
+Train loss (one batch): 35.89557647705078
+Train CE loss (one batch): 0.12901365756988525
+Classification AUC (TEST): 0.6466
+Test MSE: 0.0055
+Poisson likelihood: 0.0
+CE loss: 0.1287643015384674
+NFE: 32.0000
+### Auxiliary Network### 
+Train CE loss (one batch): 0.7702911496162415
+Test CE loss: 1.0981429815292358
+Choice of integrator: dopri5
+Reward for Dopri integrator: 384624.0
+Reward for Euler integrator: 320082.0
+Reward for RK4 integrator: 326328.0
+Experiment 66546
+Epoch 0009 [Test seq (cond on sampled tp)] | Loss 36.129799 | Likelihood -24.331680 | KL fp 4.8178 | FP STD 0.0098 | NFE 32.0000
+KL coef: 0.0
+Train loss (one batch): 35.55708312988281
+Train CE loss (one batch): 0.129236102104187
+Classification AUC (TEST): 0.6504
+Test MSE: 0.0054
+Poisson likelihood: 0.0
+CE loss: 0.12896806001663208
+NFE: 32.0000
+### Auxiliary Network### 
+Train CE loss (one batch): 0.7609297037124634
+Test CE loss: 1.0980627536773682
+Choice of integrator: dopri5
+Reward for Dopri integrator: 384624.0
+Reward for Euler integrator: 320082.0
+Reward for RK4 integrator: 326328.0
+Experiment 66546
+Epoch 0010 [Test seq (cond on sampled tp)] | Loss 35.956005 | Likelihood -24.161709 | KL fp 5.0446 | FP STD 0.0074 | NFE 44.0000
+KL coef: 0.0
+Train loss (one batch): 35.463111877441406
+Train CE loss (one batch): 0.1299593299627304
+Classification AUC (TEST): 0.6540
+Test MSE: 0.0054
+Poisson likelihood: 0.0
+CE loss: 0.12892937660217285
+NFE: 44.0000
+### Auxiliary Network### 
+Train CE loss (one batch): 0.7694790959358215
+Test CE loss: 1.0983458757400513
+Choice of integrator: dopri5
+Reward for Dopri integrator: 409608.0
+Reward for Euler integrator: 320082.0
+Reward for RK4 integrator: 326328.0
+Experiment 66546
+Epoch 0011 [Test seq (cond on sampled tp)] | Loss 35.803692 | Likelihood -23.995586 | KL fp 5.1466 | FP STD 0.0066 | NFE 44.0000
+KL coef: 0.010000000000000009
+Train loss (one batch): 35.35082244873047
+Train CE loss (one batch): 0.12974853813648224
+Classification AUC (TEST): 0.6575
+Test MSE: 0.0054
+Poisson likelihood: 0.0
+CE loss: 0.12855269014835358
+NFE: 44.0000
+### Auxiliary Network### 
+Train CE loss (one batch): 0.7273002862930298
+Test CE loss: 1.098275065422058
+Choice of integrator: dopri5
+Reward for Dopri integrator: 409608.0
+Reward for Euler integrator: 320082.0
+Reward for RK4 integrator: 326328.0
+Experiment 66546
+Epoch 0012 [Test seq (cond on sampled tp)] | Loss 35.845703 | Likelihood -24.000385 | KL fp 4.6581 | FP STD 0.0110 | NFE 44.0000
+KL coef: 0.01990000000000003
+Train loss (one batch): 35.33329391479492
+Train CE loss (one batch): 0.12962740659713745
+Classification AUC (TEST): 0.6591
+Test MSE: 0.0054
+Poisson likelihood: 0.0
+CE loss: 0.12851247191429138
+NFE: 44.0000
+### Auxiliary Network### 
+Train CE loss (one batch): 0.6618186235427856
+Test CE loss: 1.097584843635559
+Choice of integrator: dopri5
+Reward for Dopri integrator: 409608.0
+Reward for Euler integrator: 320082.0
+Reward for RK4 integrator: 326328.0
+Experiment 66546
+Epoch 0013 [Test seq (cond on sampled tp)] | Loss 35.820602 | Likelihood -23.980085 | KL fp 4.8090 | FP STD 0.0105 | NFE 50.0000
+KL coef: 0.029700999999999977
+Train loss (one batch): 35.49891662597656
+Train CE loss (one batch): 0.12942063808441162
+Classification AUC (TEST): 0.6678
+Test MSE: 0.0053
+Poisson likelihood: 0.0
+CE loss: 0.12796424329280853
+NFE: 50.0000
+### Auxiliary Network### 
+Train CE loss (one batch): 0.795757532119751
+Test CE loss: 1.097124695777893
+Choice of integrator: dopri5
+Reward for Dopri integrator: 422100.0
+Reward for Euler integrator: 320082.0
+Reward for RK4 integrator: 326328.0
+Experiment 66546
+Epoch 0014 [Test seq (cond on sampled tp)] | Loss 35.651955 | Likelihood -23.816069 | KL fp 4.7612 | FP STD 0.0100 | NFE 50.0000
+KL coef: 0.039403990000000055
+Train loss (one batch): 35.24022674560547
+Train CE loss (one batch): 0.1286301463842392
+Classification AUC (TEST): 0.6699
+Test MSE: 0.0053
+Poisson likelihood: 0.0
+CE loss: 0.1274716556072235
+NFE: 50.0000
+### Auxiliary Network### 
+Train CE loss (one batch): 0.7425380945205688
+Test CE loss: 1.0979440212249756
+Choice of integrator: dopri5
+Reward for Dopri integrator: 422100.0
+Reward for Euler integrator: 320082.0
+Reward for RK4 integrator: 326328.0
+Experiment 66546
+Epoch 0015 [Test seq (cond on sampled tp)] | Loss 35.684982 | Likelihood -23.900894 | KL fp 4.3066 | FP STD 0.0139 | NFE 50.0000
+KL coef: 0.04900995010000009
+Train loss (one batch): 35.31031036376953
+Train CE loss (one batch): 0.1285780668258667
+Classification AUC (TEST): 0.6785
+Test MSE: 0.0053
+Poisson likelihood: 0.0
+CE loss: 0.12671814858913422
+NFE: 50.0000
+### Auxiliary Network### 
+Train CE loss (one batch): 0.7487356662750244
+Test CE loss: 1.09771728515625
+Choice of integrator: dopri5
+Reward for Dopri integrator: 422100.0
+Reward for Euler integrator: 320082.0
+Reward for RK4 integrator: 326328.0
+Experiment 66546
+Epoch 0016 [Test seq (cond on sampled tp)] | Loss 35.856934 | Likelihood -24.070097 | KL fp 4.1262 | FP STD 0.0182 | NFE 50.0000
+KL coef: 0.058519850599
+Train loss (one batch): 35.402809143066406
+Train CE loss (one batch): 0.12683771550655365
+Classification AUC (TEST): 0.6807
+Test MSE: 0.0054
+Poisson likelihood: 0.0
+CE loss: 0.1264503002166748
+NFE: 50.0000
+### Auxiliary Network### 
+Train CE loss (one batch): 0.7655280828475952
+Test CE loss: 1.0964020490646362
+Choice of integrator: dopri5
+Reward for Dopri integrator: 422100.0
+Reward for Euler integrator: 320082.0
+Reward for RK4 integrator: 326328.0
+Experiment 66546
+Epoch 0017 [Test seq (cond on sampled tp)] | Loss 35.511234 | Likelihood -23.752844 | KL fp 4.4996 | FP STD 0.0124 | NFE 50.0000
+KL coef: 0.06793465209301008
+Train loss (one batch): 35.109066009521484
+Train CE loss (one batch): 0.1257462203502655
+Classification AUC (TEST): 0.6869
+Test MSE: 0.0053
+Poisson likelihood: 0.0
+CE loss: 0.12551581859588623
+NFE: 50.0000
+### Auxiliary Network### 
+Train CE loss (one batch): 0.7678046226501465
+Test CE loss: 1.0974687337875366
+Choice of integrator: dopri5
+Reward for Dopri integrator: 422100.0
+Reward for Euler integrator: 320082.0
+Reward for RK4 integrator: 326328.0
+Experiment 66546
+Epoch 0018 [Test seq (cond on sampled tp)] | Loss 35.575222 | Likelihood -23.891800 | KL fp 4.3750 | FP STD 0.0156 | NFE 56.0000
+KL coef: 0.07725530557207994
+Train loss (one batch): 35.34203338623047
+Train CE loss (one batch): 0.12470521777868271
+Classification AUC (TEST): 0.6972
+Test MSE: 0.0053
+Poisson likelihood: 0.0
+CE loss: 0.12444262951612473
+NFE: 56.0000
+### Auxiliary Network### 
+Train CE loss (one batch): 0.74684739112854
+Test CE loss: 1.095607042312622
+Choice of integrator: dopri5
+Reward for Dopri integrator: 434592.0
+Reward for Euler integrator: 320082.0
+Reward for RK4 integrator: 326328.0
+Experiment 66546
+Epoch 0019 [Test seq (cond on sampled tp)] | Loss 35.124821 | Likelihood -23.467985 | KL fp 4.5609 | FP STD 0.0108 | NFE 56.0000
+KL coef: 0.08648275251635917
+Train loss (one batch): 34.84866714477539
+Train CE loss (one batch): 0.1225292831659317
+Classification AUC (TEST): 0.6978
+Test MSE: 0.0052
+Poisson likelihood: 0.0
+CE loss: 0.12361028045415878
+NFE: 56.0000
+### Auxiliary Network### 
+Train CE loss (one batch): 0.72641521692276
+Test CE loss: 1.0976732969284058
+Choice of integrator: dopri5
+Reward for Dopri integrator: 434592.0
+Reward for Euler integrator: 320082.0
+Reward for RK4 integrator: 326328.0
+Experiment 66546
+Epoch 0020 [Test seq (cond on sampled tp)] | Loss 35.656986 | Likelihood -24.046131 | KL fp 4.3052 | FP STD 0.0179 | NFE 56.0000
+KL coef: 0.09561792499119559
+Train loss (one batch): 35.32936096191406
+Train CE loss (one batch): 0.12058760225772858
+Classification AUC (TEST): 0.7023
+Test MSE: 0.0054
+Poisson likelihood: 0.0
+CE loss: 0.12300501763820648
+NFE: 56.0000
+### Auxiliary Network### 
+Train CE loss (one batch): 0.7795126438140869
+Test CE loss: 1.0897639989852905
+Choice of integrator: dopri5
+Reward for Dopri integrator: 434592.0
+Reward for Euler integrator: 320082.0
+Reward for RK4 integrator: 326328.0
+Experiment 66546
+Epoch 0021 [Test seq (cond on sampled tp)] | Loss 35.107243 | Likelihood -23.588903 | KL fp 4.1278 | FP STD 0.0191 | NFE 56.0000
+KL coef: 0.10466174574128362
+Train loss (one batch): 34.59297180175781
+Train CE loss (one batch): 0.11878909170627594
+Classification AUC (TEST): 0.7073
+Test MSE: 0.0053
+Poisson likelihood: 0.0
+CE loss: 0.1218523308634758
+NFE: 56.0000
+### Auxiliary Network### 
+Train CE loss (one batch): 0.7732969522476196
+Test CE loss: 1.0915628671646118
+Choice of integrator: dopri5
+Reward for Dopri integrator: 434592.0
+Reward for Euler integrator: 320082.0
+Reward for RK4 integrator: 326328.0
+Experiment 66546
+Epoch 0022 [Test seq (cond on sampled tp)] | Loss 34.833069 | Likelihood -23.406830 | KL fp 3.9253 | FP STD 0.0226 | NFE 56.0000
+KL coef: 0.11361512828387077
+Train loss (one batch): 34.480430603027344
+Train CE loss (one batch): 0.1180611401796341
+Classification AUC (TEST): 0.7190
+Test MSE: 0.0052
+Poisson likelihood: 0.0
+CE loss: 0.1207909882068634
+NFE: 56.0000
+### Auxiliary Network### 
+Train CE loss (one batch): 0.695301353931427
+Test CE loss: 1.0915393829345703
+Choice of integrator: dopri5
+Reward for Dopri integrator: 434592.0
+Reward for Euler integrator: 320082.0
+Reward for RK4 integrator: 326328.0
+Experiment 66546
+Epoch 0023 [Test seq (cond on sampled tp)] | Loss 34.215073 | Likelihood -22.855484 | KL fp 3.9658 | FP STD 0.0207 | NFE 56.0000
+KL coef: 0.12247897700103216
+Train loss (one batch): 33.922969818115234
+Train CE loss (one batch): 0.1170538067817688
+Classification AUC (TEST): 0.7254
+Test MSE: 0.0051
+Poisson likelihood: 0.0
+CE loss: 0.11972495913505554
+NFE: 56.0000
+### Auxiliary Network### 
+Train CE loss (one batch): 0.7605670690536499
+Test CE loss: 1.0928877592086792
+Choice of integrator: dopri5
+Reward for Dopri integrator: 434592.0
+Reward for Euler integrator: 320082.0
+Reward for RK4 integrator: 326328.0
+Experiment 66546
+Epoch 0024 [Test seq (cond on sampled tp)] | Loss 33.741528 | Likelihood -22.418137 | KL fp 4.0758 | FP STD 0.0191 | NFE 56.0000
+KL coef: 0.13125418723102178
+Train loss (one batch): 33.6719970703125
+Train CE loss (one batch): 0.11664552986621857
+Classification AUC (TEST): 0.7294
+Test MSE: 0.0050
+Poisson likelihood: 0.0
+CE loss: 0.1188717782497406
+NFE: 56.0000
+### Auxiliary Network### 
+Train CE loss (one batch): 0.748613178730011
+Test CE loss: 1.0943565368652344
+Choice of integrator: dopri5
+Reward for Dopri integrator: 434592.0
+Reward for Euler integrator: 320082.0
+Reward for RK4 integrator: 326328.0
+Experiment 66546
+Epoch 0025 [Test seq (cond on sampled tp)] | Loss 34.313187 | Likelihood -22.999914 | KL fp 3.9459 | FP STD 0.0220 | NFE 56.0000
+KL coef: 0.13994164535871156
+Train loss (one batch): 32.92438507080078
+Train CE loss (one batch): 0.11291029304265976
+Classification AUC (TEST): 0.7302
+Test MSE: 0.0052
+Poisson likelihood: 0.0
+CE loss: 0.11860426515340805
+NFE: 56.0000
+### Auxiliary Network### 
+Train CE loss (one batch): 0.7693082690238953
+Test CE loss: 1.0939109325408936
+Choice of integrator: dopri5
+Reward for Dopri integrator: 434592.0
+Reward for Euler integrator: 320082.0
+Reward for RK4 integrator: 326328.0
+Experiment 66546
+Epoch 0026 [Test seq (cond on sampled tp)] | Loss 33.127205 | Likelihood -21.914778 | KL fp 4.0017 | FP STD 0.0217 | NFE 56.0000
+KL coef: 0.14854222890512447
+Train loss (one batch): 33.18577575683594
+Train CE loss (one batch): 0.1164764016866684
+Classification AUC (TEST): 0.7418
+Test MSE: 0.0049
+Poisson likelihood: 0.0
+CE loss: 0.11716747283935547
+NFE: 56.0000
+### Auxiliary Network### 
+Train CE loss (one batch): 0.7927566766738892
+Test CE loss: 1.09272038936615
+Choice of integrator: dopri5
+Reward for Dopri integrator: 434592.0
+Reward for Euler integrator: 320082.0
+Reward for RK4 integrator: 327324.0
+Experiment 66546
+Epoch 0027 [Test seq (cond on sampled tp)] | Loss 32.879986 | Likelihood -21.765499 | KL fp 3.9772 | FP STD 0.0219 | NFE 56.0000
+KL coef: 0.15705680661607324
+Train loss (one batch): 32.67005157470703
+Train CE loss (one batch): 0.11429216712713242
+Classification AUC (TEST): 0.7487
+Test MSE: 0.0049
+Poisson likelihood: 0.0
+CE loss: 0.11588604748249054
+NFE: 56.0000
+### Auxiliary Network### 
+Train CE loss (one batch): 0.7189136147499084
+Test CE loss: 1.0927666425704956
+Choice of integrator: dopri5
+Reward for Dopri integrator: 434592.0
+Reward for Euler integrator: 321081.0
+Reward for RK4 integrator: 326328.0
+Experiment 66546
+Epoch 0028 [Test seq (cond on sampled tp)] | Loss 32.397984 | Likelihood -21.301132 | KL fp 4.0198 | FP STD 0.0208 | NFE 62.0000
+KL coef: 0.1654862385499125
+Train loss (one batch): 32.7240104675293
+Train CE loss (one batch): 0.11472698301076889
+Classification AUC (TEST): 0.7529
+Test MSE: 0.0048
+Poisson likelihood: 0.0
+CE loss: 0.11530601233243942
+NFE: 62.0000
+### Auxiliary Network### 
+Train CE loss (one batch): 0.6974543333053589
+Test CE loss: 1.0926772356033325
+Choice of integrator: dopri5
+Reward for Dopri integrator: 445208.0
+Reward for Euler integrator: 319083.0
+Reward for RK4 integrator: 324336.0
+Experiment 66546
+Epoch 0029 [Test seq (cond on sampled tp)] | Loss 32.178982 | Likelihood -21.156277 | KL fp 3.9618 | FP STD 0.0219 | NFE 50.0000
+KL coef: 0.17383137616441335
+Train loss (one batch): 32.331756591796875
+Train CE loss (one batch): 0.11496427655220032
+Classification AUC (TEST): 0.7591
+Test MSE: 0.0048
+Poisson likelihood: 0.0
+CE loss: 0.11432719230651855
+NFE: 50.0000
+### Auxiliary Network### 
+Train CE loss (one batch): 0.8367857933044434
+Test CE loss: 1.0920649766921997
+Choice of integrator: dopri5
+Reward for Dopri integrator: 422100.0
+Reward for Euler integrator: 319083.0
+Reward for RK4 integrator: 327324.0
+Experiment 66546
+Epoch 0030 [Test seq (cond on sampled tp)] | Loss 31.668486 | Likelihood -20.688877 | KL fp 3.9102 | FP STD 0.0215 | NFE 62.0000
+KL coef: 0.18209306240276923
+Train loss (one batch): 32.37450408935547
+Train CE loss (one batch): 0.11650365591049194
+Classification AUC (TEST): 0.7635
+Test MSE: 0.0047
+Poisson likelihood: 0.0
+CE loss: 0.11366885900497437
+NFE: 62.0000
+### Auxiliary Network### 
+Train CE loss (one batch): 0.7211475372314453
+Test CE loss: 1.0920205116271973
+Choice of integrator: dopri5
+Reward for Dopri integrator: 448960.0
+Reward for Euler integrator: 320082.0
+Reward for RK4 integrator: 324336.0
+Experiment 66546
+Epoch 0031 [Test seq (cond on sampled tp)] | Loss 31.308411 | Likelihood -20.394066 | KL fp 3.9951 | FP STD 0.0205 | NFE 62.0000
+KL coef: 0.19027213177874158
+Train loss (one batch): 32.35818862915039
+Train CE loss (one batch): 0.11621945351362228
+Classification AUC (TEST): 0.7712
+Test MSE: 0.0046
+Poisson likelihood: 0.0
+CE loss: 0.11253978312015533
+NFE: 62.0000
+### Auxiliary Network### 
+Train CE loss (one batch): 0.9236977100372314
+Test CE loss: 1.0927932262420654
+Choice of integrator: dopri5
+Reward for Dopri integrator: 449898.0
+Reward for Euler integrator: 325077.0
+Reward for RK4 integrator: 327324.0
+Experiment 66546
+Epoch 0032 [Test seq (cond on sampled tp)] | Loss 31.172325 | Likelihood -20.185976 | KL fp 3.9293 | FP STD 0.0208 | NFE 62.0000
+KL coef: 0.19836941046095413
+Train loss (one batch): 32.3521728515625
+Train CE loss (one batch): 0.11676111072301865
+Classification AUC (TEST): 0.7672
+Test MSE: 0.0046
+Poisson likelihood: 0.0
+CE loss: 0.11305537074804306
+NFE: 62.0000
+### Auxiliary Network### 
+Train CE loss (one batch): 0.7825889587402344
+Test CE loss: 1.093507170677185
+Choice of integrator: dopri5
+Reward for Dopri integrator: 449898.0
+Reward for Euler integrator: 326076.0
+Reward for RK4 integrator: 331308.0
+Experiment 66546
+Epoch 0033 [Test seq (cond on sampled tp)] | Loss 31.054667 | Likelihood -20.032059 | KL fp 3.9482 | FP STD 0.0204 | NFE 62.0000
+KL coef: 0.20638571635634462
+Train loss (one batch): 32.1118278503418
+Train CE loss (one batch): 0.11658743023872375
+Classification AUC (TEST): 0.7680
+Test MSE: 0.0046
+Poisson likelihood: 0.0
+CE loss: 0.11307108402252197
+NFE: 62.0000
+### Auxiliary Network### 
+Train CE loss (one batch): 0.8702110052108765
+Test CE loss: 1.09318208694458
+Choice of integrator: dopri5
+Reward for Dopri integrator: 448960.0
+Reward for Euler integrator: 323079.0
+Reward for RK4 integrator: 328320.0
+Experiment 66546
+Epoch 0034 [Test seq (cond on sampled tp)] | Loss 31.139412 | Likelihood -20.267807 | KL fp 3.9314 | FP STD 0.0209 | NFE 62.0000
+KL coef: 0.21432185919278124
+Train loss (one batch): 31.726211547851562
+Train CE loss (one batch): 0.11394312232732773
+Classification AUC (TEST): 0.7791
+Test MSE: 0.0046
+Poisson likelihood: 0.0
+CE loss: 0.11128759384155273
+NFE: 62.0000
+### Auxiliary Network### 
+Train CE loss (one batch): 0.8613258600234985
+Test CE loss: 1.0923113822937012
+Choice of integrator: dopri5
+Reward for Dopri integrator: 448960.0
+Reward for Euler integrator: 323079.0
+Reward for RK4 integrator: 328320.0
+Experiment 66546
+Epoch 0035 [Test seq (cond on sampled tp)] | Loss 31.057644 | Likelihood -20.181274 | KL fp 3.9692 | FP STD 0.0199 | NFE 62.0000
+KL coef: 0.22217864060085335
+Train loss (one batch): 31.683528900146484
+Train CE loss (one batch): 0.11486979573965073
+Classification AUC (TEST): 0.7820
+Test MSE: 0.0046
+Poisson likelihood: 0.0
+CE loss: 0.11093177646398544
+NFE: 62.0000
+### Auxiliary Network### 
+Train CE loss (one batch): 0.7391915321350098
+Test CE loss: 1.0934923887252808
+Choice of integrator: dopri5
+Reward for Dopri integrator: 449898.0
+Reward for Euler integrator: 322080.0
+Reward for RK4 integrator: 329316.0
+Experiment 66546
+Epoch 0036 [Test seq (cond on sampled tp)] | Loss 31.635942 | Likelihood -20.637526 | KL fp 3.9409 | FP STD 0.0204 | NFE 62.0000
+KL coef: 0.2299568541948449
+Train loss (one batch): 31.42931365966797
+Train CE loss (one batch): 0.11294940114021301
+Classification AUC (TEST): 0.7766
+Test MSE: 0.0047
+Poisson likelihood: 0.0
+CE loss: 0.11190830171108246
+NFE: 62.0000
+### Auxiliary Network### 
+Train CE loss (one batch): 0.7340165972709656
+Test CE loss: 1.0926610231399536
+Choice of integrator: dopri5
+Reward for Dopri integrator: 449898.0
+Reward for Euler integrator: 323079.0
+Reward for RK4 integrator: 328320.0
+Experiment 66546
+Epoch 0037 [Test seq (cond on sampled tp)] | Loss 31.958935 | Likelihood -20.975346 | KL fp 3.9523 | FP STD 0.0198 | NFE 62.0000
+KL coef: 0.23765728565289646
+Train loss (one batch): 31.30105972290039
+Train CE loss (one batch): 0.1123812198638916
+Classification AUC (TEST): 0.7823
+Test MSE: 0.0047
+Poisson likelihood: 0.0
+CE loss: 0.11143123358488083
+NFE: 62.0000
+### Auxiliary Network### 
+Train CE loss (one batch): 0.7599082589149475
+Test CE loss: 1.0922993421554565
+Choice of integrator: dopri5
+Reward for Dopri integrator: 448022.0
+Reward for Euler integrator: 322080.0
+Reward for RK4 integrator: 327324.0
+Experiment 66546
+Epoch 0038 [Test seq (cond on sampled tp)] | Loss 31.362175 | Likelihood -20.471401 | KL fp 4.0007 | FP STD 0.0190 | NFE 62.0000
+KL coef: 0.24528071279636743
+Train loss (one batch): 31.15754508972168
+Train CE loss (one batch): 0.11163379997015
+Classification AUC (TEST): 0.7889
+Test MSE: 0.0046
+Poisson likelihood: 0.0
+CE loss: 0.1100878119468689
+NFE: 62.0000
+### Auxiliary Network### 
+Train CE loss (one batch): 0.7145434617996216
+Test CE loss: 1.093206763267517
+Choice of integrator: dopri5
+Reward for Dopri integrator: 448022.0
+Reward for Euler integrator: 322080.0
+Reward for RK4 integrator: 327324.0
+Experiment 66546
+Epoch 0039 [Test seq (cond on sampled tp)] | Loss 35.120987 | Likelihood -23.224937 | KL fp 3.8313 | FP STD 0.0223 | NFE 62.0000
+KL coef: 0.25282790566840385
+Train loss (one batch): 34.877105712890625
+Train CE loss (one batch): 0.11777114868164062
+Classification AUC (TEST): 0.7161
+Test MSE: 0.0052
+Poisson likelihood: 0.0
+CE loss: 0.12026121467351913
+NFE: 62.0000
+### Auxiliary Network### 
+Train CE loss (one batch): 0.7370862364768982
+Test CE loss: 1.0913207530975342
+Choice of integrator: dopri5
+Reward for Dopri integrator: 444270.0
+Reward for Euler integrator: 317085.0
+Reward for RK4 integrator: 323340.0
+Experiment 66546
+Epoch 0040 [Test seq (cond on sampled tp)] | Loss 31.086308 | Likelihood -20.165747 | KL fp 3.9310 | FP STD 0.0205 | NFE 62.0000
+KL coef: 0.2602996266117198
+Train loss (one batch): 31.524547576904297
+Train CE loss (one batch): 0.11243930459022522
+Classification AUC (TEST): 0.7879
+Test MSE: 0.0046
+Poisson likelihood: 0.0
+CE loss: 0.1099618598818779
+NFE: 62.0000
+### Auxiliary Network### 
+Train CE loss (one batch): 0.7721291184425354
+Test CE loss: 1.0929263830184937
+Choice of integrator: dopri5
+Reward for Dopri integrator: 447084.0
+Reward for Euler integrator: 319083.0
+Reward for RK4 integrator: 324336.0
+Experiment 66546
+Epoch 0041 [Test seq (cond on sampled tp)] | Loss 30.977039 | Likelihood -20.053967 | KL fp 3.9029 | FP STD 0.0207 | NFE 62.0000
+KL coef: 0.26769663034560254
+Train loss (one batch): 31.40972328186035
+Train CE loss (one batch): 0.11263445019721985
+Classification AUC (TEST): 0.7903
+Test MSE: 0.0046
+Poisson likelihood: 0.0
+CE loss: 0.1097751259803772
+NFE: 62.0000
+### Auxiliary Network### 
+Train CE loss (one batch): 0.6756319403648376
+Test CE loss: 1.093368411064148
+Choice of integrator: dopri5
+Reward for Dopri integrator: 449898.0
+Reward for Euler integrator: 321081.0
+Reward for RK4 integrator: 326328.0
+Experiment 66546
+Epoch 0042 [Test seq (cond on sampled tp)] | Loss 31.161606 | Likelihood -20.190191 | KL fp 3.9370 | FP STD 0.0200 | NFE 62.0000
+KL coef: 0.2750196640421466
+Train loss (one batch): 31.26673126220703
+Train CE loss (one batch): 0.11126622557640076
+Classification AUC (TEST): 0.7904
+Test MSE: 0.0046
+Poisson likelihood: 0.0
+CE loss: 0.1098770722746849
+NFE: 62.0000
+### Auxiliary Network### 
+Train CE loss (one batch): 0.7421366572380066
+Test CE loss: 1.0940849781036377
+Choice of integrator: dopri5
+Reward for Dopri integrator: 448022.0
+Reward for Euler integrator: 323079.0
+Reward for RK4 integrator: 329316.0
+Experiment 66546
+Epoch 0043 [Test seq (cond on sampled tp)] | Loss 31.297829 | Likelihood -20.268421 | KL fp 3.9743 | FP STD 0.0191 | NFE 62.0000
+KL coef: 0.2822694674017251
+Train loss (one batch): 31.076419830322266
+Train CE loss (one batch): 0.11012821644544601
+Classification AUC (TEST): 0.7891
+Test MSE: 0.0046
+Poisson likelihood: 0.0
+CE loss: 0.11006373167037964
+NFE: 62.0000
+### Auxiliary Network### 
+Train CE loss (one batch): 0.7587676048278809
+Test CE loss: 1.0937910079956055
+Choice of integrator: dopri5
+Reward for Dopri integrator: 447084.0
+Reward for Euler integrator: 323079.0
+Reward for RK4 integrator: 327324.0
+Experiment 66546
+Epoch 0044 [Test seq (cond on sampled tp)] | Loss 31.204899 | Likelihood -20.155460 | KL fp 3.9868 | FP STD 0.0190 | NFE 62.0000
+KL coef: 0.2894467727277079
+Train loss (one batch): 31.160903930664062
+Train CE loss (one batch): 0.1099524050951004
+Classification AUC (TEST): 0.7893
+Test MSE: 0.0046
+Poisson likelihood: 0.0
+CE loss: 0.10994690656661987
+NFE: 62.0000
+### Auxiliary Network### 
+Train CE loss (one batch): 0.9585975408554077
+Test CE loss: 1.094355583190918
+Choice of integrator: dopri5
+Reward for Dopri integrator: 447084.0
+Reward for Euler integrator: 318084.0
+Reward for RK4 integrator: 328320.0
+Experiment 66546
+Epoch 0045 [Test seq (cond on sampled tp)] | Loss 31.449986 | Likelihood -20.389585 | KL fp 3.9238 | FP STD 0.0195 | NFE 62.0000
+KL coef: 0.29655230500043084
+Train loss (one batch): 30.94305992126465
+Train CE loss (one batch): 0.10893106460571289
+Classification AUC (TEST): 0.7905
+Test MSE: 0.0046
+Poisson likelihood: 0.0
+CE loss: 0.10996124148368835
+NFE: 62.0000
+### Auxiliary Network### 
+Train CE loss (one batch): 0.7557275295257568
+Test CE loss: 1.0942707061767578
+Choice of integrator: dopri5
+Reward for Dopri integrator: 447084.0
+Reward for Euler integrator: 319083.0
+Reward for RK4 integrator: 327324.0
+Experiment 66546
+Epoch 0046 [Test seq (cond on sampled tp)] | Loss 31.385298 | Likelihood -20.332102 | KL fp 3.7859 | FP STD 0.0214 | NFE 62.0000
+KL coef: 0.30358678195042654
+Train loss (one batch): 31.038700103759766
+Train CE loss (one batch): 0.10869267582893372
+Classification AUC (TEST): 0.7895
+Test MSE: 0.0046
+Poisson likelihood: 0.0
+CE loss: 0.1100250780582428
+NFE: 62.0000
+### Auxiliary Network### 
+Train CE loss (one batch): 0.7666448354721069
+Test CE loss: 1.0935020446777344
+Choice of integrator: dopri5
+Reward for Dopri integrator: 448022.0
+Reward for Euler integrator: 322080.0
+Reward for RK4 integrator: 326328.0
+Experiment 66546
+Epoch 0047 [Test seq (cond on sampled tp)] | Loss 30.997368 | Likelihood -19.945717 | KL fp 3.8515 | FP STD 0.0205 | NFE 62.0000
+KL coef: 0.3105509141309223
+Train loss (one batch): 31.00836944580078
+Train CE loss (one batch): 0.10898970067501068
+Classification AUC (TEST): 0.7911
+Test MSE: 0.0045
+Poisson likelihood: 0.0
+CE loss: 0.10954222083091736
+NFE: 62.0000
+### Auxiliary Network### 
+Train CE loss (one batch): 0.7880179286003113
+Test CE loss: 1.0944634675979614
+Choice of integrator: dopri5
+Reward for Dopri integrator: 447084.0
+Reward for Euler integrator: 319083.0
+Reward for RK4 integrator: 326328.0
+Experiment 66546
+Epoch 0048 [Test seq (cond on sampled tp)] | Loss 30.975029 | Likelihood -19.984411 | KL fp 3.7691 | FP STD 0.0211 | NFE 62.0000
+KL coef: 0.31744540498961304
+Train loss (one batch): 30.8892822265625
+Train CE loss (one batch): 0.10797087848186493
+Classification AUC (TEST): 0.7952
+Test MSE: 0.0045
+Poisson likelihood: 0.0
+CE loss: 0.10893052071332932
+NFE: 62.0000
+### Auxiliary Network### 
+Train CE loss (one batch): 0.7848693132400513
+Test CE loss: 1.0941073894500732
+Choice of integrator: dopri5
+Reward for Dopri integrator: 447084.0
+Reward for Euler integrator: 321081.0
+Reward for RK4 integrator: 326328.0
+Experiment 66546
+Epoch 0049 [Test seq (cond on sampled tp)] | Loss 30.884277 | Likelihood -19.827747 | KL fp 3.7901 | FP STD 0.0206 | NFE 62.0000
+KL coef: 0.3242709509397169
+Train loss (one batch): 30.862560272216797
+Train CE loss (one batch): 0.10739485919475555
+Classification AUC (TEST): 0.7926
+Test MSE: 0.0045
+Poisson likelihood: 0.0
+CE loss: 0.10926487296819687
+NFE: 62.0000
+### Auxiliary Network### 
+Train CE loss (one batch): 0.7482523322105408
+Test CE loss: 1.0945534706115723
+Choice of integrator: dopri5
+Reward for Dopri integrator: 446146.0
+Reward for Euler integrator: 323079.0
+Reward for RK4 integrator: 329316.0
+Experiment 66546
+Epoch 0050 [Test seq (cond on sampled tp)] | Loss 30.541969 | Likelihood -19.514950 | KL fp 3.8262 | FP STD 0.0198 | NFE 62.0000
+KL coef: 0.3310282414303197
+Train loss (one batch): 31.113712310791016
+Train CE loss (one batch): 0.10830304026603699
+Classification AUC (TEST): 0.7964
+Test MSE: 0.0045
+Poisson likelihood: 0.0
+CE loss: 0.1085921972990036
+NFE: 62.0000
+### Auxiliary Network### 
+Train CE loss (one batch): 0.8178916573524475
+Test CE loss: 1.0942853689193726
+Choice of integrator: dopri5
+Reward for Dopri integrator: 457402.0
+Reward for Euler integrator: 327075.0
+Reward for RK4 integrator: 335292.0
+Experiment 66546
+Epoch 0051 [Test seq (cond on sampled tp)] | Loss 30.545746 | Likelihood -19.433937 | KL fp 3.9388 | FP STD 0.0186 | NFE 62.0000
+KL coef: 0.33771795901601653
+Train loss (one batch): 31.072235107421875
+Train CE loss (one batch): 0.10877227038145065
+Classification AUC (TEST): 0.7946
+Test MSE: 0.0044
+Poisson likelihood: 0.0
+CE loss: 0.108803391456604
+NFE: 62.0000
+### Auxiliary Network### 
+Train CE loss (one batch): 0.7442215085029602
+Test CE loss: 1.094597339630127
+Choice of integrator: dopri5
+Reward for Dopri integrator: 455526.0
+Reward for Euler integrator: 330072.0
+Reward for RK4 integrator: 339276.0
+Experiment 66546
+Epoch 0052 [Test seq (cond on sampled tp)] | Loss 30.456711 | Likelihood -19.403357 | KL fp 3.8052 | FP STD 0.0201 | NFE 62.0000
+KL coef: 0.3443407794258564
+Train loss (one batch): 31.284557342529297
+Train CE loss (one batch): 0.10956042259931564
+Classification AUC (TEST): 0.7968
+Test MSE: 0.0044
+Poisson likelihood: 0.0
+CE loss: 0.10841861367225647
+NFE: 62.0000
+### Auxiliary Network### 
+Train CE loss (one batch): 0.7962174415588379
+Test CE loss: 1.0941226482391357
+Choice of integrator: dopri5
+Reward for Dopri integrator: 454588.0
+Reward for Euler integrator: 332070.0
+Reward for RK4 integrator: 335292.0
+Experiment 66546
+Epoch 0053 [Test seq (cond on sampled tp)] | Loss 30.502171 | Likelihood -19.342978 | KL fp 3.8336 | FP STD 0.0198 | NFE 62.0000
+KL coef: 0.35089737163159784
+Train loss (one batch): 31.371444702148438
+Train CE loss (one batch): 0.10941242426633835
+Classification AUC (TEST): 0.7917
+Test MSE: 0.0044
+Poisson likelihood: 0.0
+CE loss: 0.10912846028804779
+NFE: 62.0000
+### Auxiliary Network### 
+Train CE loss (one batch): 0.7579060196876526
+Test CE loss: 1.0947661399841309
+Choice of integrator: dopri5
+Reward for Dopri integrator: 454588.0
+Reward for Euler integrator: 328074.0
+Reward for RK4 integrator: 336288.0
+Experiment 66546
+Epoch 0054 [Test seq (cond on sampled tp)] | Loss 30.476753 | Likelihood -19.216320 | KL fp 3.8810 | FP STD 0.0201 | NFE 56.0000
+KL coef: 0.3573883979152819
+Train loss (one batch): 31.529817581176758
+Train CE loss (one batch): 0.10934419929981232
+Classification AUC (TEST): 0.7891
+Test MSE: 0.0044
+Poisson likelihood: 0.0
+CE loss: 0.10972203314304352
+NFE: 56.0000
+### Auxiliary Network### 
+Train CE loss (one batch): 0.7968612909317017
+Test CE loss: 1.0946354866027832
+Choice of integrator: dopri5
+Reward for Dopri integrator: 445920.0
+Reward for Euler integrator: 335067.0
+Reward for RK4 integrator: 337284.0
+Experiment 66546
+Epoch 0055 [Test seq (cond on sampled tp)] | Loss 30.437510 | Likelihood -19.219646 | KL fp 3.8031 | FP STD 0.0205 | NFE 56.0000
+KL coef: 0.36381451393612907
+Train loss (one batch): 31.529865264892578
+Train CE loss (one batch): 0.10904645174741745
+Classification AUC (TEST): 0.7908
+Test MSE: 0.0044
+Poisson likelihood: 0.0
+CE loss: 0.10932996869087219
+NFE: 56.0000
+### Auxiliary Network### 
+Train CE loss (one batch): 0.7531541585922241
+Test CE loss: 1.0948094129562378
+Choice of integrator: dopri5
+Reward for Dopri integrator: 444976.0
+Reward for Euler integrator: 330072.0
+Reward for RK4 integrator: 333300.0
+Experiment 66546
+Epoch 0056 [Test seq (cond on sampled tp)] | Loss 30.503305 | Likelihood -19.328993 | KL fp 3.7904 | FP STD 0.0204 | NFE 74.0000
+KL coef: 0.37017636879676774
+Train loss (one batch): 31.16326141357422
+Train CE loss (one batch): 0.10707738995552063
+Classification AUC (TEST): 0.7954
+Test MSE: 0.0044
+Poisson likelihood: 0.0
+CE loss: 0.10870056599378586
+NFE: 74.0000
+### Auxiliary Network### 
+Train CE loss (one batch): 0.9354624152183533
+Test CE loss: 1.0948463678359985
+Choice of integrator: dopri5
+Reward for Dopri integrator: 484106.0
+Reward for Euler integrator: 334068.0
+Reward for RK4 integrator: 338280.0
+Experiment 66546
+Epoch 0057 [Test seq (cond on sampled tp)] | Loss 31.420898 | Likelihood -19.980156 | KL fp 3.8471 | FP STD 0.0197 | NFE 56.0000
+KL coef: 0.37647460510880004
+Train loss (one batch): 31.63955307006836
+Train CE loss (one batch): 0.10838603228330612
+Classification AUC (TEST): 0.7893
+Test MSE: 0.0045
+Poisson likelihood: 0.0
+CE loss: 0.11091352999210358
+NFE: 56.0000
+### Auxiliary Network### 
+Train CE loss (one batch): 0.7450206279754639
+Test CE loss: 1.0949722528457642
+Choice of integrator: dopri5
+Reward for Dopri integrator: 445920.0
+Reward for Euler integrator: 334068.0
+Reward for RK4 integrator: 340272.0
+Experiment 66546
+Epoch 0058 [Test seq (cond on sampled tp)] | Loss 30.768509 | Likelihood -19.542847 | KL fp 3.7495 | FP STD 0.0210 | NFE 74.0000
+KL coef: 0.38270985905771204
+Train loss (one batch): 31.004186630249023
+Train CE loss (one batch): 0.10569068789482117
+Classification AUC (TEST): 0.7966
+Test MSE: 0.0045
+Poisson likelihood: 0.0
+CE loss: 0.10889395326375961
+NFE: 74.0000
+### Auxiliary Network### 
+Train CE loss (one batch): 0.7434890270233154
+Test CE loss: 1.0945992469787598
+Choice of integrator: dopri5
+Reward for Dopri integrator: 479476.0
+Reward for Euler integrator: 331071.0
+Reward for RK4 integrator: 335292.0
+Experiment 66546
+Epoch 0059 [Test seq (cond on sampled tp)] | Loss 30.628433 | Likelihood -19.465252 | KL fp 3.7077 | FP STD 0.0221 | NFE 56.0000
+KL coef: 0.388882760467135
+Train loss (one batch): 30.90757942199707
+Train CE loss (one batch): 0.10444681346416473
+Classification AUC (TEST): 0.7985
+Test MSE: 0.0044
+Poisson likelihood: 0.0
+CE loss: 0.10819964110851288
+NFE: 56.0000
+### Auxiliary Network### 
+Train CE loss (one batch): 0.9124784469604492
+Test CE loss: 1.0940310955047607
+Choice of integrator: dopri5
+Reward for Dopri integrator: 447808.0
+Reward for Euler integrator: 333069.0
+Reward for RK4 integrator: 337284.0
+Experiment 66546
+Epoch 0060 [Test seq (cond on sampled tp)] | Loss 30.799179 | Likelihood -19.396774 | KL fp 3.6875 | FP STD 0.0228 | NFE 68.0000
+KL coef: 0.39499393286246365
+Train loss (one batch): 31.066165924072266
+Train CE loss (one batch): 0.10572605580091476
+Classification AUC (TEST): 0.7886
+Test MSE: 0.0044
+Poisson likelihood: 0.0
+CE loss: 0.11044993251562119
+NFE: 68.0000
+### Auxiliary Network### 
+Train CE loss (one batch): 0.769256591796875
+Test CE loss: 1.0932276248931885
+Choice of integrator: dopri5
+Reward for Dopri integrator: 471692.0
+Reward for Euler integrator: 334068.0
+Reward for RK4 integrator: 338280.0
+Experiment 66546
+Epoch 0061 [Test seq (cond on sampled tp)] | Loss 30.737633 | Likelihood -19.425049 | KL fp 3.6819 | FP STD 0.0226 | NFE 68.0000
+KL coef: 0.401043993533839
+Train loss (one batch): 31.02794647216797
+Train CE loss (one batch): 0.10486235469579697
+Classification AUC (TEST): 0.7943
+Test MSE: 0.0044
+Poisson likelihood: 0.0
+CE loss: 0.10934996604919434
+NFE: 68.0000
+### Auxiliary Network### 
+Train CE loss (one batch): 0.7573549151420593
+Test CE loss: 1.093078374862671
+Choice of integrator: dopri5
+Reward for Dopri integrator: 473556.0
+Reward for Euler integrator: 329073.0
+Reward for RK4 integrator: 339276.0
+Experiment 66546
+Epoch 0062 [Test seq (cond on sampled tp)] | Loss 30.693401 | Likelihood -19.426424 | KL fp 3.7134 | FP STD 0.0219 | NFE 56.0000
+KL coef: 0.4070335535985006
+Train loss (one batch): 31.17321014404297
+Train CE loss (one batch): 0.10605485737323761
+Classification AUC (TEST): 0.7971
+Test MSE: 0.0044
+Poisson likelihood: 0.0
+CE loss: 0.10854487121105194
+NFE: 56.0000
+### Auxiliary Network### 
+Train CE loss (one batch): 0.9269266724586487
+Test CE loss: 1.0933886766433716
+Choice of integrator: dopri5
+Reward for Dopri integrator: 449696.0
+Reward for Euler integrator: 333069.0
+Reward for RK4 integrator: 340272.0
+Experiment 66546
+Epoch 0063 [Test seq (cond on sampled tp)] | Loss 31.405647 | Likelihood -20.004467 | KL fp 3.7307 | FP STD 0.0218 | NFE 68.0000
+KL coef: 0.41296321806251557
+Train loss (one batch): 30.680030822753906
+Train CE loss (one batch): 0.10271545499563217
+Classification AUC (TEST): 0.7932
+Test MSE: 0.0046
+Poisson likelihood: 0.0
+CE loss: 0.10959305614233017
+NFE: 68.0000
+### Auxiliary Network### 
+Train CE loss (one batch): 0.8026847243309021
+Test CE loss: 1.0933433771133423
+Choice of integrator: dopri5
+Reward for Dopri integrator: 464236.0
+Reward for Euler integrator: 324078.0
+Reward for RK4 integrator: 332304.0
+Experiment 66546
+Epoch 0064 [Test seq (cond on sampled tp)] | Loss 30.873098 | Likelihood -19.522114 | KL fp 3.7404 | FP STD 0.0216 | NFE 68.0000
+KL coef: 0.41883358588189046
+Train loss (one batch): 30.974884033203125
+Train CE loss (one batch): 0.10364153981208801
+Classification AUC (TEST): 0.7957
+Test MSE: 0.0045
+Poisson likelihood: 0.0
+CE loss: 0.10883399844169617
+NFE: 68.0000
+### Auxiliary Network### 
+Train CE loss (one batch): 0.7346031665802002
+Test CE loss: 1.0936291217803955
+Choice of integrator: dopri5
+Reward for Dopri integrator: 470760.0
+Reward for Euler integrator: 333069.0
+Reward for RK4 integrator: 336288.0
+Experiment 66546
+Epoch 0065 [Test seq (cond on sampled tp)] | Loss 30.870056 | Likelihood -19.545252 | KL fp 3.6898 | FP STD 0.0224 | NFE 68.0000
+KL coef: 0.4246452500230715
+Train loss (one batch): 31.02214813232422
+Train CE loss (one batch): 0.10356807708740234
+Classification AUC (TEST): 0.7966
+Test MSE: 0.0045
+Poisson likelihood: 0.0
+CE loss: 0.10856671631336212
+NFE: 68.0000
+### Auxiliary Network### 
+Train CE loss (one batch): 0.7170102596282959
+Test CE loss: 1.0936249494552612
+Choice of integrator: dopri5
+Reward for Dopri integrator: 467964.0
+Reward for Euler integrator: 331071.0
+Reward for RK4 integrator: 337284.0
+Experiment 66546
+Epoch 0066 [Test seq (cond on sampled tp)] | Loss 30.997326 | Likelihood -19.638767 | KL fp 3.6852 | FP STD 0.0223 | NFE 68.0000
+KL coef: 0.4303987975228408
+Train loss (one batch): 30.743209838867188
+Train CE loss (one batch): 0.10278737545013428
+Classification AUC (TEST): 0.7959
+Test MSE: 0.0045
+Poisson likelihood: 0.0
+CE loss: 0.1087125688791275
+NFE: 68.0000
+### Auxiliary Network### 
+Train CE loss (one batch): 0.7551515102386475
+Test CE loss: 1.0933871269226074
+Choice of integrator: dopri5
+Reward for Dopri integrator: 467032.0
+Reward for Euler integrator: 332070.0
+Reward for RK4 integrator: 336288.0
+Experiment 66546
+Epoch 0067 [Test seq (cond on sampled tp)] | Loss 31.059319 | Likelihood -19.665783 | KL fp 3.6749 | FP STD 0.0225 | NFE 68.0000
+KL coef: 0.4360948095476125
+Train loss (one batch): 30.928245544433594
+Train CE loss (one batch): 0.10407580435276031
+Classification AUC (TEST): 0.7955
+Test MSE: 0.0045
+Poisson likelihood: 0.0
+CE loss: 0.10889646410942078
+NFE: 68.0000
+### Auxiliary Network### 
+Train CE loss (one batch): 0.8584151268005371
+Test CE loss: 1.0930026769638062
+Choice of integrator: dopri5
+Reward for Dopri integrator: 470760.0
+Reward for Euler integrator: 331071.0
+Reward for RK4 integrator: 338280.0
+Experiment 66546
+Epoch 0068 [Test seq (cond on sampled tp)] | Loss 31.156755 | Likelihood -19.724056 | KL fp 3.6556 | FP STD 0.0228 | NFE 68.0000
+KL coef: 0.44173386145213633
+Train loss (one batch): 30.840959548950195
+Train CE loss (one batch): 0.10225936770439148
+Classification AUC (TEST): 0.7951
+Test MSE: 0.0045
+Poisson likelihood: 0.0
+CE loss: 0.10916824638843536
+NFE: 68.0000
+### Auxiliary Network### 
+Train CE loss (one batch): 0.6951061487197876
+Test CE loss: 1.093565821647644
+Choice of integrator: dopri5
+Reward for Dopri integrator: 468896.0
+Reward for Euler integrator: 331071.0
+Reward for RK4 integrator: 336288.0
+Experiment 66546
+Epoch 0069 [Test seq (cond on sampled tp)] | Loss 31.054863 | Likelihood -19.635206 | KL fp 3.6876 | FP STD 0.0221 | NFE 68.0000
+KL coef: 0.4473165228376149
+Train loss (one batch): 30.810094833374023
+Train CE loss (one batch): 0.10323110222816467
+Classification AUC (TEST): 0.7963
+Test MSE: 0.0045
+Poisson likelihood: 0.0
+CE loss: 0.10868792980909348
+NFE: 68.0000
+### Auxiliary Network### 
+Train CE loss (one batch): 0.7644065022468567
+Test CE loss: 1.093671202659607
+Choice of integrator: dopri5
+Reward for Dopri integrator: 470760.0
+Reward for Euler integrator: 332070.0
+Reward for RK4 integrator: 338280.0
+Experiment 66546
+Epoch 0070 [Test seq (cond on sampled tp)] | Loss 30.960560 | Likelihood -19.539448 | KL fp 3.6439 | FP STD 0.0229 | NFE 68.0000
+KL coef: 0.4528433576092388
+Train loss (one batch): 30.796356201171875
+Train CE loss (one batch): 0.10320226848125458
+Classification AUC (TEST): 0.7973
+Test MSE: 0.0045
+Poisson likelihood: 0.0
+CE loss: 0.10869614779949188
+NFE: 68.0000
+### Auxiliary Network### 
+Train CE loss (one batch): 0.7887601852416992
+Test CE loss: 1.0935187339782715
+Choice of integrator: dopri5
+Reward for Dopri integrator: 470760.0
+Reward for Euler integrator: 333069.0
+Reward for RK4 integrator: 338280.0
+Experiment 66546
+Epoch 0071 [Test seq (cond on sampled tp)] | Loss 30.903717 | Likelihood -19.445036 | KL fp 3.6548 | FP STD 0.0225 | NFE 68.0000
+KL coef: 0.45831492403314644
+Train loss (one batch): 30.728168487548828
+Train CE loss (one batch): 0.10237126797437668
+Classification AUC (TEST): 0.7955
+Test MSE: 0.0044
+Poisson likelihood: 0.0
+CE loss: 0.10882450640201569
+NFE: 68.0000
+### Auxiliary Network### 
+Train CE loss (one batch): 0.7273409962654114
+Test CE loss: 1.0940340757369995
+Choice of integrator: dopri5
+Reward for Dopri integrator: 470760.0
+Reward for Euler integrator: 332070.0
+Reward for RK4 integrator: 340272.0
+Experiment 66546
+Epoch 0072 [Test seq (cond on sampled tp)] | Loss 30.824566 | Likelihood -19.389656 | KL fp 3.6509 | FP STD 0.0226 | NFE 68.0000
+KL coef: 0.463731774792815
+Train loss (one batch): 31.15338897705078
+Train CE loss (one batch): 0.10468083620071411
+Classification AUC (TEST): 0.7967
+Test MSE: 0.0044
+Poisson likelihood: 0.0
+CE loss: 0.10840578377246857
+NFE: 68.0000
+### Auxiliary Network### 
+Train CE loss (one batch): 0.953794538974762
+Test CE loss: 1.0935665369033813
+Choice of integrator: dopri5
+Reward for Dopri integrator: 472624.0
+Reward for Euler integrator: 332070.0
+Reward for RK4 integrator: 343260.0
+Experiment 66546
+Epoch 0073 [Test seq (cond on sampled tp)] | Loss 30.767300 | Likelihood -19.293232 | KL fp 3.6377 | FP STD 0.0227 | NFE 68.0000
+KL coef: 0.46909445704488684
+Train loss (one batch): 31.03586196899414
+Train CE loss (one batch): 0.1038534939289093
+Classification AUC (TEST): 0.7962
+Test MSE: 0.0044
+Poisson likelihood: 0.0
+CE loss: 0.10866554826498032
+NFE: 68.0000
+### Auxiliary Network### 
+Train CE loss (one batch): 0.7027537822723389
+Test CE loss: 1.093251347541809
+Choice of integrator: dopri5
+Reward for Dopri integrator: 469828.0
+Reward for Euler integrator: 333069.0
+Reward for RK4 integrator: 340272.0
+Experiment 66546
+Epoch 0074 [Test seq (cond on sampled tp)] | Loss 30.756058 | Likelihood -19.276653 | KL fp 3.6308 | FP STD 0.0229 | NFE 68.0000
+KL coef: 0.474403512474438
+Train loss (one batch): 31.21121597290039
+Train CE loss (one batch): 0.10460477322340012
+Classification AUC (TEST): 0.7974
+Test MSE: 0.0044
+Poisson likelihood: 0.0
+CE loss: 0.10855786502361298
+NFE: 68.0000
+### Auxiliary Network### 
+Train CE loss (one batch): 0.7386361956596375
+Test CE loss: 1.0935258865356445
+Choice of integrator: dopri5
+Reward for Dopri integrator: 474488.0
+Reward for Euler integrator: 334068.0
+Reward for RK4 integrator: 339276.0
+Experiment 66546
+Epoch 0075 [Test seq (cond on sampled tp)] | Loss 30.759598 | Likelihood -19.245070 | KL fp 3.6300 | FP STD 0.0230 | NFE 68.0000
+KL coef: 0.4796594773496936
+Train loss (one batch): 31.258708953857422
+Train CE loss (one batch): 0.10580271482467651
+Classification AUC (TEST): 0.7970
+Test MSE: 0.0044
+Poisson likelihood: 0.0
+CE loss: 0.10872188210487366
+NFE: 68.0000
+### Auxiliary Network### 
+Train CE loss (one batch): 0.8136862516403198
+Test CE loss: 1.0932376384735107
+Choice of integrator: dopri5
+Reward for Dopri integrator: 472624.0
+Reward for Euler integrator: 338064.0
+Reward for RK4 integrator: 344256.0
+Experiment 66546
+Epoch 0076 [Test seq (cond on sampled tp)] | Loss 30.730375 | Likelihood -19.206881 | KL fp 3.6046 | FP STD 0.0236 | NFE 68.0000
+KL coef: 0.4848628825761967
+Train loss (one batch): 31.4102783203125
+Train CE loss (one batch): 0.10648846626281738
+Classification AUC (TEST): 0.7966
+Test MSE: 0.0044
+Poisson likelihood: 0.0
+CE loss: 0.10874481499195099
+NFE: 68.0000
+### Auxiliary Network### 
+Train CE loss (one batch): 0.7212100625038147
+Test CE loss: 1.0935173034667969
+Choice of integrator: dopri5
+Reward for Dopri integrator: 472624.0
+Reward for Euler integrator: 336066.0
+Reward for RK4 integrator: 342264.0
+Experiment 66546
+Epoch 0077 [Test seq (cond on sampled tp)] | Loss 33.775650 | Likelihood -20.984566 | KL fp 3.6211 | FP STD 0.0234 | NFE 68.0000
+KL coef: 0.4900142537504347
+Train loss (one batch): 32.966102600097656
+Train CE loss (one batch): 0.1065058708190918
+Classification AUC (TEST): 0.7424
+Test MSE: 0.0047
+Poisson likelihood: 0.0
+CE loss: 0.12115694582462311
+NFE: 68.0000
+### Auxiliary Network### 
+Train CE loss (one batch): 0.7389324903488159
+Test CE loss: 1.0942573547363281
+Choice of integrator: dopri5
+Reward for Dopri integrator: 467964.0
+Reward for Euler integrator: 326076.0
+Reward for RK4 integrator: 335292.0
+Experiment 66546
+Epoch 0078 [Test seq (cond on sampled tp)] | Loss 30.752106 | Likelihood -19.045448 | KL fp 3.6290 | FP STD 0.0233 | NFE 74.0000
+KL coef: 0.49511411121293036
+Train loss (one batch): 31.349979400634766
+Train CE loss (one batch): 0.10537794232368469
+Classification AUC (TEST): 0.7907
+Test MSE: 0.0044
+Poisson likelihood: 0.0
+CE loss: 0.1100851520895958
+NFE: 74.0000
+### Auxiliary Network### 
+Train CE loss (one batch): 0.7346876263618469
+Test CE loss: 1.0935665369033813
+Choice of integrator: dopri5
+Reward for Dopri integrator: 487810.0
+Reward for Euler integrator: 340062.0
+Reward for RK4 integrator: 344256.0
+Experiment 66546
+Epoch 0079 [Test seq (cond on sampled tp)] | Loss 30.626648 | Likelihood -19.074774 | KL fp 3.5697 | FP STD 0.0246 | NFE 68.0000
+KL coef: 0.500162970100801
+Train loss (one batch): 31.53936767578125
+Train CE loss (one batch): 0.10631804168224335
+Classification AUC (TEST): 0.7958
+Test MSE: 0.0044
+Poisson likelihood: 0.0
+CE loss: 0.10865163803100586
+NFE: 68.0000
+### Auxiliary Network### 
+Train CE loss (one batch): 0.6942518353462219
+Test CE loss: 1.0932517051696777
+Choice of integrator: dopri5
+Reward for Dopri integrator: 472624.0
+Reward for Euler integrator: 337065.0
+Reward for RK4 integrator: 341268.0
+Experiment 66546
+Epoch 0080 [Test seq (cond on sampled tp)] | Loss 30.594982 | Likelihood -19.039757 | KL fp 3.5956 | FP STD 0.0239 | NFE 68.0000
+KL coef: 0.505161340399793
+Train loss (one batch): 31.35875129699707
+Train CE loss (one batch): 0.10523681342601776
+Classification AUC (TEST): 0.7978
+Test MSE: 0.0044
+Poisson likelihood: 0.0
+CE loss: 0.10837489366531372
+NFE: 68.0000
+### Auxiliary Network### 
+Train CE loss (one batch): 0.7504319548606873
+Test CE loss: 1.0935699939727783
+Choice of integrator: dopri5
+Reward for Dopri integrator: 475420.0
+Reward for Euler integrator: 338064.0
+Reward for RK4 integrator: 340272.0
+Experiment 66546
+Epoch 0081 [Test seq (cond on sampled tp)] | Loss 30.791317 | Likelihood -19.216938 | KL fp 3.5460 | FP STD 0.0251 | NFE 68.0000
+KL coef: 0.510109726995795
+Train loss (one batch): 31.303380966186523
+Train CE loss (one batch): 0.1056399941444397
+Classification AUC (TEST): 0.7966
+Test MSE: 0.0044
+Poisson likelihood: 0.0
+CE loss: 0.10864158719778061
+NFE: 68.0000
+### Auxiliary Network### 
+Train CE loss (one batch): 0.7352126240730286
+Test CE loss: 1.0937778949737549
+Choice of integrator: dopri5
+Reward for Dopri integrator: 472624.0
+Reward for Euler integrator: 336066.0
+Reward for RK4 integrator: 341268.0
+Experiment 66546
+Epoch 0082 [Test seq (cond on sampled tp)] | Loss 31.066368 | Likelihood -19.556715 | KL fp 3.5437 | FP STD 0.0254 | NFE 68.0000
+KL coef: 0.5150086297258372
+Train loss (one batch): 31.96837043762207
+Train CE loss (one batch): 0.10711242258548737
+Classification AUC (TEST): 0.7985
+Test MSE: 0.0045
+Poisson likelihood: 0.0
+CE loss: 0.10783402621746063
+NFE: 68.0000
+### Auxiliary Network### 
+Train CE loss (one batch): 0.774964451789856
+Test CE loss: 1.0937987565994263
+Choice of integrator: dopri5
+Reward for Dopri integrator: 458644.0
+Reward for Euler integrator: 323079.0
+Reward for RK4 integrator: 328320.0
+Experiment 66546
+Epoch 0083 [Test seq (cond on sampled tp)] | Loss 30.994942 | Likelihood -19.339651 | KL fp 3.5164 | FP STD 0.0258 | NFE 68.0000
+KL coef: 0.5198585434285787
+Train loss (one batch): 31.17559051513672
+Train CE loss (one batch): 0.10345527529716492
+Classification AUC (TEST): 0.7936
+Test MSE: 0.0044
+Poisson likelihood: 0.0
+CE loss: 0.10926445573568344
+NFE: 68.0000
+### Auxiliary Network### 
+Train CE loss (one batch): 0.7897672653198242
+Test CE loss: 1.0933537483215332
+Choice of integrator: dopri5
+Reward for Dopri integrator: 470760.0
+Reward for Euler integrator: 332070.0
+Reward for RK4 integrator: 338280.0
+Experiment 66546
+Epoch 0084 [Test seq (cond on sampled tp)] | Loss 31.046261 | Likelihood -19.311005 | KL fp 3.5346 | FP STD 0.0254 | NFE 68.0000
+KL coef: 0.524659957994293
+Train loss (one batch): 31.19046401977539
+Train CE loss (one batch): 0.10347288101911545
+Classification AUC (TEST): 0.7912
+Test MSE: 0.0044
+Poisson likelihood: 0.0
+CE loss: 0.1097944900393486
+NFE: 68.0000
+### Auxiliary Network### 
+Train CE loss (one batch): 0.8224337100982666
+Test CE loss: 1.093603491783142
+Choice of integrator: dopri5
+Reward for Dopri integrator: 470760.0
+Reward for Euler integrator: 336066.0
+Reward for RK4 integrator: 337284.0
+Experiment 66546
+Epoch 0085 [Test seq (cond on sampled tp)] | Loss 30.977867 | Likelihood -19.292229 | KL fp 3.4911 | FP STD 0.0262 | NFE 68.0000
+KL coef: 0.5294133584143501
+Train loss (one batch): 31.067230224609375
+Train CE loss (one batch): 0.10312195122241974
+Classification AUC (TEST): 0.7948
+Test MSE: 0.0044
+Poisson likelihood: 0.0
+CE loss: 0.10936488211154938
+NFE: 68.0000
+### Auxiliary Network### 
+Train CE loss (one batch): 0.7518669366836548
+Test CE loss: 1.0931528806686401
+Choice of integrator: dopri5
+Reward for Dopri integrator: 475420.0
+Reward for Euler integrator: 337065.0
+Reward for RK4 integrator: 342264.0
+Experiment 66546
+Epoch 0086 [Test seq (cond on sampled tp)] | Loss 31.103737 | Likelihood -19.475677 | KL fp 3.4152 | FP STD 0.0278 | NFE 68.0000
+KL coef: 0.5341192248302067
+Train loss (one batch): 31.040428161621094
+Train CE loss (one batch): 0.10339581221342087
+Classification AUC (TEST): 0.7954
+Test MSE: 0.0044
+Poisson likelihood: 0.0
+CE loss: 0.10902874916791916
+NFE: 68.0000
+### Auxiliary Network### 
+Train CE loss (one batch): 0.9000421166419983
+Test CE loss: 1.0932413339614868
+Choice of integrator: dopri5
+Reward for Dopri integrator: 470760.0
+Reward for Euler integrator: 331071.0
+Reward for RK4 integrator: 339276.0
+Experiment 66546
+Epoch 0087 [Test seq (cond on sampled tp)] | Loss 31.097143 | Likelihood -19.444416 | KL fp 3.4095 | FP STD 0.0279 | NFE 68.0000
+KL coef: 0.5387780325819045
+Train loss (one batch): 31.03276824951172
+Train CE loss (one batch): 0.1028352603316307
+Classification AUC (TEST): 0.7962
+Test MSE: 0.0044
+Poisson likelihood: 0.0
+CE loss: 0.10914537310600281
+NFE: 68.0000
+### Auxiliary Network### 
+Train CE loss (one batch): 0.7838810682296753
+Test CE loss: 1.0929332971572876
+Choice of integrator: dopri5
+Reward for Dopri integrator: 472624.0
+Reward for Euler integrator: 336066.0
+Reward for RK4 integrator: 336288.0
+Experiment 66546
+Epoch 0088 [Test seq (cond on sampled tp)] | Loss 31.069977 | Likelihood -19.417761 | KL fp 3.3886 | FP STD 0.0283 | NFE 68.0000
+KL coef: 0.5433902522560855
+Train loss (one batch): 31.023357391357422
+Train CE loss (one batch): 0.10123421996831894
+Classification AUC (TEST): 0.7955
+Test MSE: 0.0044
+Poisson likelihood: 0.0
+CE loss: 0.10909831523895264
+NFE: 68.0000
+### Auxiliary Network### 
+Train CE loss (one batch): 0.7385717630386353
+Test CE loss: 1.093346118927002
+Choice of integrator: dopri5
+Reward for Dopri integrator: 473556.0
+Reward for Euler integrator: 331071.0
+Reward for RK4 integrator: 343260.0
+Experiment 66546
+Epoch 0089 [Test seq (cond on sampled tp)] | Loss 31.192162 | Likelihood -19.507797 | KL fp 3.3833 | FP STD 0.0283 | NFE 68.0000
+KL coef: 0.5479563497335247
+Train loss (one batch): 30.83603286743164
+Train CE loss (one batch): 0.10107153654098511
+Classification AUC (TEST): 0.7963
+Test MSE: 0.0045
+Poisson likelihood: 0.0
+CE loss: 0.10929794609546661
+NFE: 68.0000
+### Auxiliary Network### 
+Train CE loss (one batch): 0.7162001132965088
+Test CE loss: 1.0927294492721558
+Choice of integrator: dopri5
+Reward for Dopri integrator: 476352.0
+Reward for Euler integrator: 333069.0
+Reward for RK4 integrator: 340272.0
+Experiment 66546
+Epoch 0090 [Test seq (cond on sampled tp)] | Loss 31.089317 | Likelihood -19.334093 | KL fp 3.4238 | FP STD 0.0273 | NFE 68.0000
+KL coef: 0.5524767862361895
+Train loss (one batch): 31.16623306274414
+Train CE loss (one batch): 0.10484036058187485
+Classification AUC (TEST): 0.7932
+Test MSE: 0.0044
+Poisson likelihood: 0.0
+CE loss: 0.10962580889463425
+NFE: 68.0000
+### Auxiliary Network### 
+Train CE loss (one batch): 0.7145114541053772
+Test CE loss: 1.093579649925232
+Choice of integrator: dopri5
+Reward for Dopri integrator: 476352.0
+Reward for Euler integrator: 335067.0
+Reward for RK4 integrator: 341268.0
+Experiment 66546
+Epoch 0091 [Test seq (cond on sampled tp)] | Loss 31.398502 | Likelihood -19.573807 | KL fp 3.4984 | FP STD 0.0260 | NFE 68.0000
+KL coef: 0.5569520183738275
+Train loss (one batch): 30.834964752197266
+Train CE loss (one batch): 0.10080607980489731
+Classification AUC (TEST): 0.7942
+Test MSE: 0.0045
+Poisson likelihood: 0.0
+CE loss: 0.10975022614002228
+NFE: 68.0000
+### Auxiliary Network### 
+Train CE loss (one batch): 0.7480478286743164
+Test CE loss: 1.093578577041626
+Choice of integrator: dopri5
+Reward for Dopri integrator: 470760.0
+Reward for Euler integrator: 330072.0
+Reward for RK4 integrator: 334296.0
+Experiment 66546
+Epoch 0092 [Test seq (cond on sampled tp)] | Loss 31.168510 | Likelihood -19.398214 | KL fp 3.4506 | FP STD 0.0266 | NFE 68.0000
+KL coef: 0.5613824981900892
+Train loss (one batch): 31.011028289794922
+Train CE loss (one batch): 0.10259978473186493
+Classification AUC (TEST): 0.7951
+Test MSE: 0.0044
+Poisson likelihood: 0.0
+CE loss: 0.10931971669197083
+NFE: 68.0000
+### Auxiliary Network### 
+Train CE loss (one batch): 0.7231748104095459
+Test CE loss: 1.0929714441299438
+Choice of integrator: dopri5
+Reward for Dopri integrator: 471692.0
+Reward for Euler integrator: 338064.0
+Reward for RK4 integrator: 338280.0
+Experiment 66546
+Epoch 0093 [Test seq (cond on sampled tp)] | Loss 31.112541 | Likelihood -19.282497 | KL fp 3.4257 | FP STD 0.0272 | NFE 68.0000
+KL coef: 0.5657686732081884
+Train loss (one batch): 30.994487762451172
+Train CE loss (one batch): 0.10187585651874542
+Classification AUC (TEST): 0.7931
+Test MSE: 0.0044
+Poisson likelihood: 0.0
+CE loss: 0.10990689694881439
+NFE: 68.0000
+### Auxiliary Network### 
+Train CE loss (one batch): 0.7501917481422424
+Test CE loss: 1.0935158729553223
+Choice of integrator: dopri5
+Reward for Dopri integrator: 472624.0
+Reward for Euler integrator: 335067.0
+Reward for RK4 integrator: 342264.0
+Experiment 66546
+Epoch 0094 [Test seq (cond on sampled tp)] | Loss 31.062969 | Likelihood -19.227421 | KL fp 3.4239 | FP STD 0.0271 | NFE 68.0000
+KL coef: 0.5701109864761065
+Train loss (one batch): 31.100576400756836
+Train CE loss (one batch): 0.10327661037445068
+Classification AUC (TEST): 0.7932
+Test MSE: 0.0044
+Poisson likelihood: 0.0
+CE loss: 0.10982602089643478
+NFE: 68.0000
+### Auxiliary Network### 
+Train CE loss (one batch): 0.7329680323600769
+Test CE loss: 1.0939639806747437
+Choice of integrator: dopri5
+Reward for Dopri integrator: 477284.0
+Reward for Euler integrator: 335067.0
+Reward for RK4 integrator: 339276.0
+Experiment 66546
+Epoch 0095 [Test seq (cond on sampled tp)] | Loss 31.037067 | Likelihood -19.160986 | KL fp 3.4691 | FP STD 0.0262 | NFE 74.0000
+KL coef: 0.5744098766113455
+Train loss (one batch): 31.06751251220703
+Train CE loss (one batch): 0.1042187362909317
+Classification AUC (TEST): 0.7931
+Test MSE: 0.0044
+Poisson likelihood: 0.0
+CE loss: 0.1098223328590393
+NFE: 74.0000
+### Auxiliary Network### 
+Train CE loss (one batch): 0.7539840340614319
+Test CE loss: 1.0938668251037598
+Choice of integrator: dopri5
+Reward for Dopri integrator: 486884.0
+Reward for Euler integrator: 338064.0
+Reward for RK4 integrator: 338280.0
+Experiment 66546
+Epoch 0096 [Test seq (cond on sampled tp)] | Loss 31.240038 | Likelihood -19.430445 | KL fp 3.4675 | FP STD 0.0276 | NFE 74.0000
+KL coef: 0.578665777845232
+Train loss (one batch): 31.12554931640625
+Train CE loss (one batch): 0.102535180747509
+Classification AUC (TEST): 0.7974
+Test MSE: 0.0044
+Poisson likelihood: 0.0
+CE loss: 0.10902532190084457
+NFE: 74.0000
+### Auxiliary Network### 
+Train CE loss (one batch): 0.7591110467910767
+Test CE loss: 1.0921441316604614
+Choice of integrator: dopri5
+Reward for Dopri integrator: 480402.0
+Reward for Euler integrator: 334068.0
+Reward for RK4 integrator: 338280.0
+Experiment 66546
+Epoch 0097 [Test seq (cond on sampled tp)] | Loss 31.251413 | Likelihood -19.396570 | KL fp 3.4162 | FP STD 0.0284 | NFE 74.0000
+KL coef: 0.5828791200667797
+Train loss (one batch): 31.529048919677734
+Train CE loss (one batch): 0.10455536097288132
+Classification AUC (TEST): 0.7934
+Test MSE: 0.0044
+Poisson likelihood: 0.0
+CE loss: 0.10962262749671936
+NFE: 74.0000
+### Auxiliary Network### 
+Train CE loss (one batch): 0.6984894871711731
+Test CE loss: 1.0917922258377075
+Choice of integrator: dopri5
+Reward for Dopri integrator: 486884.0
+Reward for Euler integrator: 331071.0
+Reward for RK4 integrator: 342264.0
+Experiment 66546
+Epoch 0098 [Test seq (cond on sampled tp)] | Loss 31.227728 | Likelihood -19.315380 | KL fp 3.4118 | FP STD 0.0284 | NFE 74.0000
+KL coef: 0.5870503288661119
+Train loss (one batch): 31.33702850341797
+Train CE loss (one batch): 0.10431166738271713
+Classification AUC (TEST): 0.7917
+Test MSE: 0.0044
+Poisson likelihood: 0.0
+CE loss: 0.11008697748184204
+NFE: 74.0000
+### Auxiliary Network### 
+Train CE loss (one batch): 0.6629995107650757
+Test CE loss: 1.0924381017684937
+Choice of integrator: dopri5
+Reward for Dopri integrator: 485958.0
+Reward for Euler integrator: 336066.0
+Reward for RK4 integrator: 343260.0
+Experiment 66546
+Epoch 0099 [Test seq (cond on sampled tp)] | Loss 31.152870 | Likelihood -19.260891 | KL fp 3.4039 | FP STD 0.0284 | NFE 74.0000
+KL coef: 0.5911798255774507
+Train loss (one batch): 31.560684204101562
+Train CE loss (one batch): 0.10550318658351898
+Classification AUC (TEST): 0.7932
+Test MSE: 0.0044
+Poisson likelihood: 0.0
+CE loss: 0.10978474467992783
+NFE: 74.0000
+### Auxiliary Network### 
+Train CE loss (one batch): 0.7070217132568359
+Test CE loss: 1.092787504196167
+Choice of integrator: dopri5
+Reward for Dopri integrator: 486884.0
+Reward for Euler integrator: 332070.0
+Reward for RK4 integrator: 340272.0
+Experiment 66546
+Epoch 0100 [Test seq (cond on sampled tp)] | Loss 31.124823 | Likelihood -19.169180 | KL fp 3.3853 | FP STD 0.0287 | NFE 74.0000
+KL coef: 0.5952680273216762
+Train loss (one batch): 31.3233585357666
+Train CE loss (one batch): 0.10297893732786179
+Classification AUC (TEST): 0.7901
+Test MSE: 0.0044
+Poisson likelihood: 0.0
+CE loss: 0.11041785776615143
+NFE: 74.0000
+### Auxiliary Network### 
+Train CE loss (one batch): 0.7464469075202942
+Test CE loss: 1.092544674873352
+Choice of integrator: dopri5
+Reward for Dopri integrator: 484106.0
+Reward for Euler integrator: 332070.0
+Reward for RK4 integrator: 338280.0

@@ -1,0 +1,32 @@
+/home/soyoung/latent_ode2/run_models.py
+run_models.py --niters 100 -n 8000 -l 20 --latent-ode --z0-encoder rnn --dataset physionet --rec-dims 40 --rec-layers 3 --gen-layers 3 --units 50 --gru-units 50 --quantization 0.016 --classif --reg_dopri 0 --reg_kinetic 0.015 --reg_l1 0 --reg_l2 0 --gpu 2
+Experiment 19485
+Epoch 0001 [Test seq (cond on sampled tp)] | Loss 58.877144 | Likelihood -46.702499 | KL fp 4.2047 | FP STD 0.0180 | NFE 14.0000
+KL coef: 0.0
+Train loss (one batch): 57.91334533691406
+Train CE loss (one batch): 0.12977838516235352
+Classification AUC (TEST): 0.5447
+Test MSE: 0.0099
+Poisson likelihood: 0.0
+CE loss: 0.13274455070495605
+NFE: 14.0000
+Experiment 19485
+Epoch 0002 [Test seq (cond on sampled tp)] | Loss 45.691544 | Likelihood -33.528343 | KL fp 4.7079 | FP STD 0.0104 | NFE 26.0000
+KL coef: 0.0
+Train loss (one batch): 45.603633880615234
+Train CE loss (one batch): 0.12495490908622742
+Classification AUC (TEST): 0.5222
+Test MSE: 0.0073
+Poisson likelihood: 0.0
+CE loss: 0.13261887431144714
+NFE: 26.0000
+Experiment 19485
+Epoch 0003 [Test seq (cond on sampled tp)] | Loss 42.647995 | Likelihood -30.413998 | KL fp 4.7511 | FP STD 0.0106 | NFE 26.0000
+KL coef: 0.0
+Train loss (one batch): 42.10032653808594
+Train CE loss (one batch): 0.12739670276641846
+Classification AUC (TEST): 0.5322
+Test MSE: 0.0066
+Poisson likelihood: 0.0
+CE loss: 0.13332827389240265
+NFE: 26.0000
