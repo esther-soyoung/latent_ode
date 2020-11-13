@@ -293,9 +293,7 @@ if __name__ == '__main__':
 	##################################################################
 
 	if args.load_aux is not None:
-		import pdb;pdb.set_trace()
 		aux_ckpt_path = os.path.join('aux_experiments/', "experiment_" + str(args.load_aux) + '.ckpt')
-		utils.get_ckpt_model(aux_ckpt_path, aux_net, device)
 		with torch.no_grad():
 			dopri_cnt, euler_cnt, rk4_cnt = 0, 0, 0
 			aux_acc = 0
@@ -327,12 +325,8 @@ if __name__ == '__main__':
 
 				aux_truth = dopri_truth + euler_truth + rk4_truth  # [60, 3]
 
-				aux_net.eval()
 				t = time.time()
-				aux_y = aux_net(fp_enc)  # [3, 20, 3]
 				aux_t += time.time() - t
-				aux_y = aux_y.view(-1, n_intg) # [60, 3]
-				aux_test_loss = torch.sqrt(aux_criterion(aux_y, aux_truth))
 
 				# Choice of integrator
 				integrators = ['dopri5', 'euler']
@@ -385,10 +379,6 @@ if __name__ == '__main__':
 				if (label_integrator == pred_integrator):
 					aux_acc += 1
 
-				torch.save({
-					'args': args,
-					'state_dict': aux_net.state_dict(),
-				}, aux_ckpt_path)
 			##############################
 
 			##### Overall AUC of the Choice #####
