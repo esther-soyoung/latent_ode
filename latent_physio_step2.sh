@@ -16,6 +16,7 @@ python train_aux2.py \
         --classif \
 	--step_size 0.1 \
 	--alpha 0.01 \
-	--m 10 \
+	--m 100 \
         --load '59645' \
-        --load_aux '59645_91853'
+        --load_aux '59645_91853' \
+	--gpu 2
