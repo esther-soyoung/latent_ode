@@ -368,7 +368,7 @@ if __name__ == '__main__':
 				else:
 					label_integrator = 'rk4'
 
-				logger.info("----- Test Iter {} | : {}".format(_itr))
+				logger.info("----- Test Iter {} |".format(_itr))
 				logger.info("Cost(alpha {}) for Dopri integrator (one batch): {}".format(args.alpha, total_cost_dopri))
 				logger.info("Cost(alpha {}) for Euler integrator (one batch): {}".format(args.alpha, total_cost_euler))
 				logger.info("Cost(alpha {}) for RK4 integrator (one batch): {}".format(args.alpha, total_cost_rk4))
