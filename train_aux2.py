@@ -372,7 +372,7 @@ if __name__ == '__main__':
 				logger.info("Cost(alpha {}) for Dopri integrator (one batch): {}".format(args.alpha, total_cost_dopri))
 				logger.info("Cost(alpha {}) for Euler integrator (one batch): {}".format(args.alpha, total_cost_euler))
 				logger.info("Cost(alpha {}) for RK4 integrator (one batch): {}".format(args.alpha, total_cost_rk4))
-				logger.info("Choice of integrator (one batch): {} | Predicted Cost: {}".format(pred_integrator, aux_y_sum))
+				logger.info("Choice of integrator (one batch): {} ".format(pred_integrator))
 				logger.info("Auxiliary network predicted {}".format(label_integrator == pred_integrator))
 				logger.info("AUC of the choice (one batch): {}".format(results['auc']))
 
