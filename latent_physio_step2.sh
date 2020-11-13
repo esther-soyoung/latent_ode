@@ -1,6 +1,6 @@
 #!/bin/sh
 
-python train_aux.py \
+python train_aux2.py \
         --niters 100 \
         -n 8000 \
         -l 20 \
@@ -17,6 +17,5 @@ python train_aux.py \
 	--step_size 0.1 \
 	--alpha 0.01 \
 	--m 10 \
-        --load '59645'
-        #--load_aux '59645_91853' \
-        #--load_aux '59645_42889' \
+        --load '59645' \
+        --load_aux '59645_91853'
