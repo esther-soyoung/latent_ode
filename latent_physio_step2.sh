@@ -1,6 +1,6 @@
 #!/bin/sh
 
-python train_aux2.py \
+python train_aux.py \
         --niters 100 \
         -n 8000 \
         -l 20 \
@@ -15,8 +15,7 @@ python train_aux2.py \
         --quantization 0.016 \
         --classif \
 	--step_size 0.1 \
-	--alpha 0.01 \
+	--alpha 0.05 \
 	--m 100 \
-        --load '59645' \
-        --load_aux '59645_91853' \
+        --load '29643' \
 	--gpu 2

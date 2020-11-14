@@ -421,7 +421,7 @@ if __name__ == '__main__':
 	true_res['dopri5'] = []
 	true_res['euler'] = []
 	true_res['rk4'] = []
-	for i in range(num_batches):
+	for i in range(num_batches * args.niters):
 		batch_dict = utils.get_next_batch(data_obj["train_dataloader"])
 		# dict_keys(['observed_data', 'observed_tp', 'data_to_predict', 'tp_to_predict', 
 		# 'observed_mask', 'mask_predicted_data', 'labels', 'mode'])
