@@ -414,14 +414,14 @@ if __name__ == '__main__':
 
 		sys.exit()
 	#####################################################################################################
-	## Train ##
+	## True Values ##
 	num_batches = data_obj["n_train_batches"]  # 64
 	true_res = {}
 	true_res['fp_enc'] = []
 	true_res['dopri5'] = []
 	true_res['euler'] = []
 	true_res['rk4'] = []
-	for i in range(num_batches * args.niters):
+	for i in range(num_batches):
 		batch_dict = utils.get_next_batch(data_obj["train_dataloader"])
 		# dict_keys(['observed_data', 'observed_tp', 'data_to_predict', 'tp_to_predict', 
 		# 'observed_mask', 'mask_predicted_data', 'labels', 'mode'])
@@ -478,7 +478,7 @@ if __name__ == '__main__':
 		aux_opt.step()
 
 		##### Validation #####
-		if itr % (num_batches * 5) == 0:  # validate every 5 trains
+		if itr % (num_batches * 10) == 0:  # validate every 5 trains
 			logger.info("########## Iter: {}".format((itr-1)//num_batches+1))
 			with torch.no_grad():
 				dopri_cnt, euler_cnt, rk4_cnt = 0, 0, 0
@@ -569,7 +569,7 @@ if __name__ == '__main__':
 					else:
 						label_integrator = 'rk4'
 
-					logger.info("----- Test Iter {} | Test loss (one batch): {}".format(_itr, aux_test_loss))
+					logger.info("----- Test Batch {} | Test loss (one batch): {}".format(_itr, aux_test_loss))
 					logger.info("Cost(alpha {}) for Dopri integrator (one batch): {}".format(args.alpha, total_cost_dopri))
 					logger.info("Cost(alpha {}) for Euler integrator (one batch): {}".format(args.alpha, total_cost_euler))
 					logger.info("Cost(alpha {}) for RK4 integrator (one batch): {}".format(args.alpha, total_cost_rk4))
