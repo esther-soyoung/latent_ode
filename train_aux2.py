@@ -342,10 +342,10 @@ if __name__ == '__main__':
 				else:
 					pred_integrator = 'euler'
 
-				if _itr in euler:
-					pred_integrator = 'euler'
-				else:
-					pred_integrator = 'dopri5'
+				# if _itr in euler:
+				# 	pred_integrator = 'euler'
+				# else:
+				# 	pred_integrator = 'dopri5'
 
 				if pred_integrator == 'dopri5':
 					dopri_cnt += 1
