@@ -19,5 +19,4 @@ python train_aux2.py \
 	--m 10 \
         --load '29643' \
 	--load_aux '29643_16228' \
-	--random-seed 4000 \
 	--gpu 2
