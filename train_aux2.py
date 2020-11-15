@@ -303,7 +303,7 @@ if __name__ == '__main__':
 			aux_conf = [0, 0, 0, 0]
 
 			# Choice of integrator
-			euler = random.sample(list(range(num_test_batches)), 10)
+			# euler = random.sample(list(range(num_test_batches)), 10)
 
 			for _itr in range(num_test_batches):  # 40
 				batch_dict = utils.get_next_batch(data_obj["test_dataloader"])
@@ -334,9 +334,13 @@ if __name__ == '__main__':
 
 				# Choice of integrator
 				integrators = ['dopri5', 'euler']
-				probs = [0.875, 0.125]
+				# probs = [0.875, 0.125]
 				results = {}
 				# pred_integrator = np.random.choice(integrators, p=probs)
+				if random.random() >= 0.75:
+					pred_integrator = 'dopri5'
+				else:
+					pred_integrator = 'euler'
 
 				if _itr in euler:
 					pred_integrator = 'euler'
