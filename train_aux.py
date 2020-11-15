@@ -478,7 +478,7 @@ if __name__ == '__main__':
 		aux_opt.step()
 
 		##### Validation #####
-		if itr % (num_batches * 10) == 0:  # validate every 5 trains
+		if itr % (num_batches * 5) == 0:  # validate every 5 trains
 			logger.info("########## Iter: {}".format((itr-1)//num_batches+1))
 			with torch.no_grad():
 				dopri_cnt, euler_cnt, rk4_cnt = 0, 0, 0
