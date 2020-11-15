@@ -18,5 +18,4 @@ python train_aux2.py \
 	--alpha 0.01 \
 	--m 100 \
         --load '59645' \
-        --load_aux '59645_91853' \
-	--gpu 2
+        --load_aux '59645_91853'

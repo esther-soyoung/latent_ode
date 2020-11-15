@@ -302,7 +302,7 @@ if __name__ == '__main__':
 			overall_auc = []
 			aux_conf = [0, 0, 0, 0]
 			# Choice of integrator
-			euler = random.sample(list(range(num_test_batches)), 5)
+			euler = random.sample(list(range(num_test_batches)), 10)
 
 			for _itr in range(num_test_batches):  # 40
 				batch_dict = utils.get_next_batch(data_obj["test_dataloader"])
