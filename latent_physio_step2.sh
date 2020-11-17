@@ -1,7 +1,7 @@
 #!/bin/sh
 
 python train_aux.py \
-        --niters 100 \
+        --niters 5 \
         -n 8000 \
         -l 20 \
         --latent-ode \
@@ -16,7 +16,6 @@ python train_aux.py \
         --classif \
 	--step_size 0.1 \
 	--alpha 0.01 \
-	--m 10 \
-        --load '59645'
-        #--load_aux '59645_91853' \
-        #--load_aux '59645_42889' \
+	--m 100 \
+        --load '29643' \
+	--gpu 2
