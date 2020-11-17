@@ -14,4 +14,4 @@ python run_models.py \
         --gru-units 50 \
         --quantization 0.016 \
         --classif \
-	--gpu 3
+	--random-seed $1
