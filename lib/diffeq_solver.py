@@ -32,7 +32,7 @@ class DiffeqSolver(nn.Module):
 		self.func = None
 		nreg = 0
 		if reg_func is not None:
-			self.func = RegularizedODEfunc(ode_func, reg_func)
+			self.func = RegularizedODEfunc(ode_func, reg_func, self.device)
 			nreg = 1
 		self.nreg = nreg
 
