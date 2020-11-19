@@ -102,10 +102,8 @@ class LatentODE(VAE_Baseline):
 		# Shape of sol_y [n_traj_samples, n_samples, n_timepoints, n_latents]
 		self.reset_nfe()
 		t = time.time()
-		sol_y, dopri_err, kinetic = self.diffeq_solver(first_point_enc_aug, time_steps_to_predict, method, step_size=self.step_size)
+		sol_y, kinetic = self.diffeq_solver(first_point_enc_aug, time_steps_to_predict, method, step_size=self.step_size)
 		t = time.time() - t
-		if method == 'dopri5_err':
-			dopri_err = torch.mean(torch.stack(dopri_err))
 		kinetic = torch.mean(kinetic)
 
 		pred_x = self.decoder(sol_y)  # [3, 50, 2208, 41]
@@ -122,7 +120,7 @@ class LatentODE(VAE_Baseline):
 			else:  # [3, 50]
 				all_extra_info["label_predictions"] = self.classifier(first_point_enc).squeeze(-1)
 
-		return pred_x, dopri_err, kinetic, all_extra_info
+		return pred_x, kinetic, all_extra_info
 
 
 	def sample_traj_from_prior(self, time_steps_to_predict, n_traj_samples = 1):

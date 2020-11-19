@@ -289,10 +289,10 @@ class VAE_Baseline(nn.Module):
 		ret[3] += np.sum((truth == 0) and (truth != (pred_y>=cut_off)))
 		return ret
 
-	def compute_all_losses(self, batch_dict, method='dopri5_err', cut_off=None, m=1000, n_traj_samples = 1, kl_coef = 1.):
+	def compute_all_losses(self, batch_dict, method='dopri5', cut_off=None, m=1000, n_traj_samples = 1, kl_coef = 1.):
 		# Condition on subsampled points
 		# Make predictions for all the points
-		pred_y, dopri_err, kinetic, info = self.get_reconstruction(
+		pred_y, kinetic, info = self.get_reconstruction(
 			batch_dict["tp_to_predict"],  # union of 83 tps of all patients removed nan (ex. 2208), [0~1]
 			batch_dict["observed_data"],  # truth, [batch_size, union tp, num_features] (ex. [50, 2208, 41])
 			batch_dict["observed_tp"],  # [2208]
@@ -371,10 +371,7 @@ class VAE_Baseline(nn.Module):
 		# dopri: 7.0814 * 0.02 = 0.141628
 		# kinetic:
 		# l1: 762.5653 * 0.00018359 = 0.14
-		results["loss"] = torch.mean(loss) \
-							+ self.reg_dopri * dopri_err \
-							+ self.reg_kinetic * kinetic \
-							+ self.reg_l1 * l1
+		results["loss"] = torch.mean(loss)
 		results["likelihood"] = torch.mean(rec_likelihood).detach()
 		results["mse"] = torch.mean(mse).detach()
 		results["pois_likelihood"] = torch.mean(pois_log_likelihood).detach()

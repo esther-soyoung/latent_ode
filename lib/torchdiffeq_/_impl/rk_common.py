@@ -60,7 +60,7 @@ def _runge_kutta_step(func, y0, f0, t0, dt, tableau):
     y1 = yi
     f1 = tuple(k_[-1] for k_ in k)
     y1_error = tuple(_scaled_dot_product(dt, tableau.c_error, k_) for k_ in k)
-    return (y1, f1, y1_error, k), tot_dt
+    return y1, f1, y1_error, k
 
 
 def rk4_step_func(func, t, dt, y, k1=None):

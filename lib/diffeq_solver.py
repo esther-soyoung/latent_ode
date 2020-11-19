@@ -13,6 +13,7 @@ import lib.utils as utils
 from torch.distributions.multivariate_normal import MultivariateNormal
 
 from lib.torchdiffeq_ import odeint_err as odeint_err
+from lib.torchdiffeq_ import odeint as odeint
 
 from lib.cnf_regularization import RegularizedODEfunc
 
@@ -49,7 +50,7 @@ class DiffeqSolver(nn.Module):
 		reg_state = torch.zeros(first_point.size(0)).to(first_point)
 		if self.nreg > 0 and self.train:  # regularizer state
 			assert self.func is not None, 'regularizer function not given'
-			state_t, err = odeint_err(self.func,  # ode_func & reg_func
+			state_t= odeint(self.func,  # ode_func & reg_func
 				(first_point, reg_state),
 				time_steps_to_predict, 
 				rtol=[self.odeint_rtol] + [1e20],
@@ -59,7 +60,7 @@ class DiffeqSolver(nn.Module):
 			pred_y = state_t[0].permute(1,2,0,3)  # [3, 50, 2208, 20]
 			reg_state = state_t[1].permute(1,0)  # [3, 2208]
 		else:
-			state_t, err = odeint_err(self.ode_func,  # ode_func
+			state_t = odeint(self.ode_func,  # ode_func
 				first_point, 
 				time_steps_to_predict, 
 				rtol=self.odeint_rtol,
@@ -72,7 +73,7 @@ class DiffeqSolver(nn.Module):
 		assert(pred_y.size()[0] == n_traj_samples)
 		assert(pred_y.size()[1] == n_traj)
 
-		return pred_y, err, reg_state
+		return pred_y, reg_state
 
 	def sample_traj_from_prior(self, starting_point_enc, time_steps_to_predict, 
 		n_traj_samples = 1):
