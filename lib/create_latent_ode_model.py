@@ -17,7 +17,7 @@ from lib.diffeq_solver import DiffeqSolver
 
 from torch.distributions.normal import Normal
 from lib.ode_func import ODEFunc, ODEFunc_w_Poisson
-from lib.cnf_regularization import quadratic_cost
+from lib.cnf_regularization import quadratic_cost, highorder_derivative
 
 #####################################################################################################
 
@@ -54,6 +54,8 @@ def create_LatentODE_model(args, input_dim, z0_prior, obsrv_std, device,
 	reg_func = None
 	if args.reg_kinetic > 0:
 		reg_func = quadratic_cost
+	elif args.reg_high > 0:
+		reg_func = highorder_derivative
 
 	z0_diffeq_solver = None
 	n_rec_dims = args.rec_dims
@@ -106,7 +108,8 @@ def create_LatentODE_model(args, input_dim, z0_prior, obsrv_std, device,
 		classif_per_tp = classif_per_tp,
 		n_labels = n_labels,
 		train_classif_w_reconstr = (args.dataset == "physionet"),
-		reg_dopri = args.reg_dopri, reg_kinetic = args.reg_kinetic, reg_l1 = args.reg_l1
+		reg_dopri = args.reg_dopri, reg_kinetic = args.reg_kinetic, reg_l1 = args.reg_l1,
+		reg_high = args.reg_high
 		).to(device)
 
 	return model

@@ -14,7 +14,5 @@ python run_models.py \
         --gru-units 50 \
         --quantization 0.016 \
         --classif \
-	--reg_dopri $1 \
-	--reg_kinetic $2 \
-	--reg_l1 $3 \
-	--reg_l2 $4
+	--reg_high $1 \
+	--gpu 1

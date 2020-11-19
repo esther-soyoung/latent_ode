@@ -38,7 +38,7 @@ class Baseline(nn.Module):
 		linear_classifier = False,
 		n_labels = 1,
 		train_classif_w_reconstr = False,
-		reg_dopri = 0, reg_kinetic = 0):
+		reg_dopri = 0, reg_kinetic = 0, reg_high = 0):
 		super(Baseline, self).__init__()
 
 		self.input_dim = input_dim
@@ -56,6 +56,7 @@ class Baseline(nn.Module):
 
 		self.reg_dopri = reg_dopri
 		self.reg_kinetic = reg_kinetic
+		self.reg_high = reg_high
 
 		z0_dim = latent_dim
 		if use_poisson_proc:
@@ -164,8 +165,7 @@ class Baseline(nn.Module):
 		# Take mean over the number of samples in a batch
 		results = {}
 		results["loss"] = torch.mean(loss) \
-							+ self.reg_dopri * dopri_err \
-							+ self.reg_kinetic * kinetic
+							+ self.reg_high * kinetic
 		results["likelihood"] = torch.mean(likelihood).detach()
 		results["mse"] = torch.mean(mse).detach()
 		results["pois_likelihood"] = torch.mean(pois_log_likelihood).detach()
@@ -191,7 +191,7 @@ class VAE_Baseline(nn.Module):
 		linear_classifier = False,
 		n_labels = 1,
 		train_classif_w_reconstr = False,
-		reg_dopri = 0, reg_kinetic = 0, reg_l1 = 0):
+		reg_dopri = 0, reg_kinetic = 0, reg_l1 = 0, reg_high = 0):
 
 		super(VAE_Baseline, self).__init__()
 		
