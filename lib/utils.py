@@ -514,7 +514,7 @@ def split_and_subsample_batch(data_dict, args, data_type = "train"):
 def compute_loss_all_batches(model,
 	test_dataloader, args,
 	n_batches, experimentID, device,
-	method = 'dopri5_err',
+	method = 'dopri5',
 	n_traj_samples = 1, kl_coef = 1., 
 	max_samples_for_eval = None):
 
@@ -540,7 +540,7 @@ def compute_loss_all_batches(model,
 		
 		batch_dict = get_next_batch(test_dataloader)
 
-		results, fp_enc, _ = model.compute_all_losses(batch_dict, method,
+		results, fp_enc  = model.compute_all_losses(batch_dict, method,
 			n_traj_samples = n_traj_samples, kl_coef = kl_coef)
 
 		if args.classif:
