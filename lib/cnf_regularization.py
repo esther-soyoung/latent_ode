@@ -68,6 +68,7 @@ def quadratic_cost(dx, t, unused_context):
     dx = dx.view(dx.shape[0], -1)
     return 0.5 * dx.pow(2).mean(dim=-1)
 
+# computation graph maintain해서 시도해보기
 def highorder_derivative(dx, t, device):
     # dx, dlogp = dstate[:2]
     one = torch.ones(3, 50, 20, device=device) #, requires_grad=True
