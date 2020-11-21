@@ -69,12 +69,11 @@ def quadratic_cost(dx, t, unused_context):
     return 0.5 * dx.pow(2).mean(dim=-1)
 
 # computation graph maintain해서 시도해보기
-def highorder_derivative(dx, t, device):
+def highorder_derivative(dstate, t, device):
     del t
     dx, dlogp = dstate[:2]
     one = torch.ones(3, 50, 20, device=device) #, requires_grad=True
 
-    import pdb;pdb.set_trace()
     order_dx = torch.autograd.grad(dx, x, dx, create_graph=True)[0]
     # order_dx = torch.autograd.grad(dx, t, one, create_graph=True)[0]
     highorder_dx = torch.autograd.grad(order_dx, x, order_dx)[0]
