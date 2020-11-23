@@ -22,7 +22,7 @@ class RegularizedODEfunc(nn.Module):
             # logp.requires_grad_(True)
             dstate = self.odefunc(t, x)
             if len(state) > 1:  # reg state
-                reg_state = self.regfunc(dstate, t, self.device)
+                reg_state = self.regfunc(dstate, t, x, self.device)
                 return (dstate, reg_state)  # [3, 50, 20], [3]
             else:
                 return dstate
@@ -62,14 +62,14 @@ def directional_derivative(x, t, logp, dx, dlogp, unused_context):
 
     return 0.5*ddx2.mean(dim=-1)
 
-def quadratic_cost(dx, t, unused_context):
-    del t
+def quadratic_cost(dx, t, x, unused_context):
+    del t, x
     # del x, logp, dlogp, t, unused_context
     dx = dx.view(dx.shape[0], -1)
     return 0.5 * dx.pow(2).mean(dim=-1)
 
 # computation graph maintain해서 시도해보기
-def highorder_derivative(dstate, t, device):
+def highorder_derivative(dstate, t, x, device):
     del t
     dx, dlogp = dstate[:2]
     one = torch.ones(3, 50, 20, device=device) #, requires_grad=True
