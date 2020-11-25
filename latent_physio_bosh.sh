@@ -15,4 +15,6 @@ python train_aux3.py \
         --quantization 0.016 \
         --classif \
 	--step_size 0.1 \
-        --load '59645'
+        --load '29643' \
+	--random-seed $1 \
+	--gpu 2

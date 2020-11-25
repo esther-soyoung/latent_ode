@@ -209,6 +209,13 @@ if __name__ == '__main__':
 			device = device,
 			method = 'euler',
 			n_traj_samples = 3, kl_coef = kl_coef)
+		rk4_res, _ = compute_loss_all_batches(model,
+			data_obj["test_dataloader"], args,
+			n_batches = data_obj["n_test_batches"],
+			experimentID = experimentID,
+			device = device,
+			method = 'rk4',
+			n_traj_samples = 3, kl_coef = kl_coef)
 		bosh3_res, _ = compute_loss_all_batches(model,
 			data_obj["test_dataloader"], args,
 			n_batches = data_obj["n_test_batches"],
@@ -218,5 +225,5 @@ if __name__ == '__main__':
 			n_traj_samples = 3, kl_coef = kl_coef)
 
 		logger.info("Experiment " + str(experimentID))
-		logger.info("Classification AUC (TEST): Dopri5 {:.4f} | Euler {:.4f} | Bosh3 {:.4f}".format(dopri_res["auc"], euler_res["auc"], bosh3_res["auc"]))
-		logger.info("NFE:  Dopri5 {:.4f} | Euler {:.4f} | Bosh3 {:.4f}".format(dopri_res["nfe"], euler_res["nfe"], bosh3_res["nfe"]))
+		logger.info("Classification AUC (TEST): Dopri5 {:.4f} | Euler {:.4f} | RK4 {:.4f} | Bosh3 {:.4f}".format(dopri_res["auc"], euler_res["auc"], rk4_res["auc"], bosh3_res["auc"]))
+		logger.info("NFE:  Dopri5 {:.4f} | Euler {:.4f} | RK4 {:.4f} | Bosh3 {:.4f}".format(dopri_res["nfe"], euler_res["nfe"], rk4_res["nfe"], bosh3_res["nfe"]))
