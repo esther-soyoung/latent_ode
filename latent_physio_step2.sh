@@ -18,4 +18,6 @@ python train_aux.py \
 	--alpha 0.01 \
 	--m 100 \
         --load '29643' \
+	--load_aux '29643_16228' \
+	--random-seed $1 \
 	--gpu 2
