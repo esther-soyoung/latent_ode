@@ -308,8 +308,11 @@ if __name__ == '__main__':
 			aux_acc = 0
 			aux_t = 0
 
-			overall_auc = []
+			# overall_auc = []
 			aux_conf = [0, 0, 0, 0]
+
+			classif_predictions = torch.Tensor([]).to(device)
+			all_test_labels =  torch.Tensor([]).to(device)
 			for _itr in range(num_test_batches):  # 40
 				batch_dict = utils.get_next_batch(data_obj["test_dataloader"])
 				##### Get True values #####
@@ -359,19 +362,25 @@ if __name__ == '__main__':
 					results = rk4_res
 
 				# overall AUC
-				overall_auc.append(results['auc'])
+				# overall_auc.append(results['auc'])
 
-				all_test_labels = batch_dict["labels"].reshape(-1, n_labels)
-				classif_predictions = results["label_predictions"].reshape(n_traj_samples, -1, n_labels)
-				all_test_labels = all_test_labels.repeat(n_traj_samples,1,1)
-				idx_not_nan = ~torch.isnan(all_test_labels)
-				classif_predictions = classif_predictions[idx_not_nan]
-				all_test_labels = all_test_labels[idx_not_nan]
+				# all_test_labels = batch_dict["labels"].reshape(-1, n_labels)
+				# classif_predictions = results["label_predictions"].reshape(n_traj_samples, -1, n_labels)
+				# all_test_labels = all_test_labels.repeat(n_traj_samples,1,1)
+				# idx_not_nan = ~torch.isnan(all_test_labels)
+				# classif_predictions = classif_predictions[idx_not_nan]
+				# all_test_labels = all_test_labels[idx_not_nan]
 
 				# cutoff = dopri_res['cutoff']
 				# a_conf = confusion_matrix(all_test_labels.cpu().numpy().reshape(-1),
 				# 		classif_predictions.cpu().numpy().reshape(-1) >= cutoff).ravel()  # tn, fp, fn, tp
 				aux_conf = [sum(x) for x in zip(aux_conf, results['conf'])]
+
+				# overall AUC
+				classif_predictions = torch.cat((classif_predictions, 
+					results["label_predictions"].reshape(n_traj_samples, -1, n_labels)),1)
+				all_test_labels = torch.cat((all_test_labels, 
+					batch_dict["labels"].reshape(-1, n_labels)),0)
 
 				# Actual costs
 				total_cost_dopri = torch.sum(dopri_cost.squeeze().view(-1)).item()
@@ -403,8 +412,23 @@ if __name__ == '__main__':
 			##############################
 
 			##### Overall AUC of the Choice #####
+			all_test_labels = all_test_labels.repeat(n_traj_samples,1,1)
 
-			overall_auc = np.mean(np.array(overall_auc))
+			idx_not_nan = ~torch.isnan(all_test_labels)
+			classif_predictions = classif_predictions[idx_not_nan]
+			all_test_labels = all_test_labels[idx_not_nan]
+
+			if torch.sum(all_test_labels) != 0.:
+				print("Number of labeled examples: {}".format(len(all_test_labels.reshape(-1))))
+				print("Number of examples with mortality 1: {}".format(torch.sum(all_test_labels == 1.)))
+
+				# Cannot compute AUC with only 1 class
+				overall_auc = sk.metrics.roc_auc_score(all_test_labels.cpu().numpy().reshape(-1), 
+					classif_predictions.cpu().numpy().reshape(-1))
+			else:
+				print("Warning: Couldn't compute AUC -- all examples are from the same class")
+
+			# overall_auc = np.mean(np.array(overall_auc))
 			############## LOGGER ###############
 			logger.info('----- Total Test Batches')
 			logger.info('Aux Net Accuracy: {}'.format(aux_acc/40))
